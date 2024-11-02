@@ -2,13 +2,77 @@
 
 @section('content')
 
-<div class="card">
-    <div class="card-header">
-        <h3 class="card-tittle">Halo, apakabar!!!</h3>
-        <div class="card tools"></div>
+<!-- Small Box (Stat card) -->
+<h5 class="mb-2 mt-4">Dashboard</h5>
+<div class="row">
+  <!-- Peserta Sertifikasi Teraktif -->
+  <div class="col-lg-3 col-6">
+    <div class="small-box bg-primary">
+      <div class="inner">
+        <h3>85</h3>
+        <p>Peserta Sertifikasi Aktif</p>
+      </div>
+      <div class="icon">
+        <i class="fas fa-user-graduate"></i>
+      </div>
+      <a href="#" class="small-box-footer">
+        More info <i class="fas fa-arrow-circle-right"></i>
+      </a>
     </div>
-    <div class="card-body">
-        Selamat datang semua, ini adalah halaman utama dari aplikasi ini.
+  </div>
+  <!-- ./col -->
+
+  <!-- Peserta Pelatihan Teraktif -->
+  <div class="col-lg-3 col-6">
+    <div class="small-box bg-success">
+      <div class="inner">
+        <h3>75</h3>
+        <p>Peserta Pelatihan Aktif</p>
+      </div>
+      <div class="icon">
+        <i class="fas fa-chalkboard-teacher"></i>
+      </div>
+      <a href="#" class="small-box-footer">
+        More info <i class="fas fa-arrow-circle-right"></i>
+      </a>
     </div>
+  </div>
+  <!-- ./col -->
+
+  <!-- Peserta Terdaftar -->
+  <div class="col-lg-3 col-6">
+    <div class="small-box bg-warning">
+      <div class="inner">
+        <h3>200</h3>
+        <p>Peserta Terdaftar</p>
+      </div>
+      <div class="icon">
+        <i class="fas fa-users"></i>
+      </div>
+      <a href="#" class="small-box-footer">
+        More info <i class="fas fa-arrow-circle-right"></i>
+      </a>
+    </div>
+  </div>
+  <!-- ./col -->
+
+  <!-- Masa Aktif Sertifikasi Berakhir -->
+  <div class="col-lg-3 col-6">
+    <div class="small-box bg-danger">
+      <div class="inner">
+        <h3>30</h3>
+        <p>Masa Aktif Sertifikasi Berakhir</p>
+      </div>
+      <div class="icon">
+        <i class="fas fa-calendar-times"></i>
+      </div>
+      <a href="#" class="small-box-footer">
+        More info <i class="fas fa-arrow-circle-right"></i>
+      </a>
+    </div>
+  </div>
+  <!-- ./col -->
 </div>
+
+
 @endsection
