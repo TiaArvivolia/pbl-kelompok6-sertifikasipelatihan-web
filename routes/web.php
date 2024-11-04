@@ -46,13 +46,13 @@ Route::get('/', [WelcomeController::class, 'index']);
 // routes/web.php
 
 
-Route::prefix('kelola-pengguna')->group(function () {
-    Route::get('/', [KelolaPenggunaController::class, 'index'])->name('kelola-pengguna.index');
-    Route::get('/create', [KelolaPenggunaController::class, 'create'])->name('kelola-pengguna.create');
-    Route::post('/store', [KelolaPenggunaController::class, 'store'])->name('kelola-pengguna.store');
-    Route::get('/edit/{id}', [KelolaPenggunaController::class, 'edit'])->name('kelola-pengguna.edit');
-    Route::put('/update/{id}', [KelolaPenggunaController::class, 'update'])->name('kelola-pengguna.update');
-    Route::delete('/destroy/{id}', [KelolaPenggunaController::class, 'destroy'])->name('kelola-pengguna.destroy');
+Route::prefix('pengguna')->group(function () {
+    Route::get('/', [KelolaPenggunaController::class, 'index'])->name('kpengguna.index');
+    Route::get('/create', [KelolaPenggunaController::class, 'create'])->name('pengguna.create');
+    Route::post('/store', [KelolaPenggunaController::class, 'store'])->name('kpengguna.store');
+    Route::get('/edit/{id}', [KelolaPenggunaController::class, 'edit'])->name('pengguna.edit');
+    Route::put('/update/{id}', [KelolaPenggunaController::class, 'update'])->name('pengguna.update');
+    Route::delete('/destroy/{id}', [KelolaPenggunaController::class, 'destroy'])->name('pengguna.destroy');
 });
 
 
@@ -75,16 +75,26 @@ Route::get('vendor-sertifikasi/{id}', [VendorSertifikasiController::class, 'show
 Route::get('vendor-sertifikasi/{id}/edit', [VendorSertifikasiController::class, 'edit']);
 
 // Kelola Mata Kuliah
-Route::get('kelola-mata-kuliah', [VendorSertifikasiController::class, 'index']);
-Route::get('kelola-mata-kuliah/create', [VendorSertifikasiController::class, 'create']);
-Route::get('kelola-mata-kuliah/{id}', [VendorSertifikasiController::class, 'show']);
-Route::get('kelola-mata-kuliah/{id}/edit', [VendorSertifikasiController::class, 'edit']);
+// routes/web.php
+
+
+Route::prefix('mata_kuliah')->name('mata_kuliah')->group(function () {
+    Route::get('/', [KelolaMataKuliahController::class, 'index'])->name('index');
+    Route::get('/create', [KelolaMataKuliahController::class, 'create'])->name('create');
+    Route::post('/', [KelolaMataKuliahController::class, 'store'])->name('store');
+    Route::get('/{id}/edit', [KelolaMataKuliahController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [KelolaMataKuliahController::class, 'update'])->name('update');
+    Route::delete('/{id}', [KelolaMataKuliahController::class, 'destroy'])->name('destroy');
+});
 
 // Kelola bidang minat
-Route::get('kelola-bidang-minat', [VendorSertifikasiController::class, 'index']);
-Route::get('kelola-bidang-minat/create', [VendorSertifikasiController::class, 'create']);
-Route::get('kelola-bidang-minat/{id}', [VendorSertifikasiController::class, 'show']);
-Route::get('kelola-bidang-minat/{id}/edit', [VendorSertifikasiController::class, 'edit']);
+
+Route::prefix('bidang_minat')->name('bidang_minat')->group(function () {
+Route::get('', [KelolaBidangMinatController::class, 'index']);
+Route::get('/create', [KelolaBidangMinatController::class, 'create']);
+Route::get('/{id}', [KelolaBidangMinatController::class, 'show']);
+Route::get('/{id}/edit', [KelolaBidangMinatController::class, 'edit']);
+});
 
 // Daftar sertifikasi
 Route::get('daftar-sertifikasi', [VendorSertifikasiController::class, 'index']);

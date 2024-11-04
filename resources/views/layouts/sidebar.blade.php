@@ -35,32 +35,32 @@
         </a>
         <ul class="nav nav-treeview">
           <li class="nav-item">
-            <a href="{{ url('/kelola-pengguna') }}" class="nav-link">
+            <a href="{{ url('/pengguna') }}" class="nav-link {{ $activeMenu == 'pengguna' ? 'active' : '' }}">
               <p>Kelola Pengguna</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/jenis-pelatihan') }}" class="nav-link">
+            <a href="{{ url('/jenis-pelatihan') }}" class="nav-link {{ $activeMenu == 'jenisPelatihan' ? 'active' : '' }}">
               <p>Jenis Pelatihan</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/vendor-pelatihan') }}" class="nav-link">
+            <a href="{{ url('/vendor-pelatihan') }}" class="nav-link {{ $activeMenu == 'vendorpelatihan' ? 'active' : '' }}">
               <p>Vendor Pelatihan</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/vendor-sertifikasi') }}" class="nav-link">
+            <a href="{{ url('/vendor-sertifikasi') }}" class="nav-link {{ $activeMenu == 'vendorSertifikasi' ? 'active' : '' }}">
               <p>Vendor Sertifikasi</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/kelola-mata-kuliah') }}" class="nav-link">
+            <a href="{{ url('/mata_kuliah') }}" class="nav-link  {{ $activeMenu == 'mataKuliah' ? 'active' : '' }}">
               <p>Kelola Mata Kuliah</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/kelola-bidang-minat') }}" class="nav-link">
+            <a href="{{ url('/bidang_minat') }}" class="nav-link {{ $activeMenu == 'bidangMinat' ? 'active' : '' }}">
               <p>Kelola Bidang Minat</p>
             </a>
           </li>
@@ -79,42 +79,42 @@
         </a>
         <ul class="nav nav-treeview">
           <li class="nav-item">
-            <a href="{{ url('/daftar-sertifikasi') }}" class="nav-link">
+            <a href="{{ url('/daftar-sertifikasi') }}" class="nav-link {{ $activeMenu == 'daftarSertifikasi' ? 'active' : '' }}">
               <p>Daftar Sertifikasi</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/daftar-pelatihan') }}" class="nav-link">
+            <a href="{{ url('/daftar-pelatihan') }}" class="nav-link {{ $activeMenu == 'daftarPelatihan' ? 'active' : '' }}">
               <p>Daftar Pelatihan</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/draft-surat-tugas') }}" class="nav-link">
+            <a href="{{ url('/draft-surat-tugas') }}" class="nav-link {{ $activeMenu == 'draftSuratTugas' ? 'active' : '' }}">
               <p>Draft Surat Tugas</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/statistik-sertifikasi') }}" class="nav-link">
+            <a href="{{ url('/statistik-sertifikasi') }}" class="nav-link {{ $activeMenu == 'statistik' ? 'active' : '' }}">
               <p>Statistik Sertifikasi</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/pelatihan-sertifikasi') }}" class="nav-link">
+            <a href="{{ url('/pelatihan-sertifikasi') }}" class="nav-link {{ $activeMenu == 'pelatihan' ? 'active' : '' }}">
               <p>Pelatihan & Sertifikasi</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/kelola-periode') }}" class="nav-link">
+            <a href="{{ url('/kelola-periode') }}" class="nav-link {{ $activeMenu == 'periode' ? 'active' : '' }}">
               <p>Kelola Periode</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/input-pelatihan') }}" class="nav-link">
+            <a href="{{ url('/input-pelatihan') }}" class="nav-link {{ $activeMenu == 'inputPelatihan' ? 'active' : '' }}">
               <p>Input Pelatihan</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/input-sertifikasi') }}" class="nav-link">
+            <a href="{{ url('/input-sertifikasi') }}" class="nav-link {{ $activeMenu == 'inputSertifikasi' ? 'active' : '' }}">
               <p>Input Sertifikasi</p>
             </a>
           </li>
@@ -122,12 +122,36 @@
       </li>
 
       <!-- Button Logout -->
-      <li class="nav-item mt-5">
-        <a href="#" class="nav-link" onclick="logout()">
-          <i class="nav-icon fas fa-sign-out-alt"></i>
-          <p>Logout</p>
-        </a>
+      <br><br><br><br><br><br><br>
+
+      <!-- Button Logout -->
+      <li class="nav-item">
+          <a href="#" class="nav-link" onclick="logout()">
+              <i class="nav-icon fas fa-sign-out-alt"></i>
+              <p>Logout</p>
+          </a>
       </li>
-    </ul>
-  </nav>
+  </ul>
+</nav>
 </div>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+function logout() {
+  // Hapus token dari localStorage
+  localStorage.removeItem('authToken');
+
+  // Tampilkan pop-up konfirmasi logout
+  Swal.fire({
+      icon: 'success',
+      title: 'Logged Out',
+      text: 'Anda telah berhasil logout!',
+      showConfirmButton: false,
+      timer: 1500
+  }).then(() => {
+      // Arahkan ke URL logout
+      window.location.href = '{{ url('/logout') }}';
+  });
+}
+</script>
