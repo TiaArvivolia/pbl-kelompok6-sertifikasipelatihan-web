@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class VendorSertifikasi extends Authenticatable
+class VendorSertifikasiModel extends Authenticatable
 {
-    protected $table = 'vendorsertifikasi';
+    protected $table = 'vendor_sertifikasi';
     protected $primaryKey = 'id_vendor_sertifikasi';
 
     protected $fillable = [

@@ -71,10 +71,17 @@ Route::get('vendorpelatihan/{id}', [VendorPelatihanController::class, 'show']);
 Route::get('vendorpelatihan/{id}/edit', [VendorPelatihanController::class, 'edit']);
 
 // Vendor Sertifikasi
-Route::get('vendorsertifikasi', [VendorSertifikasiController::class, 'index']);
-Route::get('vendorsertifikasi/create', [VendorSertifikasiController::class, 'create']);
-Route::get('vendorsertifikasi/{id}', [VendorSertifikasiController::class, 'show']);
-Route::get('vendorsertifikasi/{id}/edit', [VendorSertifikasiController::class, 'edit']);
+Route::prefix('vendor_sertifikasi')->group(function () {
+    Route::get('/', [VendorSertifikasiController::class, 'index']);
+    Route::post('/list', [VendorSertifikasiController::class, 'list']);
+    Route::get('/create_ajax', [VendorSertifikasiController::class, 'create_ajax']);
+    Route::post('/ajax', [VendorSertifikasiController::class, 'store_ajax']);
+    Route::get('/{id}/show_ajax', [VendorSertifikasiController::class, 'show_ajax']);
+    Route::get('/{id}/edit_ajax', [VendorSertifikasiController::class, 'edit_ajax']);
+    Route::put('/{id}/update_ajax', [VendorSertifikasiController::class, 'update_ajax']);
+    Route::get('/{id}/delete_ajax', [VendorSertifikasiController::class, 'confirm_ajax']);
+    Route::delete('/{id}/delete_ajax', [VendorSertifikasiController::class, 'delete_ajax']);
+});
 
 // Kelola Mata Kuliah
 Route::prefix('mata_kuliah')->name('mata_kuliah')->group(function () {
