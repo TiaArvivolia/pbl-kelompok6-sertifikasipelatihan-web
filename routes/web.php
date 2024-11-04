@@ -92,10 +92,15 @@ Route::prefix('mata_kuliah')->name('mata_kuliah')->group(function () {
 // Kelola bidang minat
 
 Route::prefix('bidang_minat')->name('bidang_minat')->group(function () {
-    Route::get('', [KelolaBidangMinatController::class, 'index']);
-    Route::get('/create', [KelolaBidangMinatController::class, 'create']);
-    Route::get('/{id}', [KelolaBidangMinatController::class, 'show']);
-    Route::get('/{id}/edit', [KelolaBidangMinatController::class, 'edit']);
+    Route::get('/', [KelolaBidangMinatController::class, 'index']);
+    Route::post('/list', [KelolaBidangMinatController::class, 'list']);
+    Route::get('/create_ajax', [KelolaBidangMinatController::class, 'create_ajax']);
+    Route::post('/ajax', [KelolaBidangMinatController::class, 'store_ajax']);
+    Route::get('/{id}/show_ajax', [KelolaBidangMinatController::class, 'show_ajax']);
+    Route::get('/{id}/edit_ajax', [KelolaBidangMinatController::class, 'edit_ajax']);
+    Route::put('/{id}/update_ajax', [KelolaBidangMinatController::class, 'update_ajax']);
+    Route::get('/{id}/delete_ajax', [KelolaBidangMinatController::class, 'confirm_ajax']);
+    Route::delete('/{id}/delete_ajax', [KelolaBidangMinatController::class, 'delete_ajax']);
 });
 
 // Daftar sertifikasi
