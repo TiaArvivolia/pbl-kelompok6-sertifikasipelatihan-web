@@ -4,9 +4,6 @@
     <div class="card-header">
         <h3 class="card-title">Kelola Mata Kuliah</h3>
         <div class="card-tools">
-            <button onclick="modalAction('{{ url('/mata_kuliah/import') }}')" class="btn btn-sm btn-info mt-1">Import Mata Kuliah</button>
-            <a href="{{url('/mata_kuliah/export_excel')}}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export Mata Kuliah (Excel)</a>
-            <a href="{{url('/mata_kuliah/export_pdf')}}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export Mata Kuliah (PDF)</a>
             <button onclick="modalAction('{{ url('mata_kuliah/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah Mata Kuliah</button>
         </div>
     </div>
@@ -34,68 +31,77 @@
                 });
             </script>
         @endif
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped table-hover table-sm" id="table_mata_kuliah">
+                <thead>
+                    <tr>
+                        <th class="text-center" style="width: 5%;">No</th>
+                        <th style="width: 20%;">Kode Mata Kuliah</th>
+                        <th style="width: 30%;">Nama Mata Kuliah</th>
+                        <th class="text-center" style="width: 25%;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($mata_kuliah as $index => $mk)  <!-- Use $index to generate the number -->
+                        <tr>
+                            <td class="text-center">{{ $index + 1 }}</td>  <!-- Display sequential number -->
+                            <td>{{ $mk->kode_mk }}</td>
+                            <td>{{ $mk->nama_mk }}</td>
+                            <td class="text-center">
+                                <!-- Show button with icon -->
+                                <button onclick="modalAction('{{ url('/mata_kuliah/' . $mk->id_mata_kuliah  . '/show_ajax') }}')" class="btn btn-info btn-sm">
+                                    <i class="fas fa-eye"></i> Show
+                                </button>
+                                <!-- Edit button with icon -->
+                                <button onclick="modalAction('{{ url('/mata_kuliah/' . $mk->id_mata_kuliah . '/edit_ajax') }}')" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <!-- Delete button with icon -->
+                                <button onclick="modalAction('{{ url('/mata_kuliah/' . $mk->id_mata_kuliah . '/delete_ajax') }}')" class="btn btn-sm btn-danger">
+                                    <i class="fas fa-trash"></i> Hapus
+                                </button>
+                            </td>                            
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
-    <table class="table table-bordered table-striped table-hover table-sm" id="table_mata_kuliah">
-        <thead>
-            <tr>
-                <th>ID Mata Kuliah</th>
-                <th>Kode MK</th>
-                <th>Nama MK</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
-    </table>
 </div>
 
-<div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" databackdrop="static" data-keyboard="false" 
+<div id="myModal" class="modal fade animate shake" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" 
 data-width="75%" aria-hidden="true"></div>
 @endsection
 
 @push('js')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        function modalAction(url = '') {
-            $('#myModal').load(url, function(){
-                $('#myModal').modal('show');
-            });
-        }
-
-        var dataMataKuliah;
-        $(document).ready(function() {
-            dataMataKuliah = $('#table_mata_kuliah').DataTable({
-                serverSide: true,
-                ajax: {
-                    "url": "{{ url('mata_kuliah/list') }}",
-                    "dataType": "json",
-                    "type": "POST"
-                },
-                columns: [
-                    {
-                        data: "id_mata_kuliah",
-                        className: "text-center",
-                        orderable: false,
-                        searchable: false
-                    }, 
-                    {
-                        data: "kode_mk",
-                        className: "",
-                        orderable: true,
-                        searchable: true
-                    }, 
-                    {
-                        data: "nama_mk",
-                        className: "",
-                        orderable: true,
-                        searchable: true
-                    }, 
-                    {
-                        data: "aksi",
-                        className: "",
-                        orderable: false,
-                        searchable: false
-                    }
-                ]
-            });
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function modalAction(url = '') {
+        $('#myModal').load(url, function(){
+            $('#myModal').modal('show');
         });
-    </script>
+    }
+
+    $(document).ready(function() {
+        $('#table_mata_kuliah').DataTable({
+            responsive: true,
+            autoWidth: false,
+            serverSide: true,
+            ajax: {
+                url: "{{ url('mata_kuliah/list') }}",
+                dataType: "json",
+                type: "POST",
+            },
+            columns: [
+                { data: null, className: "text-center", orderable: false, render: function(data, type, row, meta) {
+                    return meta.row + meta.settings._iDisplayStart + 1;  // Calculate the number to display
+                }},
+                { data: "kode_mk", orderable: true },
+                { data: "nama_mk", orderable: true },
+                { data: "aksi", className: "text-center", orderable: false }
+            ]
+        });
+    });
+</script>
 @endpush
