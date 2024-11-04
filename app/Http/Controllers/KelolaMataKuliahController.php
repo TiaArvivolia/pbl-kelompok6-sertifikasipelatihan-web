@@ -42,9 +42,9 @@ class KelolaMataKuliahController extends Controller
         return DataTables::of($mata_kuliah)
             ->addIndexColumn() // This will add the DT_RowIndex
             ->addColumn('aksi', function ($mata_kuliah) {
-                $btn = '<button onclick="modalAction(\'' . url('/mata-kuliah/' . $mata_kuliah->id_mata_kuliah . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/mata-kuliah/' . $mata_kuliah->id_mata_kuliah . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/mata-kuliah/' . $mata_kuliah->id_mata_kuliah . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button>';
+                $btn = '<button onclick="modalAction(\'' . url('/mata_kuliah/' . $mata_kuliah->id_mata_kuliah . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/mata_kuliah/' . $mata_kuliah->id_mata_kuliah . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/mata_kuliah/' . $mata_kuliah->id_mata_kuliah . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button>';
 
                 return $btn;
             })

@@ -42,9 +42,9 @@ class KelolaBidangMinatController extends Controller
         return DataTables::of($bidang_minat)
             ->addIndexColumn() // This will add the DT_RowIndex
             ->addColumn('aksi', function ($bidang_minat) {
-                $btn = '<button onclick="modalAction(\'' . url('/bidang-minat/' . $bidang_minat->id_bidang_minat . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/bidang-minat/' . $bidang_minat->id_bidang_minat . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/bidang-minat/' . $bidang_minat->id_bidang_minat . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button>';
+                $btn = '<button onclick="modalAction(\'' . url('/bidang_minat/' . $bidang_minat->id_bidang_minat . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/bidang_minat/' . $bidang_minat->id_bidang_minat . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
+                $btn .= '<button onclick="modalAction(\'' . url('/bidang_minat/' . $bidang_minat->id_bidang_minat . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button>';
 
                 return $btn;
             })

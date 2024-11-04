@@ -38,8 +38,8 @@
                 <select class="form-control" id="peran_filter" name="peran_filter">
                     <option value="">- Semua -</option>
                     <option value="Admin">Admin</option>
-                    <option value="Manager">Manager</option>
-                    <option value="Staff">Staff</option>
+                    <option value="Dosen">Dosen</option>
+                    <option value="Pimpinan">Pimpinan</option>
                     <!-- Add more roles as needed -->
                 </select>
                 <small class="form-text text-muted">Peran Pengguna</small>
