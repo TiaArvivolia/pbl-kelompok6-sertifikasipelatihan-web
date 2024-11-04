@@ -63,16 +63,16 @@ Route::get('jenis-pelatihan/{id}', [JenisPelatihanController::class, 'show']);
 Route::get('jenis-pelatihan/{id}/edit', [JenisPelatihanController::class, 'edit']);
 
 // Vendor Pelatihan
-Route::get('vendor-pelatihan', [VendorPelatihanController::class, 'index']);
-Route::get('vendor-pelatihan/create', [VendorPelatihanController::class, 'create']);
-Route::get('vendor-pelatihan/{id}', [VendorPelatihanController::class, 'show']);
-Route::get('vendor-pelatihan/{id}/edit', [VendorPelatihanController::class, 'edit']);
+Route::get('vendorpelatihan', [VendorPelatihanController::class, 'index']);
+Route::get('vendorpelatihan/create', [VendorPelatihanController::class, 'create']);
+Route::get('vendorpelatihan/{id}', [VendorPelatihanController::class, 'show']);
+Route::get('vendorpelatihan/{id}/edit', [VendorPelatihanController::class, 'edit']);
 
 // Vendor Sertifikasi
-Route::get('vendor-sertifikasi', [VendorSertifikasiController::class, 'index']);
-Route::get('vendor-sertifikasi/create', [VendorSertifikasiController::class, 'create']);
-Route::get('vendor-sertifikasi/{id}', [VendorSertifikasiController::class, 'show']);
-Route::get('vendor-sertifikasi/{id}/edit', [VendorSertifikasiController::class, 'edit']);
+Route::get('vendorsertifikasi', [VendorSertifikasiController::class, 'index']);
+Route::get('vendorsertifikasi/create', [VendorSertifikasiController::class, 'create']);
+Route::get('vendorsertifikasi/{id}', [VendorSertifikasiController::class, 'show']);
+Route::get('vendorsertifikasi/{id}/edit', [VendorSertifikasiController::class, 'edit']);
 
 // Kelola Mata Kuliah
 // routes/web.php
