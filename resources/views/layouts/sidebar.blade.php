@@ -50,7 +50,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/vendor-sertifikasi') }}" class="nav-link {{ $activeMenu == 'vendorSertifikasi' ? 'active' : '' }}">
+            <a href="{{ url('/vendorsertifikasi') }}" class="nav-link {{ $activeMenu == 'vendorSertifikasi' ? 'active' : '' }}">
               <p>Vendor Sertifikasi</p>
             </a>
           </li>

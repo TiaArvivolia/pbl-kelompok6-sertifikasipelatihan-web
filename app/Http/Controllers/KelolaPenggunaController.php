@@ -32,29 +32,29 @@ class KelolaPenggunaController extends Controller
 
     public function list(Request $request)
     {
-        $pengguna = Pengguna::select(
-            'id_pengguna',
-            'username',
-            'nama_lengkap',
-            'peran'
-        );
-
-        // Filter berdasarkan peran pengguna jika diberikan
-        if ($request->peran) {
-            $pengguna->where('peran', $request->peran);
+        // Initialize the query
+        $query = Pengguna::select('id_pengguna', 'username', 'nama_lengkap', 'email', 'peran');
+    
+        // Apply role filtering if provided
+        if ($request->filled('peran_filter')) {
+            $query->where('peran', $request->input('peran_filter'));
         }
-
-        return DataTables::of($pengguna)
+    
+        // Get the filtered users
+        return DataTables::of($query)
             ->addIndexColumn()
             ->addColumn('aksi', function ($pengguna) {
                 $btn = '<button onclick="modalAction(\'' . url('/pengguna/' . $pengguna->id_pengguna . '/show_ajax') . '\')" class="btn btn-info btn-sm">Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/pengguna/' . $pengguna->id_pengguna . '/edit_ajax') . '\')" class="btn btn-warning btn-sm">Edit</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/pengguna/' . $pengguna->id_pengguna . '/delete_ajax') . '\')" class="btn btn-danger btn-sm">Hapus</button> ';
+        
                 return $btn;
             })
             ->rawColumns(['aksi'])
             ->make(true);
     }
+    
+    
 
     public function exportExcel()
     {
@@ -146,7 +146,7 @@ class KelolaPenggunaController extends Controller
     {
         if ($request->ajax() || $request->wantsJson()) {
             $rules = [
-                'username' => 'required|string|max:50|unique:penggunas,username,' . $id . ',id_pengguna',
+                'username' => 'required|string|max:50|unique:pengguna,username,' . $id . ',id_pengguna',
                 'nama_lengkap' => 'required|string|max:100',
                 'peran' => 'required|string|max:50',
             ];
@@ -169,6 +169,13 @@ class KelolaPenggunaController extends Controller
             ]);
         }
         return redirect('/');
+    }
+    
+    public function confirm_ajax(string $id)
+    {
+        $pengguna = Pengguna::find($id);
+
+        return view('pengguna.confirm_ajax', ['pengguna' => $pengguna]);
     }
 
     // Delete Pengguna via AJAX

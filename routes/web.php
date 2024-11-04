@@ -48,11 +48,16 @@ Route::get('/', [WelcomeController::class, 'index']);
 
 Route::prefix('pengguna')->group(function () {
     Route::get('/', [KelolaPenggunaController::class, 'index'])->name('pengguna.index');
+    Route::post('/list', [KelolaPenggunaController::class, 'list']);       
     Route::get('/create_ajax', [KelolaPenggunaController::class, 'create_ajax'])->name('pengguna.create_ajax');
     Route::post('/ajax', [KelolaPenggunaController::class, 'store_ajax']);
-    Route::get('/edit/{id}', [KelolaPenggunaController::class, 'edit'])->name('pengguna.edit');
-    Route::put('/update/{id}', [KelolaPenggunaController::class, 'update'])->name('pengguna.update');
-    Route::delete('/destroy/{id}', [KelolaPenggunaController::class, 'destroy'])->name('pengguna.destroy');
+    Route::get('/{id}/show_ajax', [KelolaPenggunaController::class, 'show_ajax']);     
+    Route::get('/{id}/edit_ajax', [KelolaPenggunaController::class, 'edit_ajax']);  
+    Route::put('/{id}/update_ajax', [KelolaPenggunaController::class, 'update_ajax']);  
+    Route::get('/{id}/delete_ajax', [KelolaPenggunaController::class, 'confirm_ajax']);  // untuk tampilkan form confirm delete user Ajax
+    Route::delete('/{id}/delete_ajax', [KelolaPenggunaController::class, 'delete_ajax']);  // untuk hapus data user Ajax    
+    // Route::put('/update/{id}', [KelolaPenggunaController::class, 'update'])->name('pengguna.update');
+    // Route::delete('/destroy/{id}', [KelolaPenggunaController::class, 'destroy'])->name('pengguna.destroy');
 });
 
 

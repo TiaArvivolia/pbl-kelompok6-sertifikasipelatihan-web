@@ -4,9 +4,9 @@
     <div class="card-header">
         <h3 class="card-title">Kelola Pengguna</h3>
         <div class="card-tools">
-            <button onclick="modalAction('{{ url('/pengguna/import') }}')" class="btn btn-sm btn-info mt-1">Import Pengguna</button>
+            {{-- <button onclick="modalAction('{{ url('/pengguna/import') }}')" class="btn btn-sm btn-info mt-1">Import Pengguna</button>
             <a href="{{ url('/pengguna/export_excel') }}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export Pengguna (Excel)</a>
-            <a href="{{ url('/pengguna/export_pdf') }}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export Pengguna (PDF)</a>
+            <a href="{{ url('/pengguna/export_pdf') }}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export Pengguna (PDF)</a> --}}
             <button onclick="modalAction('{{ url('pengguna/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah Pengguna</button>
         </div>
     </div>
@@ -35,6 +35,21 @@
             </script>
         @endif
 
+        <div class="form-group row">
+            <label class="col-1 control-label col-form-label">Filter:</label>
+            <div class="col-3">
+                <select class="form-control" id="peran_filter" name="peran_filter">
+                    <option value="">- Semua -</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Manager">Manager</option>
+                    <option value="Staff">Staff</option>
+                    <!-- Add more roles as needed -->
+                </select>
+                <small class="form-text text-muted">Peran Pengguna</small>
+            </div>
+        </div>
+        
+
         <div class="table-responsive">
             <table class="table table-bordered table-striped table-hover table-sm" id="table_pengguna">
                 <thead>
@@ -54,16 +69,23 @@
                             <td>{{ $user->nama_lengkap }}</td>
                             <td>{{ $user->peran }}</td>
                             <td class="text-center">
-                                <button onclick="modalAction('{{ url('/pengguna/edit/'.$user->id_pengguna) }}')" class="btn btn-sm btn-primary">Edit</button>
-                                <form action="{{ url('/pengguna/delete/'.$user->id_pengguna) }}" method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
-                                </form>
-                            </td>
+                                <!-- Show button with icon -->
+                                <button onclick="modalAction('{{ url('/pengguna/' . $user->id_pengguna . '/show_ajax') }}')" class="btn btn-info btn-sm">
+                                    <i class="fas fa-eye"></i> Show <!-- Nama untuk "Show" -->
+                                </button>
+                                <!-- Edit button with icon -->
+                                <button onclick="modalAction('{{ url('/pengguna/' . $user->id_pengguna . '/edit_ajax') }}')" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-edit"></i> Edit <!-- Nama untuk "Edit" -->
+                                </button>
+                                <!-- Delete button with icon -->
+                                <button onclick="modalAction('{{ url('/pengguna/' . $user->id_pengguna . '/delete_ajax') }}')" class="btn btn-sm btn-danger">
+                                    <i class="fas fa-trash"></i> Hapus <!-- Nama untuk "Hapus" -->
+                                </button>
+                            </td>                            
                         </tr>
                     @endforeach
                 </tbody>
+                
             </table>
         </div>
     </div>
@@ -82,24 +104,34 @@ data-width="75%" aria-hidden="true"></div>
         });
     }
 
+    var dataPengguna;
     $(document).ready(function() {
-        $('#table_pengguna').DataTable({
-            responsive: true,
-            autoWidth: false,
-            serverSide: true,
-            ajax: {
-                url: "{{ url('pengguna/list') }}",
-                dataType: "json",
-                type: "POST"
-            },
-            columns: [
-                { data: "id_pengguna", className: "text-center", orderable: false },
-                { data: "username", orderable: true },
-                { data: "nama_lengkap", orderable: true },
-                { data: "peran", orderable: true },
-                { data: "aksi", className: "text-center", orderable: false }
-            ]
-        });
+    dataPengguna = $('#table_pengguna').DataTable({
+        responsive: true,
+        autoWidth: false,
+        serverSide: true,
+        ajax: {
+            url: "{{ url('pengguna/list') }}",
+            dataType: "json",
+            type: "POST",
+            data: function(d) {
+                d.peran_filter = $('#peran_filter').val(); // Get the selected role
+            }
+        },
+        columns: [
+            { data: "id_pengguna", className: "text-center", orderable: false },
+            { data: "username", orderable: true },
+            { data: "nama_lengkap", orderable: true },
+            { data: "peran", orderable: true },
+            { data: "aksi", className: "text-center", orderable: false }
+        ]
     });
+
+    // Filter change event
+    $('#peran_filter').change(function() {
+        dataPengguna.ajax.reload(); // Reload the table data
+    });
+});
+
 </script>
 @endpush

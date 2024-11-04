@@ -93,7 +93,7 @@
 
                 <div class="form-group">
                     <label>Foto Profil</label>
-                    <input type="text" name="photo_profile" id="photo_profile" class="form-control">
+                    <input type="file" name="photo_profile" id="photo_profile" class="form-control">
                 </div>
             </div>
 
@@ -122,37 +122,32 @@
                 type: form.method,
                 data: $(form).serialize(),
                 success: function(response) {
-                    if (response.status) {
-                        $('#modal-pengguna').modal('hide');
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Berhasil',
-                            text: response.message
-                        });
-                        if (typeof dataPengguna !== 'undefined') {
-                            dataPengguna.ajax.reload();
-                        }
-                    } else {
-                        $('.error-text').text('');
-                        if (response.msgField) {
-                            $.each(response.msgField, function(prefix, val) {
-                                $('#error-' + prefix).text(val[0]);
-                            });
-                        }
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Terjadi Kesalahan',
-                            text: response.message || 'Ada masalah saat menyimpan data.'
-                        });
-                    }
-                },
-                error: function(xhr) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Terjadi Kesalahan',
-                        text: 'Silakan coba lagi nanti.'
-                    });
-                }
+    if (response.status) {
+        $('#modal-pengguna').modal('hide');
+        Swal.fire({
+            icon: 'success',
+            title: 'Berhasil',
+            text: response.message
+        });
+        
+        // Reload DataTable untuk menampilkan data baru
+        dataPengguna.ajax.reload();
+        $('#table_pengguna').DataTable().ajax.reload(null, false); // Pass false to keep the current paging
+    } else {
+        $('.error-text').text('');
+        if (response.msgField) {
+            $.each(response.msgField, function(prefix, val) {
+                $('#error-' + prefix).text(val[0]);
+            });
+        }
+        Swal.fire({
+            icon: 'error',
+            title: 'Terjadi Kesalahan',
+            text: response.message || 'Ada masalah saat menyimpan data.'
+        });
+    }
+}
+
             });
             return false; // Prevent default form submission
         },
