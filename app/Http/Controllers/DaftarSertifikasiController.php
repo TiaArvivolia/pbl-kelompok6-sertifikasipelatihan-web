@@ -6,13 +6,19 @@ use Illuminate\Http\Request;
 
 class DaftarSertifikasiController extends Controller
 {
-    public function index() {
-        
+    public function index()
+    {
         $breadcrumb = (object) [
-            'title' => 'Selamat Datang',
-            'list' => ['Home', 'Welcome']
+            'title' => 'Daftar Sertifikasi',  
+            'list' => ['Home', 'Daftar Sertifikasi']
         ];
-        $activeMenu = 'dashboard';
-        return view('welcome', ['breadcrumb' => $breadcrumb, 'activeMenu' => $activeMenu]);
+
+        $page = (object) [
+            'title' => 'Daftar Sertifikasi'
+        ];
+    
+        $activeMenu = ' ';  
+    
+        return view('daftar-sertifikasi.index', compact('breadcrumb', 'page', 'activeMenu'));
     }
 }
