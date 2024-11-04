@@ -47,9 +47,9 @@ Route::get('/', [WelcomeController::class, 'index']);
 
 
 Route::prefix('pengguna')->group(function () {
-    Route::get('/', [KelolaPenggunaController::class, 'index'])->name('kpengguna.index');
-    Route::get('/create', [KelolaPenggunaController::class, 'create'])->name('pengguna.create');
-    Route::post('/store', [KelolaPenggunaController::class, 'store'])->name('kpengguna.store');
+    Route::get('/', [KelolaPenggunaController::class, 'index'])->name('pengguna.index');
+    Route::get('/create_ajax', [KelolaPenggunaController::class, 'create_ajax'])->name('pengguna.create_ajax');
+    Route::post('/ajax', [KelolaPenggunaController::class, 'store_ajax']);
     Route::get('/edit/{id}', [KelolaPenggunaController::class, 'edit'])->name('pengguna.edit');
     Route::put('/update/{id}', [KelolaPenggunaController::class, 'update'])->name('pengguna.update');
     Route::delete('/destroy/{id}', [KelolaPenggunaController::class, 'destroy'])->name('pengguna.destroy');

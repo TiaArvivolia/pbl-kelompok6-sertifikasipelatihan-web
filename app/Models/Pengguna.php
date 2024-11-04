@@ -30,4 +30,6 @@ class Pengguna extends Authenticatable
     protected $hidden = [
         'password'
     ];
+
+    public $timestamps = false;
 }
