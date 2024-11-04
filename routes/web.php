@@ -111,22 +111,29 @@ Route::prefix('bidang_minat')->name('bidang_minat')->group(function () {
 });
 
 // Daftar sertifikasi
-Route::get('daftar-sertifikasi', [VendorSertifikasiController::class, 'index']);
-Route::get('daftar-sertifikasi/create', [VendorSertifikasiController::class, 'create']);
-Route::get('daftar-sertifikasi/{id}', [VendorSertifikasiController::class, 'show']);
-Route::get('daftar-sertifikasi/{id}/edit', [VendorSertifikasiController::class, 'edit']);
+Route::prefix('daftar-sertifikasi')->name('daftar-sertifikasi')->group(function () {
+Route::get('/', [DaftarSertifikasiController::class, 'index']);
+Route::get('/create', [DaftarSertifikasiController::class, 'create']);
+Route::get('/{id}', [DaftarSertifikasiController::class, 'show']);
+Route::get('/{id}/edit', [DaftarSertifikasiController::class, 'edit']);
+});
+
 
 // Daftar Pelatihan
-Route::get('daftar-pelatihan', [VendorSertifikasiController::class, 'index']);
-Route::get('daftar-pelatihan/create', [VendorSertifikasiController::class, 'create']);
-Route::get('daftar-pelatihan/{id}', [VendorSertifikasiController::class, 'show']);
-Route::get('daftar-pelatihan/{id}/edit', [VendorSertifikasiController::class, 'edit']);
+Route::prefix('daftar-pelatihan')->name('daftar-pelatihan')->group(function () {
+Route::get('/', [DaftarPelatihanController::class, 'index']);
+Route::get('/create', [DaftarPelatihanController::class, 'create']);
+Route::get('/{id}', [DaftarPelatihanController::class, 'show']);
+Route::get('/{id}/edit', [DaftarPelatihanController::class, 'edit']);
+});
 
 // Draft Surat Tugas
-Route::get('draft-surat-tugas', [VendorSertifikasiController::class, 'index']);
-Route::get('draft-surat-tugas/create', [VendorSertifikasiController::class, 'create']);
-Route::get('draft-surat-tugas/{id}', [VendorSertifikasiController::class, 'show']);
-Route::get('draft-surat-tugas/{id}/edit', [VendorSertifikasiController::class, 'edit']);
+Route::prefix('draft-surat-tugas')->name('draft-surat-tugas')->group(function () {
+Route::get('/', [DraftSuratTugasController::class, 'index']);
+Route::get('/create', [DraftSuratTugasController::class, 'create']);
+Route::get('/{id}', [DraftSuratTugasController::class, 'show']);
+Route::get('/{id}/edit', [DraftSuratTugasController::class, 'edit']);
+});
 
 // Statistik sertifikasi
 Route::get('statistik-sertifikasi', [VendorSertifikasiController::class, 'index']);
