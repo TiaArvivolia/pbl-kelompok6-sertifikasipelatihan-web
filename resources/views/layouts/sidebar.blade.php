@@ -45,7 +45,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/vendorpelatihan') }}" class="nav-link {{ $activeMenu == 'vendorpelatihan' ? 'active' : '' }}">
+            <a href="{{ url('/vendor_pelatihan') }}" class="nav-link {{ $activeMenu == 'vendorpelatihan' ? 'active' : '' }}">
               <p>Vendor Pelatihan</p>
             </a>
           </li>
