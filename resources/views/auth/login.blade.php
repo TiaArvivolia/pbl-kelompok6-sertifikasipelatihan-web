@@ -38,20 +38,16 @@
         }
 
         /* Logo di pojok kiri dan kanan */
-        .logo-top-left {
+        .logo-top-left, .logo-top-right {
             position: absolute;
-            top: 10px;
-            left: 10px;
-            width: 50px;
-            height: 50px;
+            top: 20px;
+            width: 80px;
         }
-
+        .logo-top-left {
+            left: 20px;
+        }
         .logo-top-right {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 50px;
-            height: 50px;
+            right: 20px;
         }
     </style>
     <meta charset="utf-8">

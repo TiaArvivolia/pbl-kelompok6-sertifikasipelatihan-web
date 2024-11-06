@@ -10,7 +10,8 @@
             height: 100%;
             margin: 0;
             padding: 0;
-            background-color: #f0f0f0; 
+            background-color: #f0f0f0;
+            position: relative;
         }
         .login-box, .card {
             background-color: rgba(255, 255, 255, 0.8);
@@ -25,6 +26,18 @@
         .card-header, .btn {
             border-radius: 20px;
         }
+        /* Styles for the logos */
+        .logo-top-left, .logo-top-right {
+            position: absolute;
+            top: 20px;
+            width: 80px;
+        }
+        .logo-top-left {
+            left: 20px;
+        }
+        .logo-top-right {
+            right: 20px;
+        }
     </style>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -37,6 +50,10 @@
     <link rel="stylesheet" href="{{ asset('adminlte/dist/css/adminlte.min.css') }}">
 </head>
 <body class="hold-transition login-page">
+    <!-- Logos in the top corners -->
+    <img src="{{ asset('storage/photos/polinema.png') }}" alt="Logo Kiri" class="logo-top-left">
+    <img src="{{ asset('storage/photos/jti.png') }}" alt="Logo Kanan" class="logo-top-right">
+
     <div class="login-box">
         <div class="card card-outline card-primary">
             <div class="card-header text-center">
