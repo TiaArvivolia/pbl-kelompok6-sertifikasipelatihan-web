@@ -49,7 +49,6 @@ class VendorSertifikasiController extends Controller
             ->rawColumns(['aksi'])
             ->make(true);
     }
-
     // Show the form for creating a new vendor sertifikasi via AJAX
     public function create_ajax()
     {
