@@ -16,22 +16,22 @@ class VendorSertifikasiSeeder extends Seeder
         DB::table('vendor_sertifikasi')->insert([
             [
                 'nama' => 'Sertifikasi Nasional',
-                'alamat' => 'Jl. Diponegoro No. 15, Jakarta',
                 'kota' => 'Jakarta',
+                'alamat' => 'Jl. Diponegoro No. 15, Jakarta',
                 'no_telepon' => '021-87654321',
                 'website' => 'www.sertifikasinasional.com',
             ],
             [
                 'nama' => 'Certify International',
-                'alamat' => 'Jl. Braga No. 5, Bandung',
                 'kota' => 'Bandung',
+                'alamat' => 'Jl. Braga No. 5, Bandung',
                 'no_telepon' => '022-12345678',
                 'website' => 'www.certifyintl.com',
             ],
             [
                 'nama' => 'Kompeten Sertifikasi',
-                'alamat' => 'Jl. Pemuda No. 50, Yogyakarta',
                 'kota' => 'Yogyakarta',
+                'alamat' => 'Jl. Pemuda No. 50, Yogyakarta',
                 'no_telepon' => '0274-7890123',
                 'website' => 'www.kompetensertifikasi.com',
             ],
