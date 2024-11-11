@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\ServiceProvider;
 
+
 return [
 
     /*
@@ -84,6 +85,7 @@ return [
     */
 
     'locale' => 'en',
+    
 
     /*
     |--------------------------------------------------------------------------
@@ -185,4 +187,5 @@ return [
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 
+    
 ];

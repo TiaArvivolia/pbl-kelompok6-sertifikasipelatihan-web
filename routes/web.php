@@ -45,6 +45,7 @@ Route::get('/', [WelcomeController::class, 'index']);
 // routes/web.php
 
 
+
 Route::prefix('pengguna')->group(function () {
     Route::get('/', [KelolaPenggunaController::class, 'index']);
     Route::post('/list', [KelolaPenggunaController::class, 'list']);
@@ -154,16 +155,30 @@ Route::get('pelatihan-sertifikasi/{id}', [VendorSertifikasiController::class, 's
 Route::get('pelatihan-sertifikasi/{id}/edit', [VendorSertifikasiController::class, 'edit']);
 
 // Input Pelatihan
-Route::get('input-pelatihan', [VendorSertifikasiController::class, 'index']);
-Route::get('input-pelatihan/create', [VendorSertifikasiController::class, 'create']);
-Route::get('input-pelatihan/{id}', [VendorSertifikasiController::class, 'show']);
-Route::get('input-pelatihan/{id}/edit', [VendorSertifikasiController::class, 'edit']);
+Route::prefix('input_pelatihan')->name('input_pelatihan')->group(function () {
+    Route::get('/', [InputPelatihanController::class, 'index']);
+    Route::post('/list', [InputPelatihanController::class, 'list']);
+    Route::get('/create_ajax', [InputPelatihanController::class, 'create_ajax']);
+    Route::post('/ajax', [InputPelatihanController::class, 'store_ajax']);
+    Route::get('/{id}/show_ajax', [InputPelatihanController::class, 'show_ajax']);
+    Route::get('/{id}/edit_ajax', [InputPelatihanController::class, 'edit_ajax']);
+    Route::put('/{id}/update_ajax', [InputPelatihanController::class, 'update_ajax']);
+    Route::get('/{id}/delete_ajax', [InputPelatihanController::class, 'confirm_ajax']);
+    Route::delete('/{id}/delete_ajax', [InputPelatihanController::class, 'delete_ajax']);
+});
 
 // Input Sertifikasi
-Route::get('input-sertifikasi', [VendorSertifikasiController::class, 'index']);
-Route::get('input-sertifikasi/create', [VendorSertifikasiController::class, 'create']);
-Route::get('input-sertifikasi/{id}', [VendorSertifikasiController::class, 'show']);
-Route::get('input-sertifikasi/{id}/edit', [VendorSertifikasiController::class, 'edit']);
+Route::prefix('input_sertifikasi')->name('input_sertifikasi')->group(function () {
+    Route::get('/', [InputSertifikasiController::class, 'index']);
+    Route::post('/list', [InputSertifikasiController::class, 'list']);
+    Route::get('/create_ajax', [InputSertifikasiController::class, 'create_ajax']);
+    Route::post('/ajax', [InputSertifikasiController::class, 'store_ajax']);
+    Route::get('/{id}/show_ajax', [InputSertifikasiController::class, 'show_ajax']);
+    Route::get('/{id}/edit_ajax', [InputSertifikasiController::class, 'edit_ajax']);
+    Route::put('/{id}/update_ajax', [InputSertifikasiController::class, 'update_ajax']);
+    Route::get('/{id}/delete_ajax', [InputSertifikasiController::class, 'confirm_ajax']);
+    Route::delete('/{id}/delete_ajax', [InputSertifikasiController::class, 'delete_ajax']);
+});
 
 // Route::get('/', function () {
 //     return view('welcome');

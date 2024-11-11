@@ -109,12 +109,12 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/input-pelatihan') }}" class="nav-link {{ $activeMenu == 'inputPelatihan' ? 'active' : '' }}">
+            <a href="{{ url('/input_pelatihan') }}" class="nav-link {{ $activeMenu == 'inputPelatihan' ? 'active' : '' }}">
               <p>Input Pelatihan</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/input-sertifikasi') }}" class="nav-link {{ $activeMenu == 'inputSertifikasi' ? 'active' : '' }}">
+            <a href="{{ url('/input_sertifikasi') }}" class="nav-link {{ $activeMenu == 'inputSertifikasi' ? 'active' : '' }}">
               <p>Input Sertifikasi</p>
             </a>
           </li>
