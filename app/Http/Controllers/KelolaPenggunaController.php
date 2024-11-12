@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\JenisPenggunaModel;
 use App\Models\Pengguna;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
-use Barryvdh\DomPDF\Facade\Pdf;
-// use App\Models\PenggunaModel;
+use Illuminate\Support\Facades\Hash;
 
 class KelolaPenggunaController extends Controller
 {
     public function index()
     {
-        // Mengambil judul halaman dan data level untuk filter
+        // Page details
         $breadcrumb = (object) [
             'title' => 'Daftar Pengguna',
             'list' => ['Home', 'Pengguna']
@@ -23,73 +23,58 @@ class KelolaPenggunaController extends Controller
         ];
         $activeMenu = 'pengguna';
 
-        $pengguna = Pengguna::all();     // ambil data kategori untuk filter kategori
+        // Fetch users and distinct roles for filtering
+        $pengguna = Pengguna::all();
+        $jenis_pengguna = Pengguna::select('id_jenis_pengguna')->distinct()->get();
 
-        $level = Pengguna::select('peran')->distinct()->get(); // Mengambil data peran sebagai filter
-
-        return view('pengguna.index', compact('breadcrumb', 'page', 'level', 'activeMenu', 'pengguna'));
+        return view('pengguna.index', compact('breadcrumb', 'page', 'jenis_pengguna', 'activeMenu', 'pengguna'));
     }
 
     public function list(Request $request)
     {
-        // Initialize the query
-        $query = Pengguna::select('id_pengguna', 'username', 'nama_lengkap', 'email', 'peran');
-    
-        // Apply role filtering if provided
-        if ($request->filled('peran_filter')) {
-            $query->where('peran', $request->input('peran_filter'));
+        $query = Pengguna::select('pengguna.id_pengguna', 'pengguna.username', 'jenis_pengguna.id_jenis_pengguna', 'jenis_pengguna.nama_jenis_pengguna')
+            ->join('jenis_pengguna', 'pengguna.id_jenis_pengguna', '=', 'jenis_pengguna.id_jenis_pengguna');
+
+        // Filter by jenis_pengguna if provided
+        if ($request->filled('jenis_pengguna_filter')) {
+            $query->where('pengguna.id_jenis_pengguna', $request->input('jenis_pengguna_filter'));
         }
-    
-        // Get the filtered users
+
         return DataTables::of($query)
             ->addIndexColumn()
             ->addColumn('aksi', function ($pengguna) {
-                $btn = '<button onclick="modalAction(\'' . url('/pengguna/' . $pengguna->id_pengguna . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/pengguna/' . $pengguna->id_pengguna . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/pengguna/' . $pengguna->id_pengguna . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Hapus</button> ';                
-                return $btn;
+                return '<button onclick="modalAction(\'' . url('/pengguna/' . $pengguna->id_pengguna . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ' .
+                    '<button onclick="modalAction(\'' . url('/pengguna/' . $pengguna->id_pengguna . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ' .
+                    '<button onclick="modalAction(\'' . url('/pengguna/' . $pengguna->id_pengguna . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Hapus</button>';
             })
             ->rawColumns(['aksi'])
             ->make(true);
     }
-    
-    // Create Pengguna via AJAX
+
+
+
+    // Show form to create a user
     public function create_ajax()
     {
-        return view('pengguna.create_ajax');
+        $jenis_pengguna = JenisPenggunaModel::select('id_jenis_pengguna', 'nama_jenis_pengguna')->get();
+
+        return view('pengguna.create_ajax')
+            ->with('jenis_pengguna', $jenis_pengguna);
     }
 
-    // Store Pengguna via AJAX
+    // Store a new user
     public function store_ajax(Request $request)
     {
         if ($request->ajax() || $request->wantsJson()) {
-            // Define validation rules
             $rules = [
                 'username' => 'required|string|unique:pengguna,username|max:50',
                 'password' => 'required|string|min:8',
-                'nama_lengkap' => 'required|string|max:100',
-                'nip' => 'required|string|max:20',
-                'tempat_lahir' => 'nullable|string|max:50',
-                'tanggal_lahir' => 'nullable|date',
-                'jenis_kelamin' => 'required|in:L,P',
-                'no_telepon' => 'nullable|string|max:20',
-                'nik' => 'nullable|string|max:20',
-                'nidn' => 'nullable|string|max:20',
-                'agama' => 'nullable|string|max:20',
-                'alamat' => 'nullable|string',
-                'email' => 'required|string|email|max:100|unique:pengguna,email',
-                'peran' => 'required|in:Admin,Dosen,Pimpinan',
-                'photo_profile' => 'nullable|string|max:255'
+                'id_jenis_pengguna' => 'required|exists:jenis_pengguna,id_jenis_pengguna'
             ];
 
             try {
-                // Validate the request data
                 $validated = $request->validate($rules);
-
-                // Add hashed password to the validated data
-                $validated['password'] = bcrypt($validated['password']);
-
-                // Store the validated data in the database
+                $validated['password'] = Hash::make($validated['password']);
                 Pengguna::create($validated);
 
                 return response()->json([
@@ -104,64 +89,80 @@ class KelolaPenggunaController extends Controller
                 ]);
             }
         }
-
         return response()->json(['status' => false, 'message' => 'Request tidak valid'], 400);
     }
 
-
-
-    // Show Pengguna details via AJAX
+    // Show user details
     public function show_ajax($id)
     {
         $pengguna = Pengguna::find($id);
         return view('pengguna.show_ajax', ['pengguna' => $pengguna]);
     }
 
-    // Edit Pengguna via AJAX
+    // Show edit form
     public function edit_ajax($id)
     {
         $pengguna = Pengguna::find($id);
-        return view('pengguna.edit_ajax', ['pengguna' => $pengguna]);
+        $jenis_pengguna = JenisPenggunaModel::select('id_jenis_pengguna', 'nama_jenis_pengguna')->get();
+
+        return view('pengguna.edit_ajax', ['pengguna' => $pengguna, 'jenis_pengguna' => $jenis_pengguna,]);
     }
 
-    // Update Pengguna data via AJAX
+    // Update user data
     public function update_ajax(Request $request, $id)
     {
         if ($request->ajax() || $request->wantsJson()) {
+            // Define the validation rules
             $rules = [
                 'username' => 'required|string|max:50|unique:pengguna,username,' . $id . ',id_pengguna',
-                'nama_lengkap' => 'required|string|max:100',
-                'peran' => 'required|string|max:50',
+                'password' => 'required|string|min:3',
+                'id_jenis_pengguna' => 'required|exists:jenis_pengguna,id_jenis_pengguna'
             ];
 
             $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
                 return response()->json([
-                    'status'   => false,
+                    'status' => false,
                     'message' => 'Validasi Gagal',
                     'msgField' => $validator->errors(),
                 ]);
             }
 
+            // Find the user
             $pengguna = Pengguna::find($id);
-            $pengguna->update($request->all());
+
+            // Update the user data
+            $pengguna->username = $request->input('username');
+            $pengguna->password = $request->input('password');
+            $pengguna->id_jenis_pengguna = $request->input('id_jenis_pengguna');
+
+            // Check if a new password is provided, hash it, and update it
+            if ($request->filled('password')) {
+                $pengguna->password = bcrypt($request->input('password'));
+            }
+
+            // Save changes
+            $pengguna->save();
+
             return response()->json([
                 'status' => true,
                 'message' => 'Data pengguna berhasil diubah'
             ]);
         }
+
         return redirect('/');
     }
-    
+
+
+    // Show delete confirmation
     public function confirm_ajax(string $id)
     {
         $pengguna = Pengguna::find($id);
-
         return view('pengguna.confirm_ajax', ['pengguna' => $pengguna]);
     }
 
-    // Delete Pengguna via AJAX
+    // Delete a user
     public function delete_ajax($id)
     {
         try {

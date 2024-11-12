@@ -17,17 +17,17 @@ return new class extends Migration
             $table->string('username', 50);
             $table->string('password', 100);
             $table->timestamps();
-    
+
             // Add id_jenis_pengguna column as bigInteger
             $table->bigInteger('id_jenis_pengguna')->unsigned();
-    
+
             // Define the foreign key relationship
             $table->foreign('id_jenis_pengguna')
-                  ->references('id_jenis_pengguna')
-                  ->on('jenis_pengguna')
-                  ->onDelete('cascade');
+                ->references('id_jenis_pengguna')
+                ->on('jenis_pengguna')
+                ->onDelete('cascade');
         });
-    }    
+    }
 
     /**
      * Reverse the migrations.

@@ -1,21 +1,21 @@
 @empty($pengguna)
-<div id="modal-master" class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Kesalahan</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <div class="modal-body">
-            <div class="alert alert-danger">
-                <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
-                Data yang anda cari tidak ditemukan
+    <div id="modal-master" class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Kesalahan</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            <a href="{{ url('/pengguna') }}" class="btn btn-warning">Kembali</a>
+            <div class="modal-body">
+                <div class="alert alert-danger">
+                    <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
+                    Data yang anda cari tidak ditemukan
+                </div>
+                <a href="{{ url('/pengguna') }}" class="btn btn-warning">Kembali</a>
+            </div>
         </div>
     </div>
-</div>
 @else
 <form action="{{ url('/pengguna/' . $pengguna->id_pengguna . '/delete_ajax') }}" method="POST" id="form-delete">
     @csrf
@@ -30,55 +30,32 @@
             </div>
             <div class="modal-body">
                 <div class="alert alert-warning">
-                    <h5><i class="icon fas fa-ban"></i> Konfirmasi !!!</h5>
-                    Apakah Anda ingin menghapus data berikut?
+                    <h5><i class="icon fas fa-exclamation-triangle"></i> Konfirmasi !!!</h5>
+                    Apakah Anda ingin menghapus data pengguna berikut?
                 </div>
                 <table class="table table-sm table-bordered table-striped">
+                    <tr>
+                        <th class="text-right col-3">ID Pengguna :</th>
+                        <td class="col-9">{{ $pengguna->id_pengguna }}</td>
+                    </tr>
                     <tr>
                         <th class="text-right col-3">Username :</th>
                         <td class="col-9">{{ $pengguna->username }}</td>
                     </tr>
                     <tr>
-                        <th class="text-right col-3">Nama Lengkap :</th>
-                        <td class="col-9">{{ $pengguna->nama_lengkap }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right col-3">NIP :</th>
-                        <td class="col-9">{{ $pengguna->nip }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right col-3">Tempat Lahir :</th>
-                        <td class="col-9">{{ $pengguna->tempat_lahir }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right col-3">Tanggal Lahir :</th>
-                        <td class="col-9">{{ $pengguna->tanggal_lahir }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right col-3">Jenis Kelamin :</th>
-                        <td class="col-9">{{ $pengguna->jenis_kelamin == 'L' ? 'Laki-laki' : 'Perempuan' }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right col-3">No Telepon :</th>
-                        <td class="col-9">{{ $pengguna->no_telepon }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right col-3">Email :</th>
-                        <td class="col-9">{{ $pengguna->email }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right col-3">Peran :</th>
-                        <td class="col-9">{{ $pengguna->peran }}</td>
+                        <th class="text-right col-3">Jenis Pengguna :</th>
+                        <td class="col-9">{{ $pengguna->jenisPengguna->nama_jenis_pengguna }}</td>
                     </tr>
                 </table>
             </div>
             <div class="modal-footer">
                 <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
-                <button type="submit" class="btn btn-primary">Ya, Hapus</button>
+                <button type="submit" class="btn btn-danger">Ya, Hapus</button>
             </div>
         </div>
     </div>
 </form>
+
 <script>
 $(document).ready(function() {
     $("#form-delete").validate({
@@ -96,7 +73,7 @@ $(document).ready(function() {
                             title: 'Berhasil',
                             text: response.message
                         });
-                        dataPengguna.ajax.reload(); // Update the DataTable after deletion
+                        dataPengguna.ajax.reload(); // Replace with your DataTable name for pengguna
                     } else {
                         $('.error-text').text('');
                         $.each(response.msgField, function(prefix, val) {
