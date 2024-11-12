@@ -17,6 +17,8 @@ use App\Http\Controllers\PelatihanSertifikasiController;
 use App\Http\Controllers\KelolaPeriodeController;
 use App\Http\Controllers\InputPelatihanController;
 use App\Http\Controllers\InputSertifikasiController;
+use App\Http\Controllers\KelolaJenisPenggunaController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -41,11 +43,20 @@ Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
 Route::middleware(['auth'])->group(function () {});
 Route::get('/', [WelcomeController::class, 'index']);
 
+// Kelola Jenis Pengguna
+Route::prefix('jenis_pengguna')->group(function () {
+    Route::get('/', [KelolaJenisPenggunaController::class, 'index']);
+    Route::post('/list', [KelolaJenisPenggunaController::class, 'list']);
+    Route::get('/create_ajax', [KelolaJenisPenggunaController::class, 'create_ajax']);
+    Route::post('/ajax', [KelolaJenisPenggunaController::class, 'store_ajax']);
+    Route::get('/{id}/show_ajax', [KelolaJenisPenggunaController::class, 'show_ajax']);
+    Route::get('/{id}/edit_ajax', [KelolaJenisPenggunaController::class, 'edit_ajax']);
+    Route::put('/{id}/update_ajax', [KelolaJenisPenggunaController::class, 'update_ajax']);
+    Route::get('/{id}/delete_ajax', [KelolaJenisPenggunaController::class, 'confirm_ajax']);
+    Route::delete('/{id}/delete_ajax', [KelolaJenisPenggunaController::class, 'delete_ajax']);
+});
+
 // Kelola Pengguna
-// routes/web.php
-
-
-
 Route::prefix('pengguna')->group(function () {
     Route::get('/', [KelolaPenggunaController::class, 'index']);
     Route::post('/list', [KelolaPenggunaController::class, 'list']);

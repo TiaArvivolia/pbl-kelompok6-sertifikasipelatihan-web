@@ -53,22 +53,6 @@ class KelolaPenggunaController extends Controller
             ->make(true);
     }
     
-    
-
-    public function exportExcel()
-    {
-        $filename = 'Pengguna_' . now()->format('Ymd_His') . '.xlsx';
-
-        return Excel::download(new PenggunaExport, $filename);
-    }
-
-    public function exportPdf()
-    {
-        $pengguna = Pengguna::all();
-
-        $pdf = Pdf::loadView('pengguna.export_pdf', compact('pengguna'));
-        return $pdf->download('Pengguna_' . now()->format('Ymd_His') . '.pdf');
-    }
     // Create Pengguna via AJAX
     public function create_ajax()
     {

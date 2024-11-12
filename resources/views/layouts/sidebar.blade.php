@@ -35,8 +35,33 @@
         </a>
         <ul class="nav nav-treeview">
           <li class="nav-item">
+            <a href="{{ url('/jenis_pengguna') }}" class="nav-link {{ $activeMenu == 'jenis_pengguna' ? 'active' : '' }}">
+              <p>Kelola Jenis Pengguna</p>
+            </a>
+          </li>
+          <li class="nav-item">
             <a href="{{ url('/pengguna') }}" class="nav-link {{ $activeMenu == 'pengguna' ? 'active' : '' }}">
               <p>Kelola Pengguna</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ url('/admin') }}" class="nav-link {{ $activeMenu == 'admin' ? 'active' : '' }}">
+              <p>Kelola Admin</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ url('/dosen') }}" class="nav-link {{ $activeMenu == 'dosen' ? 'active' : '' }}">
+              <p>Kelola Dosen</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ url('/tendik') }}" class="nav-link {{ $activeMenu == 'tendik' ? 'active' : '' }}">
+              <p>Kelola Tendik</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ url('/pimpinan') }}" class="nav-link {{ $activeMenu == 'pimpinan' ? 'active' : '' }}">
+              <p>Kelola Pimpinan</p>
             </a>
           </li>
           <li class="nav-item">
