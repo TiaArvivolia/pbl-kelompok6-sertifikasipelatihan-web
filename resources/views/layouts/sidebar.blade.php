@@ -15,6 +15,7 @@
   <!-- Sidebar Menu -->
   <nav class="mt-2">
     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+
       <!-- Dashboard -->
       <li class="nav-item">
         <a href="{{ url('/') }}" class="nav-link {{ $activeMenu == 'dashboard' ? 'active' : '' }}">
@@ -23,13 +24,13 @@
         </a>
       </li>
 
-      <!-- Kategori Umum -->
-      <li class="nav-header">Kategori Umum</li>
+      <!-- Kategori Kelola Pengguna -->
+      <li class="nav-header">Kategori Kelola Pengguna</li>
       <li class="nav-item has-treeview">
         <a href="#" class="nav-link">
           <i class="nav-icon fas fa-th"></i>
           <p>
-            Kelola Umum
+            Kelola Pengguna
             <i class="right fas fa-angle-left"></i>
           </p>
         </a>
@@ -64,6 +65,20 @@
               <p>Kelola Pimpinan</p>
             </a>
           </li>
+        </ul>
+      </li>
+
+      <!-- Kategori Umum -->
+      <li class="nav-header">Kategori Umum</li>
+      <li class="nav-item has-treeview">
+        <a href="#" class="nav-link">
+          <i class="nav-icon fas fa-th"></i>
+          <p>
+            Kelola Umum
+            <i class="right fas fa-angle-left"></i>
+          </p>
+        </a>
+        <ul class="nav nav-treeview">
           <li class="nav-item">
             <a href="{{ url('/jenis-pelatihan') }}" class="nav-link {{ $activeMenu == 'jenisPelatihan' ? 'active' : '' }}">
               <p>Jenis Pelatihan</p>
@@ -147,27 +162,21 @@
       </li>
 
       <!-- Button Logout -->
-      <br><br><br><br><br><br><br>
-
-      <!-- Button Logout -->
       <li class="nav-item">
           <a href="#" class="nav-link" onclick="logout()">
               <i class="nav-icon fas fa-sign-out-alt"></i>
               <p>Logout</p>
           </a>
       </li>
-  </ul>
-</nav>
+    </ul>
+  </nav>
 </div>
 
 <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 function logout() {
-  // Hapus token dari localStorage
   localStorage.removeItem('authToken');
-
-  // Tampilkan pop-up konfirmasi logout
   Swal.fire({
       icon: 'success',
       title: 'Logged Out',
@@ -175,7 +184,6 @@ function logout() {
       showConfirmButton: false,
       timer: 1500
   }).then(() => {
-      // Arahkan ke URL logout
       window.location.href = '{{ url('/logout') }}';
   });
 }
