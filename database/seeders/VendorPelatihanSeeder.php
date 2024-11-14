@@ -11,29 +11,44 @@ class VendorPelatihanSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run(): void
+    public function run()
     {
         DB::table('vendor_pelatihan')->insert([
             [
-                'nama' => 'Pelatihan Indonesia',
-                'kota' => 'Jakarta',
-                'alamat' => 'Jl. Merdeka No. 10, Jakarta',
-                'no_telepon' => '021-12345678',
-                'website' => 'www.pelatihanindonesia.com',
-            ],
-            [
-                'nama' => 'Global Training Center',
-                'kota' => 'Bandung',
-                'alamat' => 'Jl. Asia Afrika No. 22, Bandung',
-                'no_telepon' => '022-98765432',
-                'website' => 'www.globaltraining.com',
-            ],
-            [
-                'nama' => 'Eduka Training',
+                'nama' => 'Inixindo Surabaya',
                 'kota' => 'Surabaya',
-                'alamat' => 'Jl. Sudirman No. 30, Surabaya',
-                'no_telepon' => '031-45678901',
-                'website' => 'www.edukatraining.co.id',
+                'alamat' => 'Jl. Raya Inixindo No. 10 Surabaya',
+                'no_telepon' => '0311234567',
+                'website' => 'https://inixindo-surabaya.com',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'nama' => 'Inixindo Jogja',
+                'kota' => 'Yogyakarta',
+                'alamat' => 'Jl. Malioboro No. 20 Yogyakarta',
+                'no_telepon' => '0274123456',
+                'website' => 'https://inixindo-jogja.com',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'nama' => 'Brainmatix',
+                'kota' => null, // No city specified
+                'alamat' => 'Jl. Citra Raya No. 30 Jakarta',
+                'no_telepon' => '0219876543',
+                'website' => 'https://brainmatix.com',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'nama' => 'Binus Jakarta',
+                'kota' => 'Jakarta',
+                'alamat' => 'Jl. KH. Wahid Hasyim No. 12 Jakarta',
+                'no_telepon' => '0219988776',
+                'website' => 'https://binusjakarta.com',
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
         ]);
     }

@@ -5,17 +5,8 @@
     <div class="card-header">
         <h3 class="card-title">{{ $page->title }}</h3>
         <div class="card-tools">
-            {{-- <button onclick="modalAction('{{ url('/level/import') }}')" class="btn btn-info btn-sm mt-1">
-                <i class="fas fa-file-import"></i> Import Level
-            </button>
-            <a href="{{ url('/level/export_excel') }}" class="btn btn-primary btn-sm mt-1">
-                <i class="fas fa-file-excel"></i> Export Level
-            </a>
-            <a href="{{ url('/level/export_pdf') }}" class="btn btn-warning btn-sm mt-1">
-                <i class="fas fa-file-pdf"></i> Export Level
-            </a> --}}
-            <button onclick="modalAction('{{ url('jenis_pengguna/create_ajax') }}')" class="btn btn-success btn-sm mt-1">
-                <i class="fas fa-plus"></i> Tambah Jenis Pengguna
+            <button onclick="modalAction('{{ url('jenis_pelatihan/create_ajax') }}')" class="btn btn-success btn-sm mt-1">
+                <i class="fas fa-plus"></i> Tambah Ajax
             </button>
         </div>
     </div>    
@@ -27,12 +18,11 @@
         @if (session('error'))
             <div class="alert alert-danger">{{ session('error') }}</div>
         @endif
-        <table class="table table-bordered table-striped table-hover table-sm" id="table_jenis_pengguna">
+        <table class="table table-bordered table-striped table-hover table-sm" id="table_jenis_pelatihan">
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Kode Jenis Pengguna</th>
-                    <th>Nama Jenis Pengguna</th>
+                    <th>Nama Jenis Pelatihan</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -52,13 +42,13 @@ function modalAction(url = ''){
     });
 }
 
-var dataJenisPengguna;
+var dataJenisPelatihan;
 $(document).ready(function() {
-    dataJenisPengguna = $('#table_jenis_pengguna').DataTable({
+    dataJenisPelatihan = $('#table_jenis_pelatihan').DataTable({
         processing: true,
         serverSide: true,
         ajax: {
-            "url": "{{ url('jenis_pengguna/list') }}",
+            "url": "{{ url('jenis_pelatihan/list') }}",
             "dataType": "json",
             "type": "POST"
         },
@@ -70,12 +60,7 @@ $(document).ready(function() {
                 searchable: false
             },
             {
-                data: "kode_jenis_pengguna",
-                orderable: true,
-                searchable: true
-            },
-            {
-                data: "nama_jenis_pengguna",
+                data: "nama_jenis_pelatihan",
                 orderable: true,
                 searchable: true
             },

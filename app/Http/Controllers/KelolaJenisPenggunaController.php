@@ -30,7 +30,7 @@ class KelolaJenisPenggunaController extends Controller
     {
         // Initialize the query
         $query = JenisPenggunaModel::select('id_jenis_pengguna', 'kode_jenis_pengguna', 'nama_jenis_pengguna');
-    
+
         // Get the filtered jenis pengguna
         return DataTables::of($query)
             ->addIndexColumn()

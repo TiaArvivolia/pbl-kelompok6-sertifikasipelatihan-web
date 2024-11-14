@@ -11,30 +11,46 @@ class VendorSertifikasiSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run(): void
+    public function run()
     {
+        // Insert multiple records into the vendor_sertifikasi table
         DB::table('vendor_sertifikasi')->insert([
             [
-                'nama' => 'Sertifikasi Nasional',
+                'nama' => 'PT. Sertifikasi Indonesia',
                 'kota' => 'Jakarta',
-                'alamat' => 'Jl. Diponegoro No. 15, Jakarta',
-                'no_telepon' => '021-87654321',
-                'website' => 'www.sertifikasinasional.com',
+                'alamat' => 'Jl. Jendral Sudirman No. 45, Jakarta Pusat',
+                'no_telepon' => '021-1234567',
+                'website' => 'https://www.sertifikasiindonesia.co.id',
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
-                'nama' => 'Certify International',
+                'nama' => 'Lembaga Sertifikasi Profesi',
                 'kota' => 'Bandung',
-                'alamat' => 'Jl. Braga No. 5, Bandung',
-                'no_telepon' => '022-12345678',
-                'website' => 'www.certifyintl.com',
+                'alamat' => 'Jl. Merdeka No. 12, Bandung',
+                'no_telepon' => '022-7654321',
+                'website' => 'https://www.lsp.com',
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
-                'nama' => 'Kompeten Sertifikasi',
-                'kota' => 'Yogyakarta',
-                'alamat' => 'Jl. Pemuda No. 50, Yogyakarta',
-                'no_telepon' => '0274-7890123',
-                'website' => 'www.kompetensertifikasi.com',
+                'nama' => 'Sertifikasi Expert',
+                'kota' => 'Surabaya',
+                'alamat' => 'Jl. Raya No. 8, Surabaya',
+                'no_telepon' => '031-2345678',
+                'website' => 'https://www.sertifikasi-expert.com',
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
+            [
+                'nama' => 'Global Training Certification',
+                'kota' => 'Yogyakarta',
+                'alamat' => 'Jl. Pahlawan No. 7, Yogyakarta',
+                'no_telepon' => '0274-9876543',
+                'website' => 'https://www.globaltraining.com',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
         ]);
     }
 }

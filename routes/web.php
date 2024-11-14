@@ -17,7 +17,12 @@ use App\Http\Controllers\PelatihanSertifikasiController;
 use App\Http\Controllers\KelolaPeriodeController;
 use App\Http\Controllers\InputPelatihanController;
 use App\Http\Controllers\InputSertifikasiController;
+use App\Http\Controllers\KelolaAdminController;
+use App\Http\Controllers\KelolaDosenController;
 use App\Http\Controllers\KelolaJenisPenggunaController;
+use App\Http\Controllers\KelolaPimpinanController;
+use App\Http\Controllers\KelolaTendikController;
+use App\Http\Controllers\RiwayatPelatihanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,14 +74,72 @@ Route::prefix('pengguna')->group(function () {
     Route::delete('/{id}/delete_ajax', [KelolaPenggunaController::class, 'delete_ajax']);
 });
 
+// Kelola Admin
+Route::prefix('admin')->group(function () {
+    Route::get('/', [KelolaAdminController::class, 'index']);
+    Route::post('/list', [KelolaAdminController::class, 'list']);
+    Route::get('/create_ajax', [KelolaAdminController::class, 'create_ajax']);
+    Route::post('/ajax', [KelolaAdminController::class, 'store_ajax']);
+    Route::get('/{id}/show_ajax', [KelolaAdminController::class, 'show_ajax']);
+    Route::get('/{id}/edit_ajax', [KelolaAdminController::class, 'edit_ajax']);
+    Route::put('/{id}/update_ajax', [KelolaAdminController::class, 'update_ajax']);
+    Route::get('/{id}/delete_ajax', [KelolaAdminController::class, 'confirm_ajax']);
+    Route::delete('/{id}/delete_ajax', [KelolaAdminController::class, 'delete_ajax']);
+});
+
+// Kelola Dosen
+Route::prefix('dosen')->group(function () {
+    Route::get('/', [KelolaDosenController::class, 'index']);
+    Route::post('/list', [KelolaDosenController::class, 'list']);
+    Route::get('/create_ajax', [KelolaDosenController::class, 'create_ajax']);
+    Route::post('/ajax', [KelolaDosenController::class, 'store_ajax']);
+    Route::get('/{id}/show_ajax', [KelolaDosenController::class, 'show_ajax']);
+    Route::get('/{id}/edit_ajax', [KelolaDosenController::class, 'edit_ajax']);
+    Route::put('/{id}/update_ajax', [KelolaDosenController::class, 'update_ajax']);
+    Route::get('/{id}/delete_ajax', [KelolaDosenController::class, 'confirm_ajax']);
+    Route::delete('/{id}/delete_ajax', [KelolaDosenController::class, 'delete_ajax']);
+});
+
+// Kelola Tendik
+Route::prefix('tendik')->group(function () {
+    Route::get('/', [KelolaTendikController::class, 'index']);
+    Route::post('/list', [KelolaTendikController::class, 'list']);
+    Route::get('/create_ajax', [KelolaTendikController::class, 'create_ajax']);
+    Route::post('/ajax', [KelolaTendikController::class, 'store_ajax']);
+    Route::get('/{id}/show_ajax', [KelolaTendikController::class, 'show_ajax']);
+    Route::get('/{id}/edit_ajax', [KelolaTendikController::class, 'edit_ajax']);
+    Route::put('/{id}/update_ajax', [KelolaTendikController::class, 'update_ajax']);
+    Route::get('/{id}/delete_ajax', [KelolaTendikController::class, 'confirm_ajax']);
+    Route::delete('/{id}/delete_ajax', [KelolaTendikController::class, 'delete_ajax']);
+});
+
+// Kelola Pimpinan
+Route::prefix('pimpinan')->group(function () {
+    Route::get('/', [KelolaPimpinanController::class, 'index']);
+    Route::post('/list', [KelolaPimpinanController::class, 'list']);
+    Route::get('/create_ajax', [KelolaPimpinanController::class, 'create_ajax']);
+    Route::post('/ajax', [KelolaPimpinanController::class, 'store_ajax']);
+    Route::get('/{id}/show_ajax', [KelolaPimpinanController::class, 'show_ajax']);
+    Route::get('/{id}/edit_ajax', [KelolaPimpinanController::class, 'edit_ajax']);
+    Route::put('/{id}/update_ajax', [KelolaPimpinanController::class, 'update_ajax']);
+    Route::get('/{id}/delete_ajax', [KelolaPimpinanController::class, 'confirm_ajax']);
+    Route::delete('/{id}/delete_ajax', [KelolaPimpinanController::class, 'delete_ajax']);
+});
 
 // Jenis Pelatihan
-Route::get('jenis-pelatihan', [JenisPelatihanController::class, 'index']);
-Route::get('jenis-pelatihan/create', [JenisPelatihanController::class, 'create']);
-Route::get('jenis-pelatihan/{id}', [JenisPelatihanController::class, 'show']);
-Route::get('jenis-pelatihan/{id}/edit', [JenisPelatihanController::class, 'edit']);
+Route::prefix('jenis_pelatihan')->group(function () {
+    Route::get('/', [JenisPelatihanController::class, 'index']);
+    Route::post('/list', [JenisPelatihanController::class, 'list']);
+    Route::get('/create_ajax', [JenisPelatihanController::class, 'create_ajax']);
+    Route::post('/ajax', [JenisPelatihanController::class, 'store_ajax']);
+    Route::get('/{id}/show_ajax', [JenisPelatihanController::class, 'show_ajax']);
+    Route::get('/{id}/edit_ajax', [JenisPelatihanController::class, 'edit_ajax']);
+    Route::put('/{id}/update_ajax', [JenisPelatihanController::class, 'update_ajax']);
+    Route::get('/{id}/delete_ajax', [JenisPelatihanController::class, 'confirm_ajax']);
+    Route::delete('/{id}/delete_ajax', [JenisPelatihanController::class, 'delete_ajax']);
+});
 
-// // Vendor Pelatihan
+// Vendor Pelatihan
 Route::prefix('vendor_pelatihan')->group(function () {
     Route::get('/', [VendorPelatihanController::class, 'index']);
     Route::post('/list', [VendorPelatihanController::class, 'list']);
@@ -128,21 +191,17 @@ Route::prefix('bidang_minat')->name('bidang_minat')->group(function () {
     Route::delete('/{id}/delete_ajax', [KelolaBidangMinatController::class, 'delete_ajax']);
 });
 
-// Daftar sertifikasi
-Route::prefix('daftar-sertifikasi')->name('daftar-sertifikasi')->group(function () {
-    Route::get('/', [DaftarSertifikasiController::class, 'index']);
-    Route::get('/create', [DaftarSertifikasiController::class, 'create']);
-    Route::get('/{id}', [DaftarSertifikasiController::class, 'show']);
-    Route::get('/{id}/edit', [DaftarSertifikasiController::class, 'edit']);
-});
-
-
 // Daftar Pelatihan
-Route::prefix('daftar-pelatihan')->name('daftar-pelatihan')->group(function () {
+Route::prefix('daftar_pelatihan')->group(function () {
     Route::get('/', [DaftarPelatihanController::class, 'index']);
-    Route::get('/create', [DaftarPelatihanController::class, 'create']);
-    Route::get('/{id}', [DaftarPelatihanController::class, 'show']);
-    Route::get('/{id}/edit', [DaftarPelatihanController::class, 'edit']);
+    Route::post('/list', [DaftarPelatihanController::class, 'list']);
+    Route::get('/create_ajax', [DaftarPelatihanController::class, 'create_ajax']);
+    Route::post('/ajax', [DaftarPelatihanController::class, 'store_ajax']);
+    Route::get('/{id}/show_ajax', [DaftarPelatihanController::class, 'show_ajax']);
+    Route::get('/{id}/edit_ajax', [DaftarPelatihanController::class, 'edit_ajax']);
+    Route::put('/{id}/update_ajax', [DaftarPelatihanController::class, 'update_ajax']);
+    Route::get('/{id}/delete_ajax', [DaftarPelatihanController::class, 'confirm_ajax']);
+    Route::delete('/{id}/delete_ajax', [DaftarPelatihanController::class, 'delete_ajax']);
 });
 
 // Draft Surat Tugas
@@ -166,16 +225,16 @@ Route::get('pelatihan-sertifikasi/{id}', [VendorSertifikasiController::class, 's
 Route::get('pelatihan-sertifikasi/{id}/edit', [VendorSertifikasiController::class, 'edit']);
 
 // Input Pelatihan
-Route::prefix('input_pelatihan')->name('input_pelatihan')->group(function () {
-    Route::get('/', [InputPelatihanController::class, 'index']);
-    Route::post('/list', [InputPelatihanController::class, 'list']);
-    Route::get('/create_ajax', [InputPelatihanController::class, 'create_ajax']);
-    Route::post('/ajax', [InputPelatihanController::class, 'store_ajax']);
-    Route::get('/{id}/show_ajax', [InputPelatihanController::class, 'show_ajax']);
-    Route::get('/{id}/edit_ajax', [InputPelatihanController::class, 'edit_ajax']);
-    Route::put('/{id}/update_ajax', [InputPelatihanController::class, 'update_ajax']);
-    Route::get('/{id}/delete_ajax', [InputPelatihanController::class, 'confirm_ajax']);
-    Route::delete('/{id}/delete_ajax', [InputPelatihanController::class, 'delete_ajax']);
+Route::prefix('riwayat_pelatihan')->group(function () {
+    Route::get('/', [RiwayatPelatihanController::class, 'index']);
+    Route::post('/list', [RiwayatPelatihanController::class, 'list']);
+    Route::get('/create_ajax', [RiwayatPelatihanController::class, 'create_ajax']);
+    Route::post('/ajax', [RiwayatPelatihanController::class, 'store_ajax']);
+    Route::get('/{id}/show_ajax', [RiwayatPelatihanController::class, 'show_ajax']);
+    Route::get('/{id}/edit_ajax', [RiwayatPelatihanController::class, 'edit_ajax']);
+    Route::put('/{id}/update_ajax', [RiwayatPelatihanController::class, 'update_ajax']);
+    Route::get('/{id}/delete_ajax', [RiwayatPelatihanController::class, 'confirm_ajax']);
+    Route::delete('/{id}/delete_ajax', [RiwayatPelatihanController::class, 'delete_ajax']);
 });
 
 // Input Sertifikasi

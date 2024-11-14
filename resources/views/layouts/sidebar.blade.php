@@ -28,7 +28,7 @@
       <li class="nav-header">Kategori Kelola Pengguna</li>
       <li class="nav-item has-treeview">
         <a href="#" class="nav-link">
-          <i class="nav-icon fas fa-th"></i>
+          <i class="nav-icon fas fa-users"></i>
           <p>
             Kelola Pengguna
             <i class="right fas fa-angle-left"></i>
@@ -80,27 +80,27 @@
         </a>
         <ul class="nav nav-treeview">
           <li class="nav-item">
-            <a href="{{ url('/jenis-pelatihan') }}" class="nav-link {{ $activeMenu == 'jenisPelatihan' ? 'active' : '' }}">
+            <a href="{{ url('/jenis_pelatihan') }}" class="nav-link {{ $activeMenu == 'jenisPelatihan' ? 'active' : '' }}">
               <p>Jenis Pelatihan</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/vendor_pelatihan') }}" class="nav-link {{ $activeMenu == 'vendorpelatihan' ? 'active' : '' }}">
+            <a href="{{ url('/vendor_pelatihan') }}" class="nav-link {{ $activeMenu == 'vendor_pelatihan' ? 'active' : '' }}">
               <p>Vendor Pelatihan</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/vendor_sertifikasi') }}" class="nav-link {{ $activeMenu == 'vendorSertifikasi' ? 'active' : '' }}">
+            <a href="{{ url('/vendor_sertifikasi') }}" class="nav-link {{ $activeMenu == 'vendor_ertifikasi' ? 'active' : '' }}">
               <p>Vendor Sertifikasi</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/mata_kuliah') }}" class="nav-link  {{ $activeMenu == 'mataKuliah' ? 'active' : '' }}">
+            <a href="{{ url('/mata_kuliah') }}" class="nav-link  {{ $activeMenu == 'mata_kuliah' ? 'active' : '' }}">
               <p>Kelola Mata Kuliah</p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/bidang_minat') }}" class="nav-link {{ $activeMenu == 'bidangMinat' ? 'active' : '' }}">
+            <a href="{{ url('/bidang_minat') }}" class="nav-link {{ $activeMenu == 'bidang_minat' ? 'active' : '' }}">
               <p>Kelola Bidang Minat</p>
             </a>
           </li>
@@ -118,13 +118,13 @@
           </p>
         </a>
         <ul class="nav nav-treeview">
-          <li class="nav-item">
+          {{-- <li class="nav-item">
             <a href="{{ url('/daftar-sertifikasi') }}" class="nav-link {{ $activeMenu == 'daftarSertifikasi' ? 'active' : '' }}">
               <p>Daftar Sertifikasi</p>
             </a>
-          </li>
+          </li> --}}
           <li class="nav-item">
-            <a href="{{ url('/daftar-pelatihan') }}" class="nav-link {{ $activeMenu == 'daftarPelatihan' ? 'active' : '' }}">
+            <a href="{{ url('/daftar_pelatihan') }}" class="nav-link {{ $activeMenu == 'daftar_pelatihan' ? 'active' : '' }}">
               <p>Daftar Pelatihan</p>
             </a>
           </li>
@@ -149,8 +149,8 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/input_pelatihan') }}" class="nav-link {{ $activeMenu == 'inputPelatihan' ? 'active' : '' }}">
-              <p>Input Pelatihan</p>
+            <a href="{{ url('/riwayat_pelatihan') }}" class="nav-link {{ $activeMenu == 'riwayat_pelatihan' ? 'active' : '' }}">
+              <p>Riwayat Pelatihan</p>
             </a>
           </li>
           <li class="nav-item">

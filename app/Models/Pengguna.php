@@ -30,4 +30,16 @@ class Pengguna extends Authenticatable
     {
         return $this->belongsTo(JenisPenggunaModel::class, 'id_jenis_pengguna', 'id_jenis_pengguna');
     }
+
+    // Relasi dengan dosen
+    public function dosen()
+    {
+        return $this->hasOne(KelolaDosenModel::class, 'id_pengguna');
+    }
+
+    // Relasi dengan tendik (jika ada)
+    public function tendik()
+    {
+        return $this->hasOne(KelolaTendikModel::class, 'id_pengguna');
+    }
 }
