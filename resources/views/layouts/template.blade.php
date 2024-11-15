@@ -37,15 +37,23 @@
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
   @include('layouts.header')
-
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
-    <a href="{{ url ('/profile') }}" class="brand-link">
-      <img src="{{asset('adminlte/dist/img/AdminLTELogo.png')}}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-      <span class="brand-text font-weight-light">Kelompok 6 - PWL</span>
+    <!-- Logo dan Teks di Sidebar -->
+    <a href="{{ url ('/profile') }}" class="brand-link text-center d-flex flex-column align-items-center">
+      <!-- Logo -->
+      <img src="{{ asset('storage/photos/jti.png') }}" alt="Logo" class="brand-image" 
+           style="height: 80px; width: auto; margin-top: 10px; border: none;">
+      
+      <!-- Nama Sistem (Bold) -->
+      <span class="brand-text font-weight-bold mt-2" style="color: white; opacity: 0.8;">SISPEKTI</span>
     </a>
-
+  
+    <!-- Sidebar -->
     @include('layouts.sidebar')
   </aside>
+  
+  
+  
 
   <div class="content-wrapper">
     @include('layouts.breadcrumb')
