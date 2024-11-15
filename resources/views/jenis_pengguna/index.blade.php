@@ -33,7 +33,7 @@
                     <th>ID</th>
                     <th>Kode Jenis Pengguna</th>
                     <th>Nama Jenis Pengguna</th>
-                    <th>Aksi</th>
+                    {{-- <th>Aksi</th> --}}
                 </tr>
             </thead>
         </table>
@@ -79,12 +79,12 @@ $(document).ready(function() {
                 orderable: true,
                 searchable: true
             },
-            {
-                data: "aksi",
-                className: "text-center",
-                orderable: false,
-                searchable: false
-            }
+            // {
+            //     data: "aksi",
+            //     className: "text-center",
+            //     orderable: false,
+            //     searchable: false
+            // }
         ]
     });
 });
