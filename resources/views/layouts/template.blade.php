@@ -45,7 +45,7 @@
            style="height: 80px; width: auto; margin-top: 10px; border: none;">
       
       <!-- Nama Sistem (Bold) -->
-      <span class="brand-text font-weight-bold mt-2" style="color: white; opacity: 0.8;">SISPEKTI</span>
+      <span class="brand-text font-weight-bold mt-2" style="color: white; opacity: 0.8;">SkillHub TI</span>
     </a>
   
     <!-- Sidebar -->
