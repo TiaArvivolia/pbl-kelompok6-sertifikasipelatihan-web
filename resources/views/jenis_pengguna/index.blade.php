@@ -14,9 +14,9 @@
             <a href="{{ url('/level/export_pdf') }}" class="btn btn-warning btn-sm mt-1">
                 <i class="fas fa-file-pdf"></i> Export Level
             </a> --}}
-            <button onclick="modalAction('{{ url('jenis_pengguna/create_ajax') }}')" class="btn btn-success btn-sm mt-1">
+            {{-- <button onclick="modalAction('{{ url('jenis_pengguna/create_ajax') }}')" class="btn btn-success btn-sm mt-1">
                 <i class="fas fa-plus"></i> Tambah Jenis Pengguna
-            </button>
+            </button> --}}
         </div>
     </div>    
 

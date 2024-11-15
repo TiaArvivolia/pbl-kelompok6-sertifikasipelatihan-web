@@ -34,13 +34,13 @@ class JenisPelatihanController extends Controller
         // Get the filtered jenis pelatihan
         return DataTables::of($query)
             ->addIndexColumn()
-            ->addColumn('aksi', function ($jenis_pelatihan) {
-                $btn = '<button onclick="modalAction(\'' . url('/jenis_pelatihan/' . $jenis_pelatihan->id_jenis_pelatihan . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/jenis_pelatihan/' . $jenis_pelatihan->id_jenis_pelatihan . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/jenis_pelatihan/' . $jenis_pelatihan->id_jenis_pelatihan . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Hapus</button>';
-                return $btn;
-            })
-            ->rawColumns(['aksi'])
+            // ->addColumn('aksi', function ($jenis_pelatihan) {
+            //     $btn = '<button onclick="modalAction(\'' . url('/jenis_pelatihan/' . $jenis_pelatihan->id_jenis_pelatihan . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
+            //     $btn .= '<button onclick="modalAction(\'' . url('/jenis_pelatihan/' . $jenis_pelatihan->id_jenis_pelatihan . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
+            //     $btn .= '<button onclick="modalAction(\'' . url('/jenis_pelatihan/' . $jenis_pelatihan->id_jenis_pelatihan . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Hapus</button>';
+            //     return $btn;
+            // })
+            // ->rawColumns(['aksi'])
             ->make(true);
     }
 
