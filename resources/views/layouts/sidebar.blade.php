@@ -154,10 +154,15 @@
             </a>
           </li>
           <li class="nav-item">
+            <a href="{{ url('/riwayat_sertifikasi') }}" class="nav-link {{ $activeMenu == 'riwayat_sertifikasi' ? 'active' : '' }}">
+              <p>Riwayat Sertfikasi</p>
+            </a>
+          </li>
+          {{-- <li class="nav-item">
             <a href="{{ url('/input_sertifikasi') }}" class="nav-link {{ $activeMenu == 'inputSertifikasi' ? 'active' : '' }}">
               <p>Input Sertifikasi</p>
             </a>
-          </li>
+          </li> --}}
         </ul>
       </li>
 
