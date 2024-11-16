@@ -17,7 +17,7 @@
         </div>
     </div>
 @else
-<form action="{{ url('/pimpinan/' . $pimpinan->id_pimpinan . '/update_ajax') }}" method="POST" id="form-edit">
+<form action="{{ url('/pimpinan/' . $pimpinan->id_pimpinan . '/update_ajax') }}" method="POST" id="form-edit" enctype="multipart/form-data">
     @csrf
     @method('PUT')
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
@@ -29,35 +29,54 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label>Nama Lengkap</label>
-                    <input value="{{ $pimpinan->nama_lengkap }}" type="text" name="nama_lengkap" id="nama_lengkap" class="form-control" required>
-                    <small id="error-nama_lengkap" class="error-text form-text text-danger"></small>
-                </div>
-                <div class="form-group">
-                    <label>NIP</label>
-                    <input value="{{ $pimpinan->nip }}" type="text" name="nip" id="nip" class="form-control" required maxlength="18">
-                    <small id="error-nip" class="error-text form-text text-danger"></small>
-                </div>
-                <div class="form-group">
-                    <label>NIDN</label>
-                    <input value="{{ $pimpinan->nidn }}" type="text" name="nidn" id="nidn" class="form-control" maxlength="20">
-                    <small id="error-nidn" class="error-text form-text text-danger"></small>
-                </div>
-                <div class="form-group">
-                    <label>No Telepon</label>
-                    <input value="{{ $pimpinan->no_telepon }}" type="text" name="no_telepon" id="no_telepon" class="form-control" maxlength="15">
-                    <small id="error-no_telepon" class="error-text form-text text-danger"></small>
-                </div>
-                <div class="form-group">
-                    <label>Email</label>
-                    <input value="{{ $pimpinan->email }}" type="email" name="email" id="email" class="form-control">
-                    <small id="error-email" class="error-text form-text text-danger"></small>
-                </div>
-                <div class="form-group">
-                    <label>Gambar Profil</label>
-                    <input type="file" name="gambar_profil" id="gambar_profil" class="form-control">
-                    <small id="error-gambar_profil" class="error-text form-text text-danger"></small>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Nama Lengkap</label>
+                            <input value="{{ $pimpinan->nama_lengkap }}" type="text" name="nama_lengkap" id="nama_lengkap" class="form-control" required>
+                            <small id="error-nama_lengkap" class="error-text form-text text-danger"></small>
+                        </div>
+                        <div class="form-group">
+                            <label>NIP</label>
+                            <input value="{{ $pimpinan->nip }}" type="text" name="nip" id="nip" class="form-control" required maxlength="18">
+                            <small id="error-nip" class="error-text form-text text-danger"></small>
+                        </div>
+                        <div class="form-group">
+                            <label>NIDN</label>
+                            <input value="{{ $pimpinan->nidn }}" type="text" name="nidn" id="nidn" class="form-control" maxlength="20">
+                            <small id="error-nidn" class="error-text form-text text-danger"></small>
+                        </div>
+                        <div class="form-group">
+                            <label>No Telepon</label>
+                            <input value="{{ $pimpinan->no_telepon }}" type="text" name="no_telepon" id="no_telepon" class="form-control" maxlength="15">
+                            <small id="error-no_telepon" class="error-text form-text text-danger"></small>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input value="{{ $pimpinan->email }}" type="email" name="email" id="email" class="form-control">
+                            <small id="error-email" class="error-text form-text text-danger"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>ID Pengguna</label>
+                            <input value="{{ $pimpinan->id_pengguna }}" type="text" name="id_pengguna" id="id_pengguna" class="form-control" required>
+                            <small id="error-id_pengguna" class="error-text form-text text-danger"></small>
+                        </div>
+                        <div class="form-group">
+                            <label>Username</label>
+                            <input value="{{ $pimpinan->username }}" type="text" name="username" id="username" class="form-control" required>
+                            <small id="error-username" class="error-text form-text text-danger"></small>
+                        </div>
+                        <div class="form-group">
+                            <label>Gambar Profil</label>
+                            <input type="file" name="gambar_profil" id="gambar_profil" class="form-control" accept="image/*">
+                            <small id="error-gambar_profil" class="error-text form-text text-danger"></small>
+                        </div>
+                        <div class="form-group">
+                            <img src="{{ asset('storage/' . $pimpinan->gambar_profil) }}" alt="Profil Image" width="100" height="100" id="preview-gambar">
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -70,6 +89,19 @@
 
 <script>
 $(document).ready(function() {
+    // Display preview of selected profile image
+    $('#gambar_profil').change(function() {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                $('#preview-gambar').attr('src', event.target.result);
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    // Validation rules
     $("#form-edit").validate({
         rules: {
             nama_lengkap: { required: true, minlength: 3, maxlength: 100 },
@@ -77,6 +109,8 @@ $(document).ready(function() {
             nidn: { maxlength: 20 },
             no_telepon: { maxlength: 15 },
             email: { required: true, email: true },
+            id_pengguna: { required: true },
+            username: { required: true },
             gambar_profil: { extension: "jpg|jpeg|png|gif|bmp" }
         },
         submitHandler: function(form) {

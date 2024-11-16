@@ -1,3 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    
+    <style>
+      /* Main Sidebar */
+        .main-sidebar {
+      background-color: rgb(11, 11, 170); /* Warna sidebar biru */
+      color: white; /* Warna teks putih */
+      border-radius: 15px; /* Kelengkungan di semua sudut */
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2), 0 6px 20px rgba(0, 0, 0, 0.19); /* Efek 3D */
+      width: 250px; /* Lebar sidebar */
+      overflow-y: auto; /* Sidebar bisa di-scroll jika konten terlalu panjang */
+ 
+      }
+
+      /* Styling Link di Sidebar */
+      .nav-link {
+          color: white; /* Warna link sidebar */
+          border-radius: 10px; /* Kelengkungan pada link */
+          padding: 10px 15px; /* Tambahkan padding untuk estetika */
+          transition: all 0.3s ease; /* Animasi untuk hover */
+      }
+  
+      .nav-link:hover {
+          background-color: rgba(255, 255, 255, 0.2); /* Warna hover */
+          color: white; /* Tetap putih saat hover */
+          transform: translateY(-2px); /* Efek hover mengangkat */
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Tambahkan efek 3D pada hover */
+      }
+  
+      .nav-link.active {
+          background-color: darkblue; /* Warna untuk link aktif */
+          border-radius: 10px; /* Pastikan kelengkungan tetap terlihat */
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3); /* Tambahkan efek 3D untuk link aktif */
+      }
+  
+      /* Styling Sidebar Item */
+      .sidebar {
+          border-radius: 25px; /* Lengkungan sudut */
+          box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2); /* Shadow */
+          background-color: #0056b3; /* Warna latar */
+          overflow: hidden; /* Pastikan elemen di dalam tidak keluar */
+          padding: 10px;
+      }
+  
+      .sidebar .nav-item .nav-link {
+          border-radius: 10px; /* Memberikan lengkungan pada tombol */
+          margin-bottom: 5px; /* Memberikan jarak antar item */
+          color: white;
+      }
+  
+      .sidebar .nav-item .nav-link.active {
+          background-color: #007bff; /* Warna untuk menu aktif */
+          color: white; /* Warna teks menu aktif */
+      }
+  
+      .sidebar .nav-item .nav-link:hover {
+          background-color: rgba(255, 255, 255, 0.2); /* Warna efek hover */
+          color: white;
+      }
+  
+      /* Styling Search Form */
+      .sidebar .form-inline {
+          padding: 10px;
+      }
+  
+      .sidebar .form-control {
+          border-radius: 15px; /* Lengkungan pada input search */
+          background-color: #0056b3;
+          color: white;
+          border-color: #007bff;
+      }
+  
+      .sidebar .btn-sidebar {
+          border-radius: 15px; /* Kelengkungan pada tombol search */
+          background-color: #0056b3;
+          color: white;
+          border-color: #007bff;
+      }
+  </style>
+  
+</head>
+<body style="background-color: #f4f6f9; padding: 20px;">
 <div class="sidebar">
   <!-- SidebarSearch Form -->
   <div class="form-inline mt-2">
@@ -193,3 +283,5 @@ function logout() {
   });
 }
 </script>
+</body>
+</html>

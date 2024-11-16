@@ -6,6 +6,8 @@
         <h3 class="card-title">Daftar Tendik</h3>
         <div class="card-tools">
             <!-- Add Data Button with Icon -->
+            <a href="{{url('/tendik/export_excel')}}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export (Excel)</a>
+            <a href="{{url('/tendik/export_pdf')}}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export (PDF)</a>
             <button onclick="modalAction('{{ url('/tendik/create_ajax') }}')" class="btn btn-success btn-sm mt-1">
                 <i class="fas fa-plus"></i> Tambah Tendik
             </button>
@@ -28,7 +30,6 @@
                     <th>NIP</th>
                     <th>No Telepon</th>
                     <th>Email</th>
-                    <th>Gambar Profil</th>
                     {{-- <th>ID Pengguna</th> <!-- Added ID Pengguna Column --> --}}
                     <th>Username</th> <!-- Added Username Column -->
                     <th>Aksi</th>
@@ -91,14 +92,6 @@ $(document).ready(function(){
                 data: "email",
                 orderable: true,
                 searchable: true
-            },
-            {
-                data: "gambar_profil",
-                orderable: false,
-                searchable: false,
-                render: function(data) {
-                    return data ? '<img src="' + data + '" alt="Profile Image" style="width:50px; height:50px; border-radius:50%;">' : 'No Image';
-                }
             },
             // {
             //     data: "pengguna.id_pengguna", // Displaying ID Pengguna

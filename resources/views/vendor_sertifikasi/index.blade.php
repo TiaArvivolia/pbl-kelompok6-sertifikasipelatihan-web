@@ -4,6 +4,8 @@
     <div class="card-header">
         <h3 class="card-title">Kelola Vendor Sertifikasi</h3>
         <div class="card-tools">
+            <a href="{{url('/vendor_sertifikasi/export_excel')}}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export (Excel)</a>
+            <a href="{{url('vendor_sertifikasi/export_pdf')}}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export (PDF)</a>
             <button onclick="modalAction('{{ url('vendor_sertifikasi/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah Vendor Sertifikasi</button>
         </div>
     </div>

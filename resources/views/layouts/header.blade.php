@@ -26,20 +26,13 @@
         <li class="nav-item d-flex align-items-center">
            
             <!-- Text -->
-            <span class="text-dark font-weight-bold" style="font-size: 1.1rem; color: #003366;">POLITEKNIK NEGERI MALANG</span>
+            <span class="text-dark font-weight-bold" style="font-size: 1.1rem; color: #003366;">JURUSAN TEKNOLOGI INFORMASI POLITEKNIK NEGERI MALANG</span>
 
             <!-- Logo 1 -->
             <img src="{{ asset('storage/photos/polinema.png') }}" alt="Logo 1" class="img-fluid" style="width: 40px; height: 40px; margin-right: 8px;">
 
             <!-- Logo 2 -->
             <img src="{{ asset('storage/photos/jti.png') }}" alt="Logo 2" class="img-fluid" style="width: 40px; height: 40px; margin-left: 8px;">
-        </li>
-
-        <!-- Fullscreen Toggle Button -->
-        <li class="nav-item">
-            <a class="nav-link" href="javascript:void(0);" onclick="toggleFullscreen()" title="Toggle Fullscreen" style="color: #003366;">
-                <i class="fas fa-expand-arrows-alt"></i>
-            </a>
         </li>
     </ul>
 </nav>
