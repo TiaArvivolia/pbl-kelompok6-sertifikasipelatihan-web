@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\KelolaPimpinanModel;
 use App\Models\Pengguna;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -57,32 +58,40 @@ class KelolaPimpinanController extends Controller
     // Store new Pimpinan data via AJAX
     public function store_ajax(Request $request)
     {
-        if ($request->ajax() || $request->wantsJson()) {
-            $rules = [
-                'id_pengguna'   => 'required|exists:pengguna,id_pengguna',
-                'nama_lengkap'  => 'required|string|max:100',
-                'nip'           => 'required|string|max:20',
-                'nidn'          => 'nullable|string|max:20',
-                'no_telepon'    => 'nullable|string|max:20',
-                'email'         => 'nullable|string|email|max:100',
-            ];
+        $request->validate([
+            'username' => 'required|string|max:50|unique:pengguna,username',  // Validasi username
+            'password' => 'required|string|min:8|confirmed',  // Validasi password dan konfirmasi
+            'password_confirmation' => 'required|string|min:8',  // Validasi konfirmasi password
+            'nama_lengkap' => 'required|string|max:100',  // Nama lengkap
+            'nip' => 'required|string|max:20',  // NIP
+            'nidn' => 'required|string|max:20',  // NIP
+            'no_telepon' => 'required|string|max:15',  // Nomor telepon
+            'email' => 'required|string|email|max:100',  // Email
+        ]);
 
-            $validator = Validator::make($request->all(), $rules);
+        // Simpan data ke tabel pengguna dan dapatkan ID
+        $id_pengguna = DB::table('pengguna')->insertGetId([
+            'username' => $request->input('username'),
+            'password' => bcrypt($request->input('password')), // Hash password
+            'id_jenis_pengguna' => 4, // Set sebagai pimpinan
+        ]);
 
-            if ($validator->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Validasi Gagal',
-                    'msgField' => $validator->errors(),
-                ]);
-            }
+        // Simpan data ke tabel pimpinan
+        DB::table('pimpinan')->insert([
+            'id_pengguna' => $id_pengguna,
+            'nama_lengkap' => $request->input('nama_lengkap'),
+            'nip' => $request->input('nip'),
+            'nidn' => $request->input('nidn'),
+            'no_telepon' => $request->input('no_telepon'),
+            'email' => $request->input('email'),
+            'gambar_profil' => $request->file('gambar_profil') ? $request->file('gambar_profil')->store('profile_pictures') : null, // Simpan file jika ada
+        ]);
 
-            KelolaPimpinanModel::create($request->all());
-            return response()->json([
-                'status' => true,
-                'message' => 'Data pimpinan berhasil disimpan'
-            ]);
-        }
+        return response()->json([
+            'status' => true,
+            'message' => 'Data pimpinan berhasil disimpan!',
+        ]);
+
         return redirect('/');
     }
 
