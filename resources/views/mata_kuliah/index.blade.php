@@ -4,6 +4,8 @@
     <div class="card-header">
         <h3 class="card-title">Kelola Mata Kuliah</h3>
         <div class="card-tools">
+            <a href="{{url('/mata_kuliah/export_excel')}}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export (Excel)</a>
+            <a href="{{url('/mata_kuliah/export_pdf')}}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export (PDF)</a>
             <button onclick="modalAction('{{ url('mata_kuliah/create_ajax') }}')" class="btn btn-sm btn-success mt-1">Tambah Mata Kuliah</button>
         </div>
     </div>

@@ -5,6 +5,8 @@
     <div class="card-header">
         <h3 class="card-title">{{ $page->title }}</h3>
         <div class="card-tools">
+            <a href="{{url('/pengguna/export_excel')}}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export (Excel)</a>
+            <a href="{{url('/pengguna/export_pdf')}}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export (PDF)</a>
             <button onclick="modalAction('{{ url('pengguna/create_ajax') }}')" class="btn btn-success btn-sm mt-1">
                 <i class="fas fa-plus"></i> Tambah Pengguna
             </button>

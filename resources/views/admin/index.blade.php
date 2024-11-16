@@ -5,6 +5,8 @@
     <div class="card-header">
         <h3 class="card-title">Daftar Admin</h3>
         <div class="card-tools">
+            <a href="{{url('/admin/export_excel')}}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export (Excel)</a>
+            <a href="{{url('/admin/export_pdf')}}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export (PDF)</a>
             <!-- Add Data Button with Icon -->
             <button onclick="modalAction('{{ url('/admin/create_ajax') }}')" class="btn btn-success btn-sm mt-1">
                 <i class="fas fa-plus"></i> Tambah Admin
@@ -28,8 +30,6 @@
                     <th>NIP</th>
                     <th>No Telepon</th>
                     <th>Email</th>
-                    <th>Gambar Profil</th>
-                    <th>ID Pengguna</th> <!-- Added ID Pengguna Column -->
                     <th>Username</th> <!-- Added Username Column -->
                     <th>Aksi</th>
                 </tr>
@@ -90,19 +90,7 @@ $(document).ready(function(){
                 orderable: true,
                 searchable: true
             },
-            {
-                data: "gambar_profil",
-                orderable: false,
-                searchable: false,
-                render: function(data) {
-                    return data ? '<img src="' + data + '" alt="Profile Image" style="width:50px; height:50px; border-radius:50%;">' : 'No Image';
-                }
-            },
-            {
-                data: "pengguna.id_pengguna", // Displaying ID Pengguna
-                orderable: false,
-                searchable: false
-            },
+        
             {
                 data: "pengguna.username", // Displaying Username
                 orderable: false,

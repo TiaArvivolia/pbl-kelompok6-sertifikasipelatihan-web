@@ -5,6 +5,8 @@
     <div class="card-header">
         <h3 class="card-title">Riwayat Pelatihan</h3>
         <div class="card-tools">
+            <a href="{{url('/riwayat_pelatihan/export_excel')}}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export (Excel)</a>
+            <a href="{{url('/riwayat_pelatihan/export_pdf')}}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export (PDF)</a>
             <!-- Add Data Button with Icon -->
             <button onclick="modalAction('{{ url('/riwayat_pelatihan/create_ajax') }}')" class="btn btn-success btn-sm mt-1">
                 <i class="fas fa-plus"></i> Tambah Riwayat Pelatihan
@@ -25,14 +27,12 @@
                     <tr>
                         <th>No</th>
                         <th>Nama Pengguna</th> <!-- Kolom Nama Pengguna -->
-                        <th>Nama Jenis Pengguna</th> <!-- Kolom Nama Jenis Pengguna -->
                         <th>Nama Pelatihan</th>
                         <th>Penyelenggara</th>
                         <th>Level Pelatihan</th>
                         <th>Tanggal Mulai</th>
                         <th>Tanggal Selesai</th>
                         <th>Lokasi</th>
-                        <th>Dokumen</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -79,11 +79,6 @@ $(document).ready(function(){
                 searchable: true
             },
             {
-                data: "nama_jenis_pengguna",  // Menampilkan nama jenis pengguna
-                orderable: false,
-                searchable: true
-            },
-            {
                 data: "nama_pelatihan",
                 orderable: true,
                 searchable: true
@@ -112,14 +107,6 @@ $(document).ready(function(){
                 data: "lokasi",
                 orderable: true,
                 searchable: true
-            },
-            {
-                data: "dokumen_pelatihan",
-                orderable: false,
-                searchable: false,
-                render: function(data) {
-                    return data ? `<a href="${data}" target="_blank">Lihat Dokumen</a>` : 'No Document';
-                }
             },
             {
                 data: "aksi",

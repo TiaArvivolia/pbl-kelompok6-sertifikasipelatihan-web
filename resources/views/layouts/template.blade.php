@@ -18,39 +18,56 @@
   <link rel="stylesheet" href="{{ asset('plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css')}}">
   <!-- Theme style -->
   <link rel="stylesheet" href="{{ asset('adminlte/dist/css/adminlte.min.css')}}">
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+    <!-- daterange picker -->
+    <link rel="stylesheet" href="../../plugins/daterangepicker/daterangepicker.css">
+    <!-- iCheck for checkboxes and radio inputs -->
+    <link rel="stylesheet" href="../../plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- Bootstrap Color Picker -->
+    <link rel="stylesheet" href="../../plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css">
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet" href="../../plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="../../plugins/select2/css/select2.min.css">
+    <link rel="stylesheet" href="../../plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+    <!-- Bootstrap4 Duallistbox -->
+    <link rel="stylesheet" href="../../plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css">
+    <!-- BS Stepper -->
+    <link rel="stylesheet" href="../../plugins/bs-stepper/css/bs-stepper.min.css">
+    <!-- dropzonejs -->
+    <link rel="stylesheet" href="../../plugins/dropzone/min/dropzone.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
 
-  <style>
-    .main-sidebar {
-      background-color: rgb(11, 11, 170); /* Ubah warna sidebar menjadi biru */
-      color: white; /* Mengubah warna teks menjadi putih */
-    }
-    .nav-link {
-      color: white; /* Mengatur warna link sidebar */
-    }
-    .nav-link.active {
-      background-color: darkblue; /* Ubah warna untuk link aktif */
-    }
-  </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0/select2.min.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0/select2.min.js"></script>
+
+  
 
   @stack('css')
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
   @include('layouts.header')
-  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+  <aside class="main-sidebar sidebar-dark-primary elevation-4" style="border: none; box-shadow: none;">
     <!-- Logo dan Teks di Sidebar -->
-    <a href="{{ url ('/profile') }}" class="brand-link text-center d-flex flex-column align-items-center">
-      <!-- Logo -->
-      <img src="{{ asset('storage/photos/jti.png') }}" alt="Logo" class="brand-image" 
-           style="height: 80px; width: auto; margin-top: 10px; border: none;">
-      
-      <!-- Nama Sistem (Bold) -->
-      <span class="brand-text font-weight-bold mt-2" style="color: white; opacity: 0.8;">SkillHub TI</span>
+    <a class="brand-link text-center d-flex flex-column align-items-center" style="border-bottom: none;">
+        <!-- Logo -->
+        <img src="{{ asset('storage/photos/jti.png') }}" alt="Logo" 
+             style="height: 80px; width: auto; margin-top: 10px; border: none;">
+        
+        <!-- Nama Sistem (Bold) -->
+        <span class="brand-text font-weight-bold mt-2" style="color: white; opacity: 0.8;">SkillHub TI</span>
     </a>
   
     <!-- Sidebar -->
     @include('layouts.sidebar')
-  </aside>
+</aside>
+
   
   
   

@@ -6,6 +6,8 @@
         <h3 class="card-title">Riwayat Sertifikasi</h3>
         <div class="card-tools">
             <!-- Add Data Button with Icon -->
+            <a href="{{url('/riwayat_sertifikasi/export_excel')}}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export (Excel)</a>
+            <a href="{{url('/riwayat_sertifikasi/export_pdf')}}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export (PDF)</a>
             <button onclick="modalAction('{{ url('/riwayat_sertifikasi/create_ajax') }}')" class="btn btn-success btn-sm mt-1">
                 <i class="fas fa-plus"></i> Tambah Riwayat Sertifikasi
             </button>
@@ -27,11 +29,9 @@
                         <th>Nama Pengguna</th>
                         <th>Level Sertifikasi</th>
                         <th>Nama Sertifikasi</th>
-                        <th>No Sertifikat</th>
                         <th>Tanggal Terbit</th>
                         <th>Masa Berlaku</th>
                         {{-- <th>Penyelenggara</th> --}}
-                        <th>Dokumen Sertifikat</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -88,11 +88,6 @@ $(document).ready(function(){
                 searchable: true
             },
             {
-                data: "no_sertifikat", // Menampilkan no sertifikat
-                orderable: true,
-                searchable: true
-            },
-            {
                 data: "tanggal_terbit", // Menampilkan tanggal terbit
                 orderable: true,
                 searchable: true
@@ -107,14 +102,6 @@ $(document).ready(function(){
             //     orderable: true,
             //     searchable: true
             // },
-            {
-                data: "dokumen_sertifikat", // Menampilkan dokumen sertifikat
-                orderable: false,
-                searchable: false,
-                render: function(data) {
-                    return data ? `<a href="${data}" target="_blank">Lihat Dokumen</a>` : 'No Document';
-                }
-            },
             {
                 data: "aksi", 
                 className: "text-center",
