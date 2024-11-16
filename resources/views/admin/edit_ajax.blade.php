@@ -17,7 +17,7 @@
         </div>
     </div>
 @else
-<form action="{{ url('/admin/' . $admin->id_admin . '/update_ajax') }}" method="POST" id="form-edit">
+<form action="{{ url('/admin/' . $admin->id_admin . '/update_ajax') }}" method="POST" id="form-edit" enctype="multipart/form-data">
     @csrf
     @method('PUT')
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
@@ -50,6 +50,22 @@
                     <small id="error-email" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
+                    <label>Username</label>
+                    <input value="{{ $admin->pengguna->username }}" type="text" name="username" id="username" class="form-control" maxlength="50">
+                    <small id="error-username" class="error-text form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label>Password (Opsional)</label>
+                    <input type="password" name="password" id="password" class="form-control" minlength="8">
+                    <small id="error-password" class="error-text form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label>Konfirmasi Password</label>
+                    <input type="password" name="password_confirmation" id="password_confirmation" class="form-control">
+                    <small id="error-password_confirmation" class="error-text form-text text-danger"></small>
+                </div>                
+
+                <div class="form-group">
                     <label>Gambar Profil</label>
                     <input type="file" name="gambar_profil" id="gambar_profil" class="form-control">
                     <small id="error-gambar_profil" class="error-text form-text text-danger"></small>
@@ -71,7 +87,15 @@ $(document).ready(function() {
             nip: { required: true, maxlength: 18 },
             no_telepon: { required: true, maxlength: 15 },
             email: { required: true, email: true },
+            username: { maxlength: 50 },
+            password: { minlength: 8 },
+            password_confirmation: { equalTo: "#password" }
             gambar_profil: { extension: "jpg|jpeg|png|gif|bmp" }
+        },
+        messages: {
+            password_confirmation: {
+                equalTo: "Password konfirmasi harus sesuai dengan password."
+            }
         },
         submitHandler: function(form) {
             $.ajax({

@@ -6,6 +6,7 @@ use App\Models\KelolaAdminModel;
 use App\Models\Pengguna;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -49,40 +50,49 @@ class KelolaAdminController extends Controller
 
     public function create_ajax()
     {
-        $pengguna = Pengguna::select('id_pengguna', 'username')->get();
+        // $pengguna = Pengguna::select('id_pengguna', 'username')->get();
 
-        return view('admin.create_ajax')->with('pengguna', $pengguna);
+        // return view('admin.create_ajax')->with('pengguna', $pengguna);
+        return view('admin.create_ajax');
     }
 
     public function store_ajax(Request $request)
     {
-        if ($request->ajax() || $request->wantsJson()) {
-            $rules = [
-                'id_pengguna'    => 'required|exists:pengguna,id_pengguna',
-                'nama_lengkap' => 'required|string|max:100',
-                'nip'  => 'required|string|max:20',
-                'no_telepon'  => 'required|string|max:15',
-                'email' => 'required|string|email|max:100',
-            ];
+        $request->validate([
+            'username' => 'required|string|max:50|unique:pengguna,username',
+            'password' => 'required|string|min:8|confirmed', // Menambahkan 'confirmed' untuk memvalidasi password dan konfirmasi password
+            'password_confirmation' => 'required|string|min:8', // Pastikan kolom password_confirmation diisi
+            'nama_lengkap' => 'required|string|max:100',
+            'nip' => 'required|string|max:20',
+            'no_telepon' => 'required|string|max:15',
+            'email' => 'required|string|email|max:100',
+        ]);
 
-            $validator = Validator::make($request->all(), $rules);
+        // Simpan data ke tabel pengguna dan dapatkan ID
+        $id_pengguna = DB::table('pengguna')->insertGetId([
+            'username' => $request->input('username'),
+            'password' => bcrypt($request->input('password')), // Hash password
+            'id_jenis_pengguna' => 1, // Set sebagai admin
+        ]);
 
-            if ($validator->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Validasi Gagal',
-                    'msgField' => $validator->errors(),
-                ]);
-            }
+        // Simpan data ke tabel admin
+        DB::table('admin')->insert([
+            'id_pengguna' => $id_pengguna,
+            'nama_lengkap' => $request->input('nama_lengkap'),
+            'nip' => $request->input('nip'),
+            'no_telepon' => $request->input('no_telepon'),
+            'email' => $request->input('email'),
+            'gambar_profil' => $request->file('gambar_profil') ? $request->file('gambar_profil')->store('profile_pictures') : null, // Simpan file jika ada
+        ]);
 
-            KelolaAdminModel::create($request->all());
-            return response()->json([
-                'status' => true,
-                'message' => 'Data admin berhasil disimpan'
-            ]);
-        }
+        return response()->json([
+            'status' => true,
+            'message' => 'Data admin berhasil disimpan!',
+        ]);
+        
         return redirect('/');
     }
+
 
     public function show_ajax(string $id)
     {
@@ -107,6 +117,9 @@ class KelolaAdminController extends Controller
                 'nip'  => 'required|string|max:20',
                 'no_telepon'  => 'required|string|max:15',
                 'email' => 'required|string|email|max:100',
+                'username' => 'nullable|string|max:50|unique:pengguna,username,' . $id . ',id_pengguna',
+                'password' => 'nullable|string|min:8|confirmed',
+                'gambar_profil' => 'nullable|file|mimes:jpeg,png,jpg|max:2048', // Validasi file
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -115,25 +128,61 @@ class KelolaAdminController extends Controller
                 return response()->json([
                     'status'   => false,
                     'message'  => 'Validasi gagal.',
-                    'msgField' => $validator->errors()
+                    'msgField' => $validator->errors(),
                 ]);
             }
 
+            // Cari data admin
             $admin = KelolaAdminModel::find($id);
+
             if ($admin) {
-                $admin->update($request->all());
+                // Update data admin
+                $admin->update($request->only(['nama_lengkap', 'nip', 'no_telepon', 'email']));
+
+                // Tangani unggahan file
+                if ($request->hasFile('gambar_profil')) {
+                    $file = $request->file('gambar_profil');
+                    $fileName = time() . '_' . $file->getClientOriginalName();
+                    $filePath = $file->storeAs('uploads/admin', $fileName, 'public');
+
+                    // // Hapus file lama jika ada
+                    // if ($admin->gambar_profil && \Storage::exists('public/' . $admin->gambar_profil)) {
+                    //     \Storage::delete('public/' . $admin->gambar_profil);
+                    // }
+
+                    // Simpan path file baru
+                    $admin->gambar_profil = $filePath;
+                    $admin->save();
+                }
+
+                // Update tabel pengguna
+                $pengguna = $admin->pengguna; // Relasi ke model Pengguna
+                if ($pengguna) {
+                    $penggunaData = [];
+                    if ($request->filled('username')) {
+                        $penggunaData['username'] = $request->input('username');
+                    }
+                    if ($request->filled('password')) {
+                        $penggunaData['password'] = bcrypt($request->input('password')); // Hash password
+                    }
+                    if (!empty($penggunaData)) {
+                        $pengguna->update($penggunaData);
+                    }
+                }
+
                 return response()->json([
                     'status'  => true,
-                    'message' => 'Data admin berhasil diperbarui.'
+                    'message' => 'Data admin berhasil diperbarui.',
                 ]);
             }
 
             return response()->json([
                 'status'  => false,
-                'message' => 'Admin tidak ditemukan'
+                'message' => 'Admin tidak ditemukan.',
             ]);
         }
     }
+
 
     // Menampilkan konfirmasi penghapusan pengguna dengan AJAX
     public function confirm_ajax(string $id)

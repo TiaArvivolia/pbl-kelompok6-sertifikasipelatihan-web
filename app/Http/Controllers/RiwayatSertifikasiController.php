@@ -44,8 +44,8 @@ class RiwayatSertifikasiController extends Controller
         // Return DataTables response
         return DataTables::of($query)
             ->addIndexColumn()
-            ->addColumn('nama_lengkap', function ($sertifikasi) {
-                return $sertifikasi->pengguna ? $sertifikasi->pengguna->nama_lengkap : 'Tidak Tersedia';
+            ->addColumn('nama_lengkap', function ($pelatihan) {
+                return $pelatihan->pengguna->dosen ? $pelatihan->pengguna->dosen->nama_lengkap : ($pelatihan->pengguna->tendik ? $pelatihan->pengguna->tendik->nama_lengkap : 'Tidak Tersedia');
             })
             // ->addColumn('penyelenggara', function ($sertifikasi) {
             //     // Access the 'nama' property from the related 'penyelenggara' (VendorSertifikasiModel)

@@ -118,11 +118,16 @@
           </p>
         </a>
         <ul class="nav nav-treeview">
-          {{-- <li class="nav-item">
-            <a href="{{ url('/daftar-sertifikasi') }}" class="nav-link {{ $activeMenu == 'daftarSertifikasi' ? 'active' : '' }}">
-              <p>Daftar Sertifikasi</p>
+          <li class="nav-item">
+            <a href="{{ url('/riwayat_pelatihan') }}" class="nav-link {{ $activeMenu == 'riwayat_pelatihan' ? 'active' : '' }}">
+              <p>Riwayat Pelatihan</p>
             </a>
-          </li> --}}
+          </li>
+          <li class="nav-item">
+            <a href="{{ url('/riwayat_sertifikasi') }}" class="nav-link {{ $activeMenu == 'riwayat_sertifikasi' ? 'active' : '' }}">
+              <p>Riwayat Sertfikasi</p>
+            </a>
+          </li>
           <li class="nav-item">
             <a href="{{ url('/daftar_pelatihan') }}" class="nav-link {{ $activeMenu == 'daftar_pelatihan' ? 'active' : '' }}">
               <p>Daftar Pelatihan</p>
@@ -148,21 +153,6 @@
               <p>Kelola Periode</p>
             </a>
           </li>
-          <li class="nav-item">
-            <a href="{{ url('/riwayat_pelatihan') }}" class="nav-link {{ $activeMenu == 'riwayat_pelatihan' ? 'active' : '' }}">
-              <p>Riwayat Pelatihan</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ url('/riwayat_sertifikasi') }}" class="nav-link {{ $activeMenu == 'riwayat_sertifikasi' ? 'active' : '' }}">
-              <p>Riwayat Sertfikasi</p>
-            </a>
-          </li>
-          {{-- <li class="nav-item">
-            <a href="{{ url('/input_sertifikasi') }}" class="nav-link {{ $activeMenu == 'inputSertifikasi' ? 'active' : '' }}">
-              <p>Input Sertifikasi</p>
-            </a>
-          </li> --}}
         </ul>
       </li>
 
