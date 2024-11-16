@@ -10,16 +10,6 @@
             </div>
             
             <div class="modal-body">
-                <div class="form-group">
-                    <label>ID Pengguna</label>
-                    <select name="id_pengguna" id="id_pengguna" class="form-control" required>
-                        <option value="">- Pilih Pengguna -</option>
-                        @foreach($pengguna as $p)
-                            <option value="{{ $p->id_pengguna }}">{{ $p->username }}</option>
-                        @endforeach
-                    </select>
-                    <small id="error-id_pengguna" class="error-text form-text text-danger"></small>
-                </div>
 
                 <div class="form-group">
                     <label>Nama Lengkap</label>
@@ -44,6 +34,35 @@
                     <input type="email" name="email" id="email" class="form-control">
                     <small id="error-email" class="error-text form-text text-danger"></small>
                 </div>
+
+                
+                <div class="form-group">
+                    <label>Username <span class="text-danger">*</span></label>
+                    <input type="text" name="username" id="username" class="form-control" required>
+                    <small id="error-username" class="error-text form-text text-danger"></small>
+                </div>
+
+                <div class="form-group">
+                    <label>Password <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <input type="password" name="password" id="password" class="form-control" required>
+                        <div class="input-group-append">
+                            <button type="button" id="toggle-password" class="btn btn-outline-secondary"><i class="fas fa-eye"></i></button>
+                        </div>
+                    </div>
+                    <small id="error-password" class="error-text form-text text-danger"></small>
+                </div>
+                
+                <div class="form-group">
+                    <label>Konfirmasi Password <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" required>
+                        <div class="input-group-append">
+                            <button type="button" id="toggle-password-confirmation" class="btn btn-outline-secondary"><i class="fas fa-eye"></i></button>
+                        </div>
+                    </div>
+                    <small id="error-password_confirmation" class="error-text form-text text-danger"></small>
+                </div> 
 
                 <div class="form-group">
                     <label>Gambar Profil</label>
@@ -73,6 +92,19 @@
 
 <script>
 $(document).ready(function() {
+    // Toggle visibility for password field
+    $('#toggle-password').click(function() {
+        var passwordField = $('#password');
+        var type = passwordField.attr('type') === 'password' ? 'text' : 'password';
+        passwordField.attr('type', type);
+    });
+
+    // Toggle visibility for password confirmation field
+    $('#toggle-password-confirmation').click(function() {
+        var passwordConfirmationField = $('#password_confirmation');
+        var type = passwordConfirmationField.attr('type') === 'password' ? 'text' : 'password';
+        passwordConfirmationField.attr('type', type);
+    });
     $("#form-tambah-tendik").validate({
         rules: {
             id_pengguna: { required: true },
@@ -80,6 +112,12 @@ $(document).ready(function() {
             nip: { required: true, minlength: 5 },
             no_telepon: { minlength: 10, maxlength: 15 },
             email: { email: true },
+            username: { required: true, minlength: 3, maxlength: 50 },
+            password: { required: true, minlength: 8 },
+            password_confirmation: {
+                required: true,
+                equalTo: "#password"  // Memastikan konfirmasi password sesuai dengan password
+            },
             gambar_profil: { extension: "jpg|jpeg|png|gif|bmp" }
         },
         submitHandler: function(form) {

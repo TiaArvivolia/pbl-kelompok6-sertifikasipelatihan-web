@@ -6,6 +6,7 @@ use App\Models\BidangMinatModel;
 use App\Models\KelolaTendikModel; // Model untuk tendik
 use App\Models\Pengguna;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -63,34 +64,44 @@ class KelolaTendikController extends Controller
 
     public function store_ajax(Request $request)
     {
-        if ($request->ajax() || $request->wantsJson()) {
-            $rules = [
-                'id_pengguna'    => 'required|exists:pengguna,id_pengguna',
-                'nama_lengkap' => 'required|string|max:100',
-                'nip'  => 'required|string|max:20',
-                'no_telepon'  => 'nullable|string|max:20',
-                'email' => 'nullable|string|email|max:100',
-                'tag_bidang_minat' => 'required|exists:bidang_minat,id_bidang_minat',
-            ];
+        // Validate the input fields
+        $request->validate([
+            'username' => 'required|string|max:50|unique:pengguna,username', // Unique username
+            'password' => 'required|string|min:8|confirmed', // Ensure password is confirmed
+            'password_confirmation' => 'required|string|min:8', // Confirmation password field
+            'nama_lengkap' => 'required|string|max:100',
+            'nip' => 'required|string|max:20',
+            'no_telepon' => 'nullable|string|max:20',
+            'email' => 'nullable|string|email|max:100',
+            'tag_bidang_minat' => 'required|exists:bidang_minat,id_bidang_minat', // Validates bidang minat tag
+        ]);
 
-            $validator = Validator::make($request->all(), $rules);
+        // Insert into the pengguna table and get the ID
+        $id_pengguna = DB::table('pengguna')->insertGetId([
+            'username' => $request->input('username'),
+            'password' => bcrypt($request->input('password')), // Hash the password before saving
+            'id_jenis_pengguna' => 3, // Set as tendik (id_jenis_pengguna for tendik, adjust if needed)
+        ]);
 
-            if ($validator->fails()) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Validasi Gagal',
-                    'msgField' => $validator->errors(),
-                ]);
-            }
+        // Save tendik details to the kelola_tendik table
+        DB::table('tendik')->insert([
+            'id_pengguna' => $id_pengguna,
+            'nama_lengkap' => $request->input('nama_lengkap'),
+            'nip' => $request->input('nip'),
+            'no_telepon' => $request->input('no_telepon'),
+            'email' => $request->input('email'),
+            'tag_bidang_minat' => $request->input('tag_bidang_minat'),
+        ]);
 
-            KelolaTendikModel::create($request->all());
-            return response()->json([
-                'status' => true,
-                'message' => 'Data tendik berhasil disimpan'
-            ]);
-        }
+        // Return a successful response
+        return response()->json([
+            'status' => true,
+            'message' => 'Data tendik berhasil disimpan'
+        ]);
+
         return redirect('/');
     }
+
 
     public function show_ajax($id)
     {
