@@ -32,11 +32,7 @@
                         <th>Tanggal Selesai</th>
                         <th>Kuota</th>
                         <th>Lokasi</th>
-                        <th>Biaya</th>
-                        <th>Jumlah Jam</th>
                         <th>Vendor Pelatihan</th>
-                        <th>Mata Kuliah</th>
-                        <th>Bidang Minat</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -109,30 +105,7 @@ $(document).ready(function(){
                 searchable: true
             },
             {
-                data: "biaya",
-                orderable: true,
-                searchable: true,
-                render: function(data) {
-                    return 'Rp. ' + data.toLocaleString(); // Format the biaya as currency
-                }
-            },
-            {
-                data: "jml_jam",
-                orderable: true,
-                searchable: true
-            },
-            {
                 data: "vendor_pelatihan.nama", // Assuming the vendor has a name attribute
-                orderable: true,
-                searchable: true
-            },
-            {
-                data: "mata_kuliah.nama_mk", // Assuming mata_kuliah has a name attribute
-                orderable: true,
-                searchable: true
-            },
-            {
-                data: "bidang_minat.nama_bidang_minat", // Assuming bidang_minat has a name attribute
                 orderable: true,
                 searchable: true
             },
