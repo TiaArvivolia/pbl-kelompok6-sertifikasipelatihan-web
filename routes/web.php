@@ -22,6 +22,7 @@ use App\Http\Controllers\KelolaDosenController;
 use App\Http\Controllers\KelolaJenisPenggunaController;
 use App\Http\Controllers\KelolaPimpinanController;
 use App\Http\Controllers\KelolaTendikController;
+use App\Http\Controllers\PengajuanPelatihanController;
 use App\Http\Controllers\RiwayatPelatihanController;
 use App\Http\Controllers\RiwayatSertifikasiController;
 
@@ -203,6 +204,19 @@ Route::prefix('daftar_pelatihan')->group(function () {
     Route::put('/{id}/update_ajax', [DaftarPelatihanController::class, 'update_ajax']);
     Route::get('/{id}/delete_ajax', [DaftarPelatihanController::class, 'confirm_ajax']);
     Route::delete('/{id}/delete_ajax', [DaftarPelatihanController::class, 'delete_ajax']);
+});
+
+// Pengajuan Pelatihan
+Route::prefix('pengajuan_pelatihan')->group(function () {
+    Route::get('/', [PengajuanPelatihanController::class, 'index']);
+    Route::post('/list', [PengajuanPelatihanController::class, 'list']);
+    Route::get('/create_ajax', [PengajuanPelatihanController::class, 'create_ajax']);
+    Route::post('/ajax', [PengajuanPelatihanController::class, 'store_ajax']);
+    Route::get('/{id}/show_ajax', [PengajuanPelatihanController::class, 'show_ajax']);
+    Route::get('/{id}/edit_ajax', [PengajuanPelatihanController::class, 'edit_ajax']);
+    Route::put('/{id}/update_ajax', [PengajuanPelatihanController::class, 'update_ajax']);
+    Route::get('/{id}/delete_ajax', [PengajuanPelatihanController::class, 'confirm_ajax']);
+    Route::delete('/{id}/delete_ajax', [PengajuanPelatihanController::class, 'delete_ajax']);
 });
 
 // Draft Surat Tugas

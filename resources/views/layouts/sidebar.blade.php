@@ -224,6 +224,11 @@
             </a>
           </li>
           <li class="nav-item">
+            <a href="{{ url('/pengajuan_pelatihan') }}" class="nav-link {{ $activeMenu == 'pengajuan_pelatihan' ? 'active' : '' }}">
+              <p>Pengajuan Pelatihan</p>
+            </a>
+          </li>
+          <li class="nav-item">
             <a href="{{ url('/draft-surat-tugas') }}" class="nav-link {{ $activeMenu == 'draftSuratTugas' ? 'active' : '' }}">
               <p>Draft Surat Tugas</p>
             </a>

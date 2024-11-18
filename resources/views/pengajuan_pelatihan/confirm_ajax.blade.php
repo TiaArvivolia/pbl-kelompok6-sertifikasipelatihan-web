@@ -1,4 +1,4 @@
-@empty($sertifikasi)
+@empty($pelatihan)
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -12,18 +12,18 @@
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                     Data yang anda cari tidak ditemukan
                 </div>
-                <a href="{{ url('/riwayat_sertifikasi') }}" class="btn btn-warning">Kembali</a>
+                <a href="{{ url('/riwayat_pelatihan') }}" class="btn btn-warning">Kembali</a>
             </div>
         </div>
     </div>
 @else
-<form action="{{ url('/riwayat_sertifikasi/' . $sertifikasi->id_riwayat . '/delete_ajax') }}" method="POST" id="form-delete-riwayat-sertifikasi">
+<form action="{{ url('/riwayat_pelatihan/' . $pelatihan->id_riwayat . '/delete_ajax') }}" method="POST" id="form-delete-riwayat-pelatihan">
     @csrf
     @method('DELETE')
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Hapus Data Riwayat Sertifikasi</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Hapus Data Riwayat Pelatihan</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -33,38 +33,40 @@
                     <h5><i class="icon fas fa-exclamation-triangle"></i> Konfirmasi !!!</h5>
                     Apakah Anda ingin menghapus data berikut?
                 </div>
-                <div class="table-responsive">
-                    <table class="table table-sm table-bordered table-striped">
-                        <tr>
-                            <th class="text-right col-3">ID Riwayat Sertifikasi :</th>
-                            <td class="col-9">{{ $sertifikasi->id_riwayat }}</td>
-                        </tr>
-                        <tr>
-                            <th class="text-right col-3">ID Pengguna :</th>
-                            <td class="col-9">{{ $sertifikasi->id_pengguna }}</td>
-                        </tr>
-                        <tr>
-                            <th class="text-right col-3">Nama Sertifikasi :</th>
-                            <td class="col-9">{{ $sertifikasi->nama_sertifikasi }}</td>
-                        </tr>
-                        <tr>
-                            <th class="text-right col-3">No Sertifikat :</th>
-                            <td class="col-9">{{ $sertifikasi->no_sertifikat }}</td>
-                        </tr>
-                        <tr>
-                            <th class="text-right col-3">Tanggal Terbit :</th>
-                            <td class="col-9">{{ $sertifikasi->tanggal_terbit }}</td>
-                        </tr>
-                        <tr>
-                            <th class="text-right col-3">Masa Berlaku :</th>
-                            <td class="col-9">{{ $sertifikasi->masa_berlaku }}</td>
-                        </tr>
-                        <tr>
-                            <th class="text-right col-3">Penyelenggara :</th>
-                            <td class="col-9">{{ $sertifikasi->penyelenggara }}</td>
-                        </tr>
-                    </table>
-                </div>
+                <table class="table table-sm table-bordered table-striped">
+                    <tr>
+                        <th class="text-right col-3">ID Riwayat Pelatihan :</th>
+                        <td class="col-9">{{ $pelatihan->id_riwayat }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right col-3">ID Pengguna :</th>
+                        <td class="col-9">{{ $pelatihan->id_pengguna }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right col-3">Nama Pelatihan :</th>
+                        <td class="col-9">{{ $pelatihan->nama_pelatihan }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right col-3">Tanggal Mulai :</th>
+                        <td class="col-9">{{ $pelatihan->tanggal_mulai }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right col-3">Tanggal Selesai :</th>
+                        <td class="col-9">{{ $pelatihan->tanggal_selesai }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right col-3">Lokasi :</th>
+                        <td class="col-9">{{ $pelatihan->lokasi }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right col-3">Penyelenggara :</th>
+                        <td class="col-9">{{ $pelatihan->penyelenggara }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right col-3">Dokumen Pelatihan :</th>
+                        <td class="col-9">{{ $pelatihan->dokumen_pelatihan }}</td>
+                    </tr>
+                </table>
             </div>
             <div class="modal-footer">
                 <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
@@ -76,7 +78,7 @@
 
 <script>
 $(document).ready(function() {
-    $("#form-delete-riwayat-sertifikasi").validate({
+    $("#form-delete-riwayat-pelatihan").validate({
         rules: {},
         submitHandler: function(form) {
             $.ajax({
@@ -91,7 +93,7 @@ $(document).ready(function() {
                             title: 'Berhasil',
                             text: response.message
                         });
-                        tableRiwayatSertifikasi.ajax.reload(); // Pastikan ini sesuai dengan nama datatable Anda
+                        tableRiwayatPelatihan.ajax.reload(); // Pastikan ini sesuai dengan nama datatable Anda
                     } else {
                         $('.error-text').text('');
                         $.each(response.msgField, function(prefix, val) {

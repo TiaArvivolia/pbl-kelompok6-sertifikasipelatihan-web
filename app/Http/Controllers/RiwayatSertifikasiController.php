@@ -9,6 +9,7 @@ use App\Models\VendorSertifikasiModel;
 use App\Models\MataKuliahModel;
 use App\Models\BidangMinatModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -62,10 +63,14 @@ class RiwayatSertifikasiController extends Controller
             ->make(true);
     }
 
-
     public function create_ajax()
     {
-        $pengguna = Pengguna::all();
+        // Mengambil data pengguna yang memiliki relasi dengan dosen atau tendik
+        $pengguna = Pengguna::with(['dosen', 'tendik'])
+            ->whereHas('dosen')
+            ->orWhereHas('tendik')
+            ->get();
+
         $mataKuliah = MataKuliahModel::all();
         $bidangMinat = BidangMinatModel::all();
         $daftarPelatihan = DaftarPelatihanModel::all();
@@ -74,11 +79,11 @@ class RiwayatSertifikasiController extends Controller
         return view('riwayat_sertifikasi.create_ajax', compact('pengguna', 'mataKuliah', 'bidangMinat', 'daftarPelatihan', 'penyelenggara'));
     }
 
+
     public function store_ajax(Request $request)
     {
         $rules = [
             'id_pengguna' => 'required|exists:pengguna,id_pengguna',
-            'id_pelatihan' => 'nullable|exists:daftar_pelatihan,id_pelatihan',
             'level_sertifikasi' => 'required|in:Nasional,Internasional',
             'diselenggarakan_oleh' => 'required|in:Mandiri,Ikut Pelatihan',
             'jenis_sertifikasi' => 'required|in:Profesi,Keahlian',
@@ -86,11 +91,11 @@ class RiwayatSertifikasiController extends Controller
             'no_sertifikat' => 'required|string|max:100',
             'tanggal_terbit' => 'required|date',
             'masa_berlaku' => 'nullable|date|after:tanggal_terbit',
-            'penyelenggara' => 'nullable|exists:vendor_sertifikasi,id_vendor_sertifikasi',
-            'dokumen_sertifikat' => 'nullable|mimes:jpg,jpeg,png,gif,bmp,pdf,docx,xlsx',
-            'tag_mk' => 'nullable|exists:mata_kuliah,id_mata_kuliah',
-            'tag_bidang_minat' => 'nullable|exists:bidang_minat,id_bidang_minat'
+            'dokumen_sertifikat' => 'nullable|mimes:jpg,jpeg,png,gif,bmp,pdf,docx,xlsx|max:10240', // Maksimum ukuran file 10MB
+            // 'tag_mk' => 'nullable|array', // Menggunakan array untuk tag_mk
+            // 'tag_bidang_minat' => 'nullable|array', // Menggunakan array untuk tag_bidang_minat
         ];
+
 
         $validator = Validator::make($request->all(), $rules);
 
@@ -102,7 +107,32 @@ class RiwayatSertifikasiController extends Controller
             ]);
         }
 
-        RiwayatSertifikasiModel::create($request->all());
+        // Menangani dokumen sertifikat jika ada
+        $dokumenPath = null;
+        if ($request->hasFile('dokumen_sertifikat') && $request->file('dokumen_sertifikat')->isValid()) {
+            // Mengambil file yang diunggah
+            $file = $request->file('dokumen_sertifikat');
+            // Menyimpan file di folder 'dokumen' di storage/public dan mendapatkan path file
+            $dokumenPath = $file->store('dokumen', 'public');
+        }
+
+        // Menyimpan data riwayat sertifikasi
+        RiwayatSertifikasiModel::create([
+            'id_pengguna' => $request->id_pengguna,
+            'level_sertifikasi' => $request->level_sertifikasi,
+            'diselenggarakan_oleh' => $request->diselenggarakan_oleh,
+            'jenis_sertifikasi' => $request->jenis_sertifikasi,
+            'nama_sertifikasi' => $request->nama_sertifikasi,
+            'no_sertifikat' => $request->no_sertifikat,
+            'tanggal_terbit' => $request->tanggal_terbit,
+            'masa_berlaku' => $request->masa_berlaku,
+            'penyelenggara' => $request->penyelenggara,
+            'dokumen_sertifikat' => $dokumenPath, // Menyimpan path dokumen di database
+            'tag_mk' => $request->tag_mk,
+            'tag_bidang_minat' => $request->tag_bidang_minat,
+            // 'tag_mk_json' => $request->has('tag_mk') ? json_encode($request->tag_mk) : null, // Menyimpan array tag_mk sebagai JSON
+            // 'tag_bidang_minat_json' => $request->has('tag_bidang_minat') ? json_encode($request->tag_bidang_minat) : null, // Menyimpan array tag_bidang_minat sebagai JSON
+        ]);
         return response()->json([
             'status' => true,
             'message' => 'Riwayat Sertifikasi berhasil disimpan'
@@ -142,7 +172,10 @@ class RiwayatSertifikasiController extends Controller
         }
 
         // Retrieve the list of pengguna, mataKuliah, bidangMinat, and penyelenggara
-        $pengguna = Pengguna::all();
+        $pengguna = Pengguna::with(['dosen', 'tendik'])
+            ->whereHas('dosen')
+            ->orWhereHas('tendik')
+            ->get();
         $mataKuliah = MataKuliahModel::all();
         $bidangMinat = BidangMinatModel::all();
         $daftarPelatihan = DaftarPelatihanModel::all();
@@ -153,6 +186,7 @@ class RiwayatSertifikasiController extends Controller
 
     public function update_ajax(Request $request, $id)
     {
+        // Validasi input
         $rules = [
             'id_pengguna' => 'exists:pengguna,id_pengguna',
             'id_pelatihan' => 'nullable|exists:daftar_pelatihan,id_pelatihan',
@@ -163,8 +197,7 @@ class RiwayatSertifikasiController extends Controller
             'no_sertifikat' => 'required|string|max:100',
             'tanggal_terbit' => 'required|date',
             'masa_berlaku' => 'nullable|date|after:tanggal_terbit',
-            'penyelenggara' => 'nullable|exists:vendor_sertifikasi,id_vendor_sertifikasi',
-            'dokumen_sertifikat' => 'nullable|string|max:255',
+            'dokumen_sertifikat' => 'nullable|mimes:jpg,jpeg,png,gif,bmp,pdf,docx,xlsx|max:10240', // Validasi untuk dokumen
             'tag_mk' => 'nullable|exists:mata_kuliah,id_mata_kuliah',
             'tag_bidang_minat' => 'nullable|exists:bidang_minat,id_bidang_minat'
         ];
@@ -179,9 +212,41 @@ class RiwayatSertifikasiController extends Controller
             ]);
         }
 
+        // Cari riwayat sertifikasi berdasarkan ID
         $sertifikasi = RiwayatSertifikasiModel::find($id);
         if ($sertifikasi) {
-            $sertifikasi->update($request->all());
+            // Menangani dokumen sertifikat jika ada file yang diunggah
+            $dokumenPath = $sertifikasi->dokumen_sertifikat; // Ambil dokumen yang lama (jika ada)
+
+            // Cek apakah dokumen lama ada dan hapus sebelum mengupdate
+            if ($dokumenPath && Storage::exists('public/' . $dokumenPath)) {
+                Storage::delete('public/' . $dokumenPath); // Hapus dokumen lama
+            }
+
+            // Menangani dokumen sertifikat baru jika ada file yang diunggah
+            if ($request->hasFile('dokumen_sertifikat') && $request->file('dokumen_sertifikat')->isValid()) {
+                // Mengambil file yang diunggah
+                $file = $request->file('dokumen_sertifikat');
+                // Menyimpan file di folder 'dokumen' di storage/public dan mendapatkan path file
+                $dokumenPath = $file->store('dokumen', 'public');
+            }
+
+            // Perbarui riwayat sertifikasi dengan data baru
+            $sertifikasi->update([
+                'id_pengguna' => $request->id_pengguna,
+                'id_pelatihan' => $request->id_pelatihan,
+                'level_sertifikasi' => $request->level_sertifikasi,
+                'diselenggarakan_oleh' => $request->diselenggarakan_oleh,
+                'jenis_sertifikasi' => $request->jenis_sertifikasi,
+                'nama_sertifikasi' => $request->nama_sertifikasi,
+                'no_sertifikat' => $request->no_sertifikat,
+                'tanggal_terbit' => $request->tanggal_terbit,
+                'masa_berlaku' => $request->masa_berlaku,
+                'penyelenggara' => $request->penyelenggara,
+                'dokumen_sertifikat' => $dokumenPath, // Menyimpan path dokumen yang baru
+                'tag_mk' => $request->tag_mk,
+                'tag_bidang_minat' => $request->tag_bidang_minat
+            ]);
 
             return response()->json([
                 'status' => true,
@@ -193,6 +258,14 @@ class RiwayatSertifikasiController extends Controller
             'status' => false,
             'message' => 'Riwayat Sertifikasi tidak ditemukan'
         ]);
+    }
+
+
+
+    public function confirm_ajax(string $id)
+    {
+        $sertifikasi = RiwayatSertifikasiModel::find($id);
+        return view('riwayat_sertifikasi.confirm_ajax', ['sertifikasi' => $sertifikasi]);
     }
 
     public function delete_ajax(string $id)

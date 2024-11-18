@@ -30,6 +30,8 @@ class RiwayatSertifikasiModel extends Model
         'dokumen_sertifikat',
         'tag_mk',
         'tag_bidang_minat',
+        'tag_mk_json',
+        'tag_bidang_minat_json',
     ];
 
     // Define the relationship to the Pengguna model
@@ -60,5 +62,10 @@ class RiwayatSertifikasiModel extends Model
     public function bidangMinat()
     {
         return $this->belongsTo(BidangMinatModel::class, 'tag_bidang_minat', 'id_bidang_minat');
+    }
+
+    public function penyelenggara()
+    {
+        return $this->belongsTo(VendorSertifikasiModel::class, 'penyelenggara', 'id_vendor_sertifikasi');
     }
 }

@@ -1,4 +1,4 @@
-@empty($pelatihan)
+@empty($sertifikasi)
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -12,7 +12,7 @@
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                     Data yang anda cari tidak ditemukan
                 </div>
-                <a href="{{ url('/riwayat_pelatihan') }}" class="btn btn-warning">Kembali</a>
+                <a href="{{ url('/riwayat_sertifikasi') }}" class="btn btn-warning">Kembali</a>
             </div>
         </div>
     </div>
@@ -20,7 +20,7 @@
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Detail Riwayat Pelatihan</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Detail Riwayat Sertifikasi</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -28,52 +28,60 @@
             <div class="modal-body">
                 <table class="table table-sm table-bordered table-striped">
                     <tr>
-                        <th class="text-right col-3">ID Riwayat Pelatihan :</th>
-                        <td class="col-9">{{ $pelatihan->id_riwayat }}</td>
+                        <th class="text-right col-3">ID Riwayat Sertifikasi :</th>
+                        <td class="col-9">{{ $sertifikasi->id_riwayat }}</td>
                     </tr>
                     <tr>
                         <th class="text-right col-3">ID Pengguna :</th>
-                        <td class="col-9">{{ $pelatihan->pengguna->id_pengguna }}</td>
+                        <td class="col-9">{{ $sertifikasi->pengguna->id_pengguna }}</td>
                     </tr>
                     <tr>
                         <th class="text-right col-3">Nama Pengguna :</th>
                         <td class="col-9">
-                            {{ $pelatihan->pengguna->dosen ? $pelatihan->pengguna->dosen->nama_lengkap : ($pelatihan->pengguna->tendik ? $pelatihan->pengguna->tendik->nama_lengkap : 'Tidak Tersedia') }}
+                            {{ $sertifikasi->pengguna->dosen ? $sertifikasi->pengguna->dosen->nama_lengkap : ($sertifikasi->pengguna->tendik ? $sertifikasi->pengguna->tendik->nama_lengkap : 'Tidak Tersedia') }}
                         </td>
                     </tr>                    
                     <tr>
                         <th class="text-right col-3">Jenis Pengguna :</th>
-                        <td class="col-9">{{ $pelatihan->pengguna->jenisPengguna->nama_jenis_pengguna ?? '-' }}</td>
+                        <td class="col-9">{{ $sertifikasi->pengguna->jenisPengguna->nama_jenis_pengguna ?? '-' }}</td>
                     </tr>
                     <tr>
-                        <th class="text-right col-3">Nama Pelatihan :</th>
-                        <td class="col-9">{{ $pelatihan->nama_pelatihan }}</td>
+                        <th class="text-right col-3">Nama Sertifikasi :</th>
+                        <td class="col-9">{{ $sertifikasi->nama_sertifikasi ?? '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right col-3">Level Sertifikasi :</th>
+                        <td class="col-9">{{ $sertifikasi->level_sertifikasi }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right col-3">Diselenggarakan Oleh :</th>
+                        <td class="col-9">{{ $sertifikasi->diselenggarakan_oleh }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right col-3">Jenis Sertifikasi :</th>
+                        <td class="col-9">{{ $sertifikasi->jenis_sertifikasi }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right col-3">No Sertifikat :</th>
+                        <td class="col-9">{{ $sertifikasi->no_sertifikat }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right col-3">Tanggal Terbit :</th>
+                        <td class="col-9">{{ \Carbon\Carbon::parse($sertifikasi->tanggal_terbit)->format('d-m-Y') }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right col-3">Masa Berlaku :</th>
+                        <td class="col-9">{{ $sertifikasi->masa_berlaku ? \Carbon\Carbon::parse($sertifikasi->masa_berlaku)->format('d-m-Y') : '-' }}</td>
                     </tr>
                     <tr>
                         <th class="text-right col-3">Penyelenggara :</th>
-                        <td class="col-9">{{ $pelatihan->penyelenggara }}</td>
+                        <td class="col-9">{{ $sertifikasi->penyelenggara }}</td>
                     </tr>
                     <tr>
-                        <th class="text-right col-3">Level Pelatihan :</th>
-                        <td class="col-9">{{ $pelatihan->level_pelatihan }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right col-3">Tanggal Mulai :</th>
-                        <td class="col-9">{{ $pelatihan->tanggal_mulai ? \Carbon\Carbon::parse($pelatihan->tanggal_mulai)->format('d-m-Y') : '-' }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right col-3">Tanggal Selesai :</th>
-                        <td class="col-9">{{ $pelatihan->tanggal_selesai ? \Carbon\Carbon::parse($pelatihan->tanggal_selesai)->format('d-m-Y') : '-' }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right col-3">Lokasi :</th>
-                        <td class="col-9">{{ $pelatihan->lokasi ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right col-3">Dokumen Pelatihan :</th>
+                        <th class="text-right col-3">Dokumen Sertifikat :</th>
                         <td class="col-9">
-                            @if($pelatihan->dokumen_pelatihan)
-                                <a href="{{ asset('storage/' . $pelatihan->dokumen_pelatihan) }}" target="_blank">Lihat Dokumen</a>
+                            @if($sertifikasi->dokumen_sertifikat)
+                                <a href="{{ asset('storage/' . $sertifikasi->dokumen_sertifikat) }}" target="_blank">Lihat Dokumen</a>
                             @else
                                 <span>-</span>
                             @endif
@@ -81,12 +89,12 @@
                     </tr>
                     <tr>
                         <th class="text-right col-3">Mata Kuliah :</th>
-                        <td class="col-9">{{ $pelatihan->mataKuliah ? $pelatihan->mataKuliah->nama_mk : '-' }}</td>
+                        <td class="col-9">{{ $sertifikasi->mataKuliah ? $sertifikasi->mataKuliah->nama_mk : '-' }}</td>
                     </tr>
                     <tr>
                         <th class="text-right col-3">Bidang Minat :</th>
-                        <td class="col-9">{{ $pelatihan->bidangMinat ? $pelatihan->bidangMinat->nama_bidang_minat : '-' }}</td>
-                    </tr>
+                        <td class="col-9">{{ $sertifikasi->BidangMinat ? $sertifikasi->BidangMinat->nama_bidang_minat : '-' }}</td>
+                    </tr>  
                 </table>
             </div>
             <div class="modal-footer">

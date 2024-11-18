@@ -99,6 +99,17 @@
   <!-- Bootstrap 4 -->
   <script src="{{ asset('adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 
+  <!-- Include Select2 CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/css/select2.min.css" rel="stylesheet" />
+
+<!-- Include Select2 JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/js/select2.min.js"></script>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" rel="stylesheet" />
+
+
+
   <!-- DataTables & Plugins -->
   <script src="{{ asset('adminlte/plugins/datatables/jquery.dataTables.min.js') }}"></script>
   <script src="{{ asset('adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
@@ -130,6 +141,46 @@
 <script src="{{ asset('adminlte/plugins/jquery-validation/additional-methods.min.js') }}"></script>
 <script src="{{ asset('adminlte/plugins/sweetalert2/sweetalert2.min.js') }}"></script>
 <script src="{{asset('adminlte/dist/js/adminlte.min.js')}}"></script> --}}
+
+<!-- Include Select2 CSS -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/css/select2.min.css" rel="stylesheet" />
+<style>
+    .select2-container--default .select2-selection--multiple {
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        padding: 0.375rem 0.75rem;
+        min-height: calc(1.5em + 0.75rem + 2px);
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: #fff;
+        padding: 0.25em 0.5em;
+        border-radius: 0.25rem;
+        margin-right: 0.25rem;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+        color: #fff;
+        cursor: pointer;
+    }
+</style>
+
+<!-- Include Select2 JS -->
+{{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.select2').select2({
+            width: '100%', // Mengisi lebar penuh
+            placeholder: function() {
+                $(this).data('placeholder');
+            },
+            allowClear: true // Menambahkan tombol untuk menghapus semua pilihan
+        });
+    });
+</script> --}}
+
 
 <script>
   $.ajaxSetup({
