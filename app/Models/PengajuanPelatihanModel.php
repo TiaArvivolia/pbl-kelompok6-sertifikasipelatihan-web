@@ -21,7 +21,8 @@ class PengajuanPelatihanModel extends Model
         'id_pelatihan', 
         'tanggal_pengajuan', 
         'status', 
-        'catatan'
+        'catatan',
+        'id_peserta'
     ];
 
     // Specify the date format if needed

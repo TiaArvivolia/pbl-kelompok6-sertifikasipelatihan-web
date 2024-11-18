@@ -1,4 +1,4 @@
-@empty($pelatihan)
+@empty($pengajuan)
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -12,7 +12,7 @@
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                     Data yang anda cari tidak ditemukan
                 </div>
-                <a href="{{ url('/riwayat_pelatihan') }}" class="btn btn-warning">Kembali</a>
+                <a href="{{ url('/pengajuan_pelatihan') }}" class="btn btn-warning">Kembali</a>
             </div>
         </div>
     </div>
@@ -20,7 +20,7 @@
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Detail Riwayat Pelatihan</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Detail Pengajuan Pelatihan</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -28,65 +28,41 @@
             <div class="modal-body">
                 <table class="table table-sm table-bordered table-striped">
                     <tr>
-                        <th class="text-right col-3">ID Riwayat Pelatihan :</th>
-                        <td class="col-9">{{ $pelatihan->id_riwayat }}</td>
+                        <th class="text-right col-3">ID Pengajuan :</th>
+                        <td class="col-9">{{ $pengajuan->id_pengajuan }}</td>
                     </tr>
                     <tr>
-                        <th class="text-right col-3">ID Pengguna :</th>
-                        <td class="col-9">{{ $pelatihan->pengguna->id_pengguna }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right col-3">Nama Pengguna :</th>
-                        <td class="col-9">
-                            {{ $pelatihan->pengguna->dosen ? $pelatihan->pengguna->dosen->nama_lengkap : ($pelatihan->pengguna->tendik ? $pelatihan->pengguna->tendik->nama_lengkap : 'Tidak Tersedia') }}
-                        </td>
-                    </tr>                    
-                    <tr>
-                        <th class="text-right col-3">Jenis Pengguna :</th>
-                        <td class="col-9">{{ $pelatihan->pengguna->jenisPengguna->nama_jenis_pengguna ?? '-' }}</td>
+                        <th class="text-right col-3">ID Pelatihan :</th>
+                        <td class="col-9">{{ $pengajuan->id_pelatihan }}</td>
                     </tr>
                     <tr>
                         <th class="text-right col-3">Nama Pelatihan :</th>
-                        <td class="col-9">{{ $pelatihan->nama_pelatihan }}</td>
+                        <td class="col-9">{{ $pengajuan->daftarPelatihan  ? $pengajuan->daftarPelatihan ->nama_pelatihan : '-' }}</td>
                     </tr>
                     <tr>
-                        <th class="text-right col-3">Penyelenggara :</th>
-                        <td class="col-9">{{ $pelatihan->penyelenggara }}</td>
+                        <th class="text-right col-3">Tanggal Pengajuan :</th>
+                        <td class="col-9">{{ \Carbon\Carbon::parse($pengajuan->tanggal_pengajuan)->format('d-m-Y') }}</td>
                     </tr>
                     <tr>
-                        <th class="text-right col-3">Level Pelatihan :</th>
-                        <td class="col-9">{{ $pelatihan->level_pelatihan }}</td>
+                        <th class="text-right col-3">Status :</th>
+                        <td class="col-9">{{ $pengajuan->status }}</td>
                     </tr>
                     <tr>
-                        <th class="text-right col-3">Tanggal Mulai :</th>
-                        <td class="col-9">{{ $pelatihan->tanggal_mulai ? \Carbon\Carbon::parse($pelatihan->tanggal_mulai)->format('d-m-Y') : '-' }}</td>
+                        <th class="text-right col-3">Catatan :</th>
+                        <td class="col-9">{{ $pengajuan->catatan ?? '-' }}</td>
                     </tr>
                     <tr>
-                        <th class="text-right col-3">Tanggal Selesai :</th>
-                        <td class="col-9">{{ $pelatihan->tanggal_selesai ? \Carbon\Carbon::parse($pelatihan->tanggal_selesai)->format('d-m-Y') : '-' }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right col-3">Lokasi :</th>
-                        <td class="col-9">{{ $pelatihan->lokasi ?? '-' }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right col-3">Dokumen Pelatihan :</th>
+                        <th class="text-right col-3"> Peserta :</th>
                         <td class="col-9">
-                            @if($pelatihan->dokumen_pelatihan)
-                                <a href="{{ asset('storage/' . $pelatihan->dokumen_pelatihan) }}" target="_blank">Lihat Dokumen</a>
+                            @if($pengajuan->id_peserta && count($participantNames) > 0)
+                                {{ implode(', ', $participantNames) }}
                             @else
                                 <span>-</span>
                             @endif
                         </td>
                     </tr>
-                    <tr>
-                        <th class="text-right col-3">Mata Kuliah :</th>
-                        <td class="col-9">{{ $pelatihan->mataKuliah ? $pelatihan->mataKuliah->nama_mk : '-' }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right col-3">Bidang Minat :</th>
-                        <td class="col-9">{{ $pelatihan->bidangMinat ? $pelatihan->bidangMinat->nama_bidang_minat : '-' }}</td>
-                    </tr>
+                    
+                    
                 </table>
             </div>
             <div class="modal-footer">

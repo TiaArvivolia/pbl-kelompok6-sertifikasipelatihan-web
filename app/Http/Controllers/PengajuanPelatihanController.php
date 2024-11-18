@@ -69,7 +69,10 @@ class PengajuanPelatihanController extends Controller
 
     public function create_ajax()
     {
-        $pengguna = Pengguna::all();
+        $pengguna = Pengguna::with(['dosen', 'tendik'])
+            ->whereHas('dosen')
+            ->orWhereHas('tendik')
+            ->get();
         $daftarPelatihan = DaftarPelatihanModel::all();
 
         return view('pengajuan_pelatihan.create_ajax', compact('pengguna', 'daftarPelatihan'));
@@ -78,11 +81,13 @@ class PengajuanPelatihanController extends Controller
     public function store_ajax(Request $request)
     {
         $rules = [
-            'id_pengguna' => 'required|exists:pengguna,id_pengguna',
+            // 'id_pengguna' => 'required|exists:pengguna,id_pengguna',
             'id_pelatihan' => 'required|exists:daftar_pelatihan,id_pelatihan',
             'tanggal_pengajuan' => 'required|date',
             'status' => 'required|in:Menunggu,Disetujui,Ditolak',
-            'catatan' => 'nullable|string'
+            'catatan' => 'nullable|string',
+            'id_peserta' => 'required|array', // id_peserta harus berupa array
+            'id_peserta.*' => 'exists:pengguna,id_pengguna', // Setiap id dalam id_peserta harus ada di tabel pengguna
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -95,7 +100,14 @@ class PengajuanPelatihanController extends Controller
             ]);
         }
 
-        PengajuanPelatihanModel::create($request->all());
+        // Ambil semua data dari request
+        $data = $request->all();
+
+        // Ubah id_peserta menjadi JSON
+        $data['id_peserta'] = json_encode($request->id_peserta);
+
+        // Simpan data ke dalam database
+        PengajuanPelatihanModel::create($data);
 
         return response()->json([
             'status' => true,
@@ -111,8 +123,24 @@ class PengajuanPelatihanController extends Controller
             return response()->json(['error' => 'Data yang anda cari tidak ditemukan'], 404);
         }
 
-        return view('pengajuan_pelatihan.show_ajax', compact('pengajuan'));
+        // Decode the JSON for id_peserta and retrieve user names
+        $participantNames = [];
+        if ($pengajuan->id_peserta) {
+            $idPesertaArray = json_decode($pengajuan->id_peserta);
+            foreach ($idPesertaArray as $idPeserta) {
+                // Find the user (pengguna) by id_pengguna
+                $user = Pengguna::find($idPeserta);
+                if ($user) {
+                    // Check if the user is a dosen or tendik and get the name accordingly
+                    $participantNames[] = $user->dosen ? $user->dosen->nama_lengkap : ($user->tendik ? $user->tendik->nama_lengkap : 'Tidak Tersedia');
+                }
+            }
+        }
+
+        return view('pengajuan_pelatihan.show_ajax', compact('pengajuan', 'participantNames'));
     }
+
+
 
     public function edit_ajax(string $id)
     {
@@ -122,7 +150,10 @@ class PengajuanPelatihanController extends Controller
             return response()->json(['error' => 'Data yang anda cari tidak ditemukan'], 404);
         }
 
-        $pengguna = Pengguna::all();
+        $pengguna = Pengguna::with(['dosen', 'tendik'])
+            ->whereHas('dosen')
+            ->orWhereHas('tendik')
+            ->get();
         $daftarPelatihan = DaftarPelatihanModel::all();
 
         return view('pengajuan_pelatihan.edit_ajax', compact('pengajuan', 'pengguna', 'daftarPelatihan'));
@@ -131,11 +162,13 @@ class PengajuanPelatihanController extends Controller
     public function update_ajax(Request $request, $id)
     {
         $rules = [
-            'id_pengguna' => 'exists:pengguna,id_pengguna',
+            // 'id_pengguna' => 'exists:pengguna,id_pengguna',
             'id_pelatihan' => 'required|exists:daftar_pelatihan,id_pelatihan',
             'tanggal_pengajuan' => 'required|date',
             'status' => 'required|in:Menunggu,Disetujui,Ditolak',
-            'catatan' => 'nullable|string'
+            'catatan' => 'nullable|string',
+            'id_peserta' => 'required|array', // id_peserta harus berupa array
+            'id_peserta.*' => 'exists:pengguna,id_pengguna', // Setiap id dalam id_peserta harus ada di tabel pengguna
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -150,7 +183,10 @@ class PengajuanPelatihanController extends Controller
 
         $pengajuan = PengajuanPelatihanModel::find($id);
         if ($pengajuan) {
-            $pengajuan->update($request->all());
+            // Perbarui data pengajuan
+            $pengajuan->update($request->except('id_peserta')); // Update data selain id_peserta
+            $pengajuan->id_peserta = json_encode($request->id_peserta); // Simpan id_peserta sebagai JSON
+            $pengajuan->save();
 
             return response()->json([
                 'status' => true,
@@ -162,6 +198,12 @@ class PengajuanPelatihanController extends Controller
             'status' => false,
             'message' => 'Pengajuan Pelatihan tidak ditemukan'
         ]);
+    }
+
+    public function confirm_ajax(string $id)
+    {
+        $pengajuan = PengajuanPelatihanModel::with(['pengguna', 'daftarPelatihan'])->find($id);
+        return view('pengajuan_pelatihan.confirm_ajax', ['pengajuan' => $pengajuan]);
     }
 
     public function delete_ajax(string $id)

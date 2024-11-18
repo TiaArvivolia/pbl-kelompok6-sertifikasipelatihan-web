@@ -1,4 +1,4 @@
-@empty($pelatihan)
+@empty($pengajuan)
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -12,18 +12,18 @@
                     <h5><i class="icon fas fa-ban"></i> Kesalahan!!!</h5>
                     Data yang anda cari tidak ditemukan
                 </div>
-                <a href="{{ url('/riwayat_pelatihan') }}" class="btn btn-warning">Kembali</a>
+                <a href="{{ url('/pengajuan_pelatihan') }}" class="btn btn-warning">Kembali</a>
             </div>
         </div>
     </div>
 @else
-<form action="{{ url('/riwayat_pelatihan/' . $pelatihan->id_riwayat . '/delete_ajax') }}" method="POST" id="form-delete-riwayat-pelatihan">
+<form action="{{ url('/pengajuan_pelatihan/' . $pengajuan->id_pengajuan . '/delete_ajax') }}" method="POST" id="form-delete-pengajuan-pelatihan">
     @csrf
     @method('DELETE')
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Hapus Data Riwayat Pelatihan</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Hapus Pengajuan Pelatihan</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -31,41 +31,33 @@
             <div class="modal-body">
                 <div class="alert alert-warning">
                     <h5><i class="icon fas fa-exclamation-triangle"></i> Konfirmasi !!!</h5>
-                    Apakah Anda ingin menghapus data berikut?
+                    Apakah Anda ingin menghapus pengajuan berikut?
                 </div>
                 <table class="table table-sm table-bordered table-striped">
                     <tr>
-                        <th class="text-right col-3">ID Riwayat Pelatihan :</th>
-                        <td class="col-9">{{ $pelatihan->id_riwayat }}</td>
+                        <th class="text-right col-3">ID Pengajuan :</th>
+                        <td class="col-9">{{ $pengajuan->id_pengajuan }}</td>
                     </tr>
                     <tr>
-                        <th class="text-right col-3">ID Pengguna :</th>
-                        <td class="col-9">{{ $pelatihan->id_pengguna }}</td>
+                        <th class="text-right col-3">Pelatihan :</th>
+                        <td class="col-9">{{ $pengajuan->daftarPelatihan  ? $pengajuan->daftarPelatihan ->nama_pelatihan : '-' }}</td>
                     </tr>
                     <tr>
-                        <th class="text-right col-3">Nama Pelatihan :</th>
-                        <td class="col-9">{{ $pelatihan->nama_pelatihan }}</td>
+                        <th class="text-right col-3">Tanggal Pengajuan :</th>
+                        <td class="col-9">{{ $pengajuan->tanggal_pengajuan }}</td>
                     </tr>
                     <tr>
-                        <th class="text-right col-3">Tanggal Mulai :</th>
-                        <td class="col-9">{{ $pelatihan->tanggal_mulai }}</td>
+                        <th class="text-right col-3">Status :</th>
+                        <td class="col-9">{{ $pengajuan->status }}</td>
                     </tr>
                     <tr>
-                        <th class="text-right col-3">Tanggal Selesai :</th>
-                        <td class="col-9">{{ $pelatihan->tanggal_selesai }}</td>
+                        <th class="text-right col-3">Catatan :</th>
+                        <td class="col-9">{{ $pengajuan->catatan }}</td>
                     </tr>
-                    <tr>
-                        <th class="text-right col-3">Lokasi :</th>
-                        <td class="col-9">{{ $pelatihan->lokasi }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right col-3">Penyelenggara :</th>
-                        <td class="col-9">{{ $pelatihan->penyelenggara }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right col-3">Dokumen Pelatihan :</th>
-                        <td class="col-9">{{ $pelatihan->dokumen_pelatihan }}</td>
-                    </tr>
+                    {{-- <tr>
+                        <th class="text-right col-3">Peserta :</th>
+                        <td class="col-9">{{ $pengajuan->id_peserta }}</td>
+                    </tr> --}}
                 </table>
             </div>
             <div class="modal-footer">
@@ -78,7 +70,7 @@
 
 <script>
 $(document).ready(function() {
-    $("#form-delete-riwayat-pelatihan").validate({
+    $("#form-delete-pengajuan-pelatihan").validate({
         rules: {},
         submitHandler: function(form) {
             $.ajax({
@@ -93,7 +85,7 @@ $(document).ready(function() {
                             title: 'Berhasil',
                             text: response.message
                         });
-                        tableRiwayatPelatihan.ajax.reload(); // Pastikan ini sesuai dengan nama datatable Anda
+                        tablePengajuanPelatihan.ajax.reload(); // Pastikan ini sesuai dengan nama datatable Anda
                     } else {
                         $('.error-text').text('');
                         $.each(response.msgField, function(prefix, val) {

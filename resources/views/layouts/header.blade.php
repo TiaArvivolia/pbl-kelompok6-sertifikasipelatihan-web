@@ -1,4 +1,4 @@
-<nav class="main-header navbar navbar-expand" style="background-color: #f2f2f2;">
+<nav class="main-header navbar navbar-expand" style="background-color: #f2f2f2; padding: 10px 20px;">
     <!-- Left navbar links -->
     <ul class="navbar-nav">
         <!-- Menu Toggle Button -->
@@ -21,18 +21,17 @@
     </ul>
 
     <!-- Right navbar links -->
-    <ul class="navbar-nav ml-auto">
+    <ul class="navbar-nav ml-auto d-flex align-items-center">
         <!-- POLITEKNIK NEGERI MALANG text with logos -->
         <li class="nav-item d-flex align-items-center">
-           
             <!-- Text -->
-            <span class="text-dark font-weight-bold" style="font-size: 1.1rem; color: #003366;">JURUSAN TEKNOLOGI INFORMASI POLITEKNIK NEGERI MALANG</span>
+            <span class="text-dark font-weight-bold" style="font-size: 1.2rem; color: #003366;">Jurusan Teknologi Informasi POLINEMA</span>
 
             <!-- Logo 1 -->
-            <img src="{{ asset('storage/photos/polinema.png') }}" alt="Logo 1" class="img-fluid" style="width: 40px; height: 40px; margin-right: 8px;">
+            <img src="{{ asset('storage/photos/polinema.png') }}" alt="Logo 1" class="img-fluid" style="width: 35px; height: 35px; margin-left: 10px;">
 
             <!-- Logo 2 -->
-            <img src="{{ asset('storage/photos/jti.png') }}" alt="Logo 2" class="img-fluid" style="width: 40px; height: 40px; margin-left: 8px;">
+            <img src="{{ asset('storage/photos/jti.png') }}" alt="Logo 2" class="img-fluid" style="width: 35px; height: 35px; margin-left: 10px;">
         </li>
     </ul>
 </nav>
