@@ -9,16 +9,16 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     
     <style>
-      /* Main Sidebar */
-        .main-sidebar {
-      background-color: rgb(11, 11, 170); /* Warna sidebar biru */
-      color: white; /* Warna teks putih */
-      border-radius: 15px; /* Kelengkungan di semua sudut */
-      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2), 0 6px 20px rgba(0, 0, 0, 0.19); /* Efek 3D */
-      width: 250px; /* Lebar sidebar */
-      overflow-y: auto; /* Sidebar bisa di-scroll jika konten terlalu panjang */
- 
-      }
+   /* Main Sidebar */
+.main-sidebar {
+    background-color: rgb(11, 11, 170); /* Warna sidebar biru */
+    color: white; /* Warna teks putih */
+    border-radius: 0 0px 0px 0; /* Kelengkungan hanya di sudut kanan */
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2), 0 6px 20px rgba(0, 0, 0, 0.19); /* Efek 3D */
+    width: 250px; /* Lebar sidebar */
+    overflow-y: auto; /* Sidebar bisa di-scroll jika konten terlalu panjang */
+}
+
 
       /* Styling Link di Sidebar */
       .nav-link {
@@ -42,13 +42,7 @@
       }
   
       /* Styling Sidebar Item */
-      .sidebar {
-          border-radius: 25px; /* Lengkungan sudut */
-          box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2); /* Shadow */
-          background-color: #0056b3; /* Warna latar */
-          overflow: hidden; /* Pastikan elemen di dalam tidak keluar */
-          padding: 10px;
-      }
+   
   
       .sidebar .nav-item .nav-link {
           border-radius: 10px; /* Memberikan lengkungan pada tombol */
@@ -87,7 +81,6 @@
   </style>
   
 </head>
-<body style="background-color: #f4f6f9; padding: 20px;">
 <div class="sidebar">
   <!-- SidebarSearch Form -->
   <div class="form-inline mt-2">
