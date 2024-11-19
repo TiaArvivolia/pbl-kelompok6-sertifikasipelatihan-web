@@ -35,16 +35,6 @@
                     <small id="error-nama" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
-                    <label>Alamat</label>
-                    <textarea name="alamat" id="alamat" class="form-control">{{ $vendor_pelatihan->alamat }}</textarea>
-                    <small id="error-alamat" class="error-text form-text text-danger"></small>
-                </div>
-                <div class="form-group">
-                    <label>Kota</label>
-                    <input value="{{ $vendor_pelatihan->kota }}" type="text" name="kota" id="kota" class="form-control">
-                    <small id="error-kota" class="error-text form-text text-danger"></small>
-                </div>
-                <div class="form-group">
                     <label>No Telepon</label>
                     <input value="{{ $vendor_pelatihan->no_telepon }}" type="text" name="no_telepon" id="no_telepon" class="form-control">
                     <small id="error-no_telepon" class="error-text form-text text-danger"></small>
@@ -53,6 +43,16 @@
                     <label>Website</label>
                     <input value="{{ $vendor_pelatihan->website }}" type="text" name="website" id="website" class="form-control">
                     <small id="error-website" class="error-text form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label>Kota</label>
+                    <input value="{{ $vendor_pelatihan->kota }}" type="text" name="kota" id="kota" class="form-control">
+                    <small id="error-kota" class="error-text form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label>Alamat</label>
+                    <textarea name="alamat" id="alamat" class="form-control">{{ $vendor_pelatihan->alamat }}</textarea>
+                    <small id="error-alamat" class="error-text form-text text-danger"></small>
                 </div>
             </div>
             <div class="modal-footer">

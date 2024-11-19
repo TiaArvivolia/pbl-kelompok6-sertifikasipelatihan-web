@@ -14,19 +14,7 @@
                     <input type="text" name="nama" id="nama" class="form-control" maxlength="100" required>
                     <small id="error-nama" class="error-text form-text text-danger"></small>
                 </div>
-
-                <div class="form-group">
-                    <label>Alamat</label>
-                    <textarea name="alamat" id="alamat" class="form-control"></textarea>
-                    <small id="error-alamat" class="error-text form-text text-danger"></small>
-                </div>
-
-                <div class="form-group">
-                    <label>Kota</label>
-                    <input type="text" name="kota" id="kota" class="form-control" maxlength="50">
-                    <small id="error-kota" class="error-text form-text text-danger"></small>
-                </div>
-
+                
                 <div class="form-group">
                     <label>No Telepon</label>
                     <input type="text" name="no_telepon" id="no_telepon" class="form-control" maxlength="20">
@@ -37,6 +25,18 @@
                     <label>Website</label>
                     <input type="text" name="website" id="website" class="form-control" maxlength="100">
                     <small id="error-website" class="error-text form-text text-danger"></small>
+                </div>
+
+                <div class="form-group">
+                    <label>Kota</label>
+                    <input type="text" name="kota" id="kota" class="form-control" maxlength="50">
+                    <small id="error-kota" class="error-text form-text text-danger"></small>
+                </div>
+                
+                <div class="form-group">
+                    <label>Alamat</label>
+                    <textarea name="alamat" id="alamat" class="form-control"></textarea>
+                    <small id="error-alamat" class="error-text form-text text-danger"></small>
                 </div>
             </div>
 
@@ -64,7 +64,7 @@ $(document).ready(function() {
                 data: $(form).serialize(),
                 success: function(response) {
                     if (response.status) {
-                        $('#modal-vendor-pelatihan').modal('hide');
+                        $('#myModal').modal('hide');
                         Swal.fire({
                             icon: 'success',
                             title: 'Berhasil',
@@ -72,7 +72,7 @@ $(document).ready(function() {
                         });
 
                         // Reload DataTable to show new data
-                        $('#table_vendor_pelatihan').DataTable().ajax.reload(null, false); // Keep the current paging
+                        dataVendorPelatihan.ajax.reload(); // Keep the current paging
                     } else {
                         $('.error-text').text('');
                         if (response.msgField) {
