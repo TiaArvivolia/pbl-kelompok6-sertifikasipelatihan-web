@@ -36,20 +36,20 @@
                         <td class="col-9">{{ $vendor->nama }}</td>
                     </tr>
                     <tr>
-                        <th class="text-right col-3">Alamat :</th>
-                        <td class="col-9">{{ $vendor->alamat }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right col-3">Kota :</th>
-                        <td class="col-9">{{ $vendor->kota }}</td>
-                    </tr>
-                    <tr>
                         <th class="text-right col-3">No Telepon :</th>
                         <td class="col-9">{{ $vendor->no_telepon }}</td>
                     </tr>
                     <tr>
                         <th class="text-right col-3">Website :</th>
                         <td class="col-9">{{ $vendor->website }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right col-3">Kota :</th>
+                        <td class="col-9">{{ $vendor->kota }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right col-3">Alamat :</th>
+                        <td class="col-9">{{ $vendor->alamat }}</td>
                     </tr>
                 </table>
             </div>

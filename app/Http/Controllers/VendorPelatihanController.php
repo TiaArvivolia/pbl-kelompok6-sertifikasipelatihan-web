@@ -23,9 +23,9 @@ class VendorPelatihanController extends Controller
 
         $activeMenu = 'vendor_pelatihan';
 
-        $vendor_pelatihan = VendorPelatihanModel::all();
+        // $vendor_pelatihan = VendorPelatihanModel::all();
 
-        return view('vendor_pelatihan.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'vendor_pelatihan' => $vendor_pelatihan, 'activeMenu' => $activeMenu]);
+        return view('vendor_pelatihan.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'activeMenu' => $activeMenu]);
     }
 
     // Get vendor data in JSON format for DataTables

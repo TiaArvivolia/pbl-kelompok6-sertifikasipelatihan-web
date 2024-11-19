@@ -23,9 +23,9 @@ class VendorSertifikasiController extends Controller
 
         $activeMenu = 'vendor_sertifikasi'; // Set the active menu
 
-        $vendors = VendorSertifikasiModel::all(); // Get all vendors for filtering
+        // $vendors = VendorSertifikasiModel::all(); // Get all vendors for filtering
 
-        return view('vendor_sertifikasi.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'vendors' => $vendors, 'activeMenu' => $activeMenu]);
+        return view('vendor_sertifikasi.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'activeMenu' => $activeMenu]);
     }
 
     // Get vendor sertifikasi data in JSON format for DataTables
@@ -43,7 +43,7 @@ class VendorSertifikasiController extends Controller
             ->addColumn('aksi', function ($vendor) {
                 $btn = '<button onclick="modalAction(\'' . url('/vendor_sertifikasi/' . $vendor->id_vendor_sertifikasi . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/vendor_sertifikasi/' . $vendor->id_vendor_sertifikasi . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/vendor_sertifikasi/' . $vendor->id_vendor_sertifikasi . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i></button>';                
+                $btn .= '<button onclick="modalAction(\'' . url('/vendor_sertifikasi/' . $vendor->id_vendor_sertifikasi . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i></button>';
                 return $btn;
             })
             ->rawColumns(['aksi'])

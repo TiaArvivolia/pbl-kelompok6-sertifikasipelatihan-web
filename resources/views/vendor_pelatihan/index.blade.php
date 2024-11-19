@@ -27,7 +27,7 @@
                     <th class="text-center">No</th>
                     <th>Nama</th>
                     <th>No. Telepon</th>
-                    <th>Website</th>
+                    {{-- <th>Website</th> --}}
                     <th>Kota</th>
                     <th>Alamat</th>
                     <th class="text-center">Aksi</th>
@@ -79,11 +79,11 @@ $(document).ready(function() {
                 orderable: true,
                 searchable: true
             },
-            {
-                data: "website",
-                orderable: true,
-                searchable: true
-            },
+            // {
+            //     data: "website",
+            //     orderable: true,
+            //     searchable: true
+            // },
             {
                 data: "kota",
                 orderable: true,

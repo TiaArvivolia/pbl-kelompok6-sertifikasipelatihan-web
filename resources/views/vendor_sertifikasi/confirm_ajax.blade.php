@@ -34,17 +34,13 @@
                     Apakah Anda ingin menghapus data berikut?
                 </div>
                 <table class="table table-sm table-bordered table-striped">
+                    {{-- <tr>
+                        <th class="text-right col-3">ID Vendor Sertifikasi :</th>
+                        <td class="col-9">{{ $vendor_sertifikasi->id_vendor_sertifikasi }}</td>
+                    </tr> --}}
                     <tr>
                         <th class="text-right col-3">Nama Vendor :</th>
                         <td class="col-9">{{ $vendor_sertifikasi->nama }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right col-3">Alamat :</th>
-                        <td class="col-9">{{ $vendor_sertifikasi->alamat }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right col-3">Kota :</th>
-                        <td class="col-9">{{ $vendor_sertifikasi->kota }}</td>
                     </tr>
                     <tr>
                         <th class="text-right col-3">No Telepon :</th>
@@ -53,6 +49,14 @@
                     <tr>
                         <th class="text-right col-3">Website :</th>
                         <td class="col-9">{{ $vendor_sertifikasi->website }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right col-3">Kota :</th>
+                        <td class="col-9">{{ $vendor_sertifikasi->kota }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-right col-3">Alamat :</th>
+                        <td class="col-9">{{ $vendor_sertifikasi->alamat }}</td>
                     </tr>
                 </table>
             </div>

@@ -16,18 +16,6 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Alamat</label>
-                    <textarea name="alamat" id="alamat" class="form-control" rows="3"></textarea>
-                    <small id="error-alamat" class="error-text form-text text-danger"></small>
-                </div>
-
-                <div class="form-group">
-                    <label>Kota</label>
-                    <input type="text" name="kota" id="kota" class="form-control" maxlength="50">
-                    <small id="error-kota" class="error-text form-text text-danger"></small>
-                </div>
-
-                <div class="form-group">
                     <label>No Telepon</label>
                     <input type="text" name="no_telepon" id="no_telepon" class="form-control" maxlength="20">
                     <small id="error-no_telepon" class="error-text form-text text-danger"></small>
@@ -37,6 +25,18 @@
                     <label>Website</label>
                     <input type="text" name="website" id="website" class="form-control" maxlength="100">
                     <small id="error-website" class="error-text form-text text-danger"></small>
+                </div>
+
+                <div class="form-group">
+                    <label>Kota</label>
+                    <input type="text" name="kota" id="kota" class="form-control" maxlength="50">
+                    <small id="error-kota" class="error-text form-text text-danger"></small>
+                </div>
+
+                <div class="form-group">
+                    <label>Alamat</label>
+                    <textarea name="alamat" id="alamat" class="form-control" rows="3"></textarea>
+                    <small id="error-alamat" class="error-text form-text text-danger"></small>
                 </div>
             </div>
 
@@ -65,15 +65,14 @@ $(document).ready(function() {
                 data: $(form).serialize(),
                 success: function(response) {
                     if (response.status) {
-                        $('#modal-vendor-sertifikasi').modal('hide');
+                        $('#myModal').modal('hide');
                         Swal.fire({
                             icon: 'success',
                             title: 'Berhasil',
                             text: response.message
                         });
-
                         // Reload DataTable to show new data
-                        $('#table_vendor_sertifikasi').DataTable().ajax.reload(null, false); // Pass false to keep the current paging
+                        dataVendorSertifikasi.ajax.reload(); 
                     } else {
                         $('.error-text').text('');
                         if (response.msgField) {

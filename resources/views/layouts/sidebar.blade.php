@@ -173,7 +173,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/vendor_sertifikasi') }}" class="nav-link {{ $activeMenu == 'vendor_ertifikasi' ? 'active' : '' }}">
+            <a href="{{ url('/vendor_sertifikasi') }}" class="nav-link {{ $activeMenu == 'vendor_sertifikasi' ? 'active' : '' }}">
               <p>Vendor Sertifikasi</p>
             </a>
           </li>
