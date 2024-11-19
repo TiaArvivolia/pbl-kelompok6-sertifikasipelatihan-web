@@ -44,7 +44,7 @@ $(document).ready(function() {
                 data: $(form).serialize(),
                 success: function(response) {
                     if (response.status) {
-                        $('#modal-bidang-minat').modal('hide');
+                        $('#myModal').modal('hide');
                         Swal.fire({
                             icon: 'success',
                             title: 'Berhasil',
@@ -52,7 +52,7 @@ $(document).ready(function() {
                         });
 
                         // Reload DataTable to show new data
-                        $('#table_bidang_minat').DataTable().ajax.reload(null, false); // Pass false to keep the current paging
+                        dataBidangMinat.ajax.reload(); 
                     } else {
                         $('.error-text').text('');
                         if (response.msgField) {
