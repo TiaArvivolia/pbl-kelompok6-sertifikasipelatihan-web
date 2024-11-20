@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class KelolaPenggunaController extends Controller
 {
@@ -178,4 +180,64 @@ class KelolaPenggunaController extends Controller
             ]);
         }
     }
+    public function export_pdf()
+{
+    // Fetch all users and their associated roles
+    $pengguna = Pengguna::select('pengguna.username', 'jenis_pengguna.nama_jenis_pengguna')
+        ->join('jenis_pengguna', 'pengguna.id_jenis_pengguna', '=', 'jenis_pengguna.id_jenis_pengguna')
+        ->orderBy('pengguna.username', 'asc')
+        ->get();
+
+    // Generate PDF using DOMPDF
+    $pdf = Pdf::loadView('pengguna.export_pdf', compact('pengguna'));
+    $pdf->setPaper('a4', 'portrait'); // Set paper size and orientation
+
+    // Stream the PDF to the browser
+    return $pdf->stream('Data_Pengguna_' . date('Y-m-d_H-i-s') . '.pdf');
+}
+public function export_excel()
+{
+    // Fetch users with their roles
+    $pengguna = Pengguna::select('pengguna.username', 'jenis_pengguna.nama_jenis_pengguna')
+        ->join('jenis_pengguna', 'pengguna.id_jenis_pengguna', '=', 'jenis_pengguna.id_jenis_pengguna')
+        ->orderBy('pengguna.username', 'asc')
+        ->get();
+
+    // Create new Spreadsheet
+    $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+
+    // Column headers
+    $sheet->setCellValue('A1', 'No');
+    $sheet->setCellValue('B1', 'Username');
+    $sheet->setCellValue('C1', 'Role');
+    $sheet->getStyle('A1:C1')->getFont()->setBold(true);
+
+    // Insert user data
+    $row = 2;
+    foreach ($pengguna as $index => $data) {
+        $sheet->setCellValue('A' . $row, $index + 1);
+        $sheet->setCellValue('B' . $row, $data->username);
+        $sheet->setCellValue('C' . $row, $data->nama_jenis_pengguna);
+        $row++;
+    }
+
+    // Auto resize columns
+    foreach (range('A', 'C') as $columnID) {
+        $sheet->getColumnDimension($columnID)->setAutoSize(true);
+    }
+
+    // Save the Excel file and serve it for download
+    $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+    $filename = 'Data_Pengguna_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+    // Send the file to the browser
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Cache-Control: max-age=0');
+
+    $writer->save('php://output');
+    exit;
+}
+
 }

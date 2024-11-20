@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class KelolaAdminController extends Controller
 {
@@ -208,4 +209,69 @@ class KelolaAdminController extends Controller
             ]);
         }
     }
+
+public function export_pdf()
+{
+    // Fetch admin data
+    $admins = KelolaAdminModel::select('id_admin', 'id_pengguna', 'nama_lengkap', 'nip', 'no_telepon', 'email')
+        ->with('pengguna')
+        ->get();
+
+
+    // Share data with the view
+    $pdf = Pdf::loadView('admin.export_pdf', ['admins' => $admins]);
+    $pdf->setPaper('a4', 'portrait'); // Ukuran dan orientasi kertas
+
+    return $pdf->stream('Data_Admin_' . date('Y-m-d_H-i-s') . '.pdf');
+}
+public function export_excel()
+{
+    $admins = KelolaAdminModel::select('id_admin', 'id_pengguna', 'nama_lengkap', 'nip', 'no_telepon', 'email')
+        ->orderBy('nama_lengkap', 'asc')
+        ->get();
+
+    $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+
+    // Header kolom
+    $sheet->setCellValue('A1', 'No');
+    $sheet->setCellValue('B1', 'ID Admin');
+    $sheet->setCellValue('C1', 'ID Pengguna');
+    $sheet->setCellValue('D1', 'Nama Lengkap');
+    $sheet->setCellValue('E1', 'NIP');
+    $sheet->setCellValue('F1', 'No Telepon');
+    $sheet->setCellValue('G1', 'Email');
+    $sheet->getStyle('A1:G1')->getFont()->setBold(true);
+
+    // Isi data
+    $row = 2;
+    foreach ($admins as $index => $data) {
+        $sheet->setCellValue('A' . $row, $index + 1);
+        $sheet->setCellValue('B' . $row, $data->id_admin);
+        $sheet->setCellValue('C' . $row, $data->id_pengguna);
+        $sheet->setCellValue('D' . $row, $data->nama_lengkap);
+        $sheet->setCellValue('E' . $row, $data->nip);
+        $sheet->setCellValue('F' . $row, $data->no_telepon);
+        $sheet->setCellValue('G' . $row, $data->email);
+        $row++;
+    }
+
+    // Auto size kolom
+    foreach (range('A', 'G') as $columnID) {
+        $sheet->getColumnDimension($columnID)->setAutoSize(true);
+    }
+
+    // Save file Excel
+    $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+    $filename = 'Data_Admin_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Cache-Control: max-age=0');
+
+    $writer->save('php://output');
+    exit;
+}
+
+
 }

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Data Jenis Pelatihan</title>
+    <title>Data Pengguna</title>
     <style>
         table {
             width: 100%;
@@ -18,21 +18,21 @@
     </style>
 </head>
 <body>
-    <h2>Data Jenis Pelatihan</h2>
+    <h2>Data Pengguna</h2>
     <table>
         <thead>
             <tr>
                 <th>No</th>
-                <th>ID Jenis Pelatihan</th>
-                <th>Nama Jenis Pelatihan</th>
+                <th>Username</th>
+                <th>Role</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($jenis_pelatihan as $index => $data)
+            @foreach ($pengguna as $index => $data)
                 <tr>
                     <td>{{ $index + 1 }}</td>
-                    <td>{{ $data->id_jenis_pelatihan }}</td>
-                    <td>{{ $data->nama_jenis_pelatihan }}</td>
+                    <td>{{ $data->username }}</td>
+                    <td>{{ $data->nama_jenis_pengguna }}</td>
                 </tr>
             @endforeach
         </tbody>
