@@ -167,4 +167,59 @@ class KelolaBidangMinatController extends Controller
 
         return redirect('/');
     }
+    public function export_pdf()
+{
+    $bidang_minat = BidangMinatModel::select('id_bidang_minat', 'kode_bidang_minat', 'nama_bidang_minat')
+        ->orderBy('nama_bidang_minat', 'asc')
+        ->get();
+
+    $pdf = Pdf::loadView('bidang_minat.export_pdf', compact('bidang_minat'));
+    $pdf->setPaper('a4', 'portrait'); // Ukuran dan orientasi kertas
+
+    return $pdf->stream('Data_Bidang_Minat_' . date('Y-m-d_H-i-s') . '.pdf');
+}
+
+public function export_excel()
+{
+    $bidang_minat = BidangMinatModel::select('id_bidang_minat', 'kode_bidang_minat', 'nama_bidang_minat')
+        ->orderBy('nama_bidang_minat', 'asc')
+        ->get();
+
+    $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+
+    // Header kolom
+    $sheet->setCellValue('A1', 'No');
+    $sheet->setCellValue('B1', 'ID Bidang Minat');
+    $sheet->setCellValue('C1', 'Kode Bidang Minat');
+    $sheet->setCellValue('D1', 'Nama Bidang Minat');
+    $sheet->getStyle('A1:D1')->getFont()->setBold(true);
+
+    // Isi data
+    $row = 2;
+    foreach ($bidang_minat as $index => $data) {
+        $sheet->setCellValue('A' . $row, $index + 1);
+        $sheet->setCellValue('B' . $row, $data->id_bidang_minat);
+        $sheet->setCellValue('C' . $row, $data->kode_bidang_minat);
+        $sheet->setCellValue('D' . $row, $data->nama_bidang_minat);
+        $row++;
+    }
+
+    // Auto size kolom
+    foreach (range('A', 'D') as $columnID) {
+        $sheet->getColumnDimension($columnID)->setAutoSize(true);
+    }
+
+    // Save file Excel
+    $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+    $filename = 'Data_Bidang_Minat_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Cache-Control: max-age=0');
+
+    $writer->save('php://output');
+    exit;
+}
+
 }
