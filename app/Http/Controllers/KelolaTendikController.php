@@ -198,76 +198,72 @@ class KelolaTendikController extends Controller
             ]);
         }
     }
-<<<<<<< HEAD
-}
-=======
+
     public function export_pdf()
-{
-    // Fetch tendik data
-    $tendik = KelolaTendikModel::select('id_tendik', 'id_pengguna', 'nama_lengkap', 'nip', 'no_telepon', 'email', 'gambar_profil', 'tag_bidang_minat')
-        ->with('pengguna', 'bidangMinat')
-        ->get();
+    {
+        // Fetch tendik data
+        $tendik = KelolaTendikModel::select('id_tendik', 'id_pengguna', 'nama_lengkap', 'nip', 'no_telepon', 'email', 'gambar_profil', 'tag_bidang_minat')
+            ->with('pengguna', 'bidangMinat')
+            ->get();
 
-    // Share data with the view
-    $pdf = Pdf::loadView('tendik.export_pdf', ['tendik' => $tendik]);
-    $pdf->setPaper('a4', 'portrait'); // Paper size and orientation
+        // Share data with the view
+        $pdf = Pdf::loadView('tendik.export_pdf', ['tendik' => $tendik]);
+        $pdf->setPaper('a4', 'portrait'); // Paper size and orientation
 
-    return $pdf->stream('Data_Tendik_' . date('Y-m-d_H-i-s') . '.pdf');
-}
-
-public function export_excel()
-{
-    // Fetch tendik data
-    $tendik = KelolaTendikModel::select('id_tendik', 'id_pengguna', 'nama_lengkap', 'nip', 'no_telepon', 'email', 'gambar_profil', 'tag_bidang_minat')
-        ->with('pengguna', 'bidangMinat')
-        ->orderBy('nama_lengkap', 'asc')
-        ->get();
-
-    // Create new spreadsheet
-    $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-    $sheet = $spreadsheet->getActiveSheet();
-
-    // Header columns
-    $sheet->setCellValue('A1', 'No');
-    $sheet->setCellValue('B1', 'ID Tendik');
-    $sheet->setCellValue('C1', 'ID Pengguna');
-    $sheet->setCellValue('D1', 'Nama Lengkap');
-    $sheet->setCellValue('E1', 'NIP');
-    $sheet->setCellValue('F1', 'No Telepon');
-    $sheet->setCellValue('G1', 'Email');
-    $sheet->setCellValue('H1', 'Tag Bidang Minat');
-    $sheet->getStyle('A1:H1')->getFont()->setBold(true);
-
-    // Fill data
-    $row = 2;
-    foreach ($tendik as $index => $data) {
-        $sheet->setCellValue('A' . $row, $index + 1);
-        $sheet->setCellValue('B' . $row, $data->id_tendik);
-        $sheet->setCellValue('C' . $row, $data->id_pengguna);
-        $sheet->setCellValue('D' . $row, $data->nama_lengkap);
-        $sheet->setCellValue('E' . $row, $data->nip);
-        $sheet->setCellValue('F' . $row, $data->no_telepon);
-        $sheet->setCellValue('G' . $row, $data->email);
-        $sheet->setCellValue('H' . $row, optional($data->bidangMinat)->nama_bidang_minat); // Assuming you have a `nama_bidang_minat` field in `BidangMinatModel`
-        $row++;
+        return $pdf->stream('Data_Tendik_' . date('Y-m-d_H-i-s') . '.pdf');
     }
 
-    // Auto size columns
-    foreach (range('A', 'H') as $columnID) {
-        $sheet->getColumnDimension($columnID)->setAutoSize(true);
+    public function export_excel()
+    {
+        // Fetch tendik data
+        $tendik = KelolaTendikModel::select('id_tendik', 'id_pengguna', 'nama_lengkap', 'nip', 'no_telepon', 'email', 'gambar_profil', 'tag_bidang_minat')
+            ->with('pengguna', 'bidangMinat')
+            ->orderBy('nama_lengkap', 'asc')
+            ->get();
+
+        // Create new spreadsheet
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Header columns
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'ID Tendik');
+        $sheet->setCellValue('C1', 'ID Pengguna');
+        $sheet->setCellValue('D1', 'Nama Lengkap');
+        $sheet->setCellValue('E1', 'NIP');
+        $sheet->setCellValue('F1', 'No Telepon');
+        $sheet->setCellValue('G1', 'Email');
+        $sheet->setCellValue('H1', 'Tag Bidang Minat');
+        $sheet->getStyle('A1:H1')->getFont()->setBold(true);
+
+        // Fill data
+        $row = 2;
+        foreach ($tendik as $index => $data) {
+            $sheet->setCellValue('A' . $row, $index + 1);
+            $sheet->setCellValue('B' . $row, $data->id_tendik);
+            $sheet->setCellValue('C' . $row, $data->id_pengguna);
+            $sheet->setCellValue('D' . $row, $data->nama_lengkap);
+            $sheet->setCellValue('E' . $row, $data->nip);
+            $sheet->setCellValue('F' . $row, $data->no_telepon);
+            $sheet->setCellValue('G' . $row, $data->email);
+            $sheet->setCellValue('H' . $row, optional($data->bidangMinat)->nama_bidang_minat); // Assuming you have a `nama_bidang_minat` field in `BidangMinatModel`
+            $row++;
+        }
+
+        // Auto size columns
+        foreach (range('A', 'H') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        // Save file Excel
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $filename = 'Data_Dosen_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
+        exit;
     }
-
-    // Save file Excel
-    $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-    $filename = 'Data_Dosen_' . date('Y-m-d_H-i-s') . '.xlsx';
-
-    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    header('Content-Disposition: attachment; filename="' . $filename . '"');
-    header('Cache-Control: max-age=0');
-
-    $writer->save('php://output');
-    exit;
 }
-
-}
->>>>>>> 1c5563fd55489ba71a6b0190fa2840e2b00765b7
