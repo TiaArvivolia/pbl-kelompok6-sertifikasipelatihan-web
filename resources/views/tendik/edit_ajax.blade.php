@@ -63,9 +63,13 @@
                     <small id="error-tag_bidang_minat" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
-                    <label>Gambar Profil</label>
-                    <input type="file" name="gambar_profil" id="gambar_profil" class="form-control">
-                    <small id="error-gambar_profil" class="error-text form-text text-danger"></small>
+                    <label for="gambar_profil">Gambar Profil</label>
+                    <div>
+                        @if($tendik->gambar_profil)
+                            <img src="{{ asset('storage/' . $tendik->gambar_profil) }}" alt="Gambar Profil" width="150" height="150" class="img-thumbnail">
+                        @endif
+                    </div>
+                    <input type="file" name="gambar_profil" class="form-control mt-2">
                 </div>
             </div>
             <div class="modal-footer">

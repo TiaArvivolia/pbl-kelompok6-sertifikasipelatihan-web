@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Storage;
 
 class KelolaTendikController extends Controller
 {
@@ -101,6 +102,7 @@ class KelolaTendikController extends Controller
             'no_telepon' => $request->input('no_telepon'),
             'email' => $request->input('email'),
             'tag_bidang_minat' => $request->input('tag_bidang_minat'),
+            'gambar_profil' => $request->file('gambar_profil') ? $request->file('gambar_profil')->store('profile_pictures', 'public') : null, // Handle optional profile picture upload
         ]);
 
         // Return a successful response
@@ -147,6 +149,7 @@ class KelolaTendikController extends Controller
                 'no_telepon'  => 'nullable|string|max:20',
                 'email' => 'nullable|string|email|max:100',
                 'tag_bidang_minat' => 'required|exists:bidang_minat,id_bidang_minat',
+                'gambar_profil' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validasi gambar
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -161,8 +164,23 @@ class KelolaTendikController extends Controller
 
             $tendik = KelolaTendikModel::find($id);
             if ($tendik) {
+                // Update bidang minat
                 $tendik->bidangMinat()->associate(BidangMinatModel::find($request->tag_bidang_minat));
-                $tendik->update($request->except(['tag_bidang_minat'])); // Update other fields except the relation
+
+                // Tangani penggantian gambar profil
+                if ($request->hasFile('gambar_profil')) {
+                    // Hapus gambar lama jika ada
+                    if ($tendik->gambar_profil && Storage::disk('public')->exists($tendik->gambar_profil)) {
+                        Storage::disk('public')->delete($tendik->gambar_profil);
+                    }
+
+                    // Simpan gambar baru
+                    $path = $request->file('gambar_profil')->store('profile_pictures', 'public');
+                    $tendik->gambar_profil = $path;
+                }
+
+                // Update data tendik
+                $tendik->update($request->except(['tag_bidang_minat', 'gambar_profil'])); // Update data lain selain gambar dan bidang minat
 
                 return response()->json([
                     'status'  => true,
@@ -176,6 +194,7 @@ class KelolaTendikController extends Controller
             ]);
         }
     }
+
 
     public function confirm_ajax(string $id)
     {

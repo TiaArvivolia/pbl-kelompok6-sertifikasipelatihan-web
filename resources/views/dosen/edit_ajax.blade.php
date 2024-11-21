@@ -100,9 +100,6 @@
                     </div>
                     <input type="file" name="gambar_profil" class="form-control mt-2">
                 </div>
-                
-                
-                
 {{--                      
                 <div class="form-group">
                     <label>Gambar Profil</label>

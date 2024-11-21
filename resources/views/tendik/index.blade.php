@@ -26,6 +26,7 @@
             <thead>
                 <tr>
                     <th>No</th>
+                    <th>Profil</th>
                     <th>Nama Lengkap</th>
                     <th>NIP</th>
                     <th>No Telepon</th>
@@ -70,6 +71,12 @@ $(document).ready(function(){
             {
                 data: "DT_RowIndex", 
                 className: "text-center",
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: 'gambar_profil',
+                name: 'gambar_profil',
                 orderable: false,
                 searchable: false
             },

@@ -159,9 +159,9 @@ class KelolaDosenController extends Controller
                 'tag_bidang_minat' => 'required|exists:bidang_minat,id_bidang_minat',
                 'gambar_profil' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validasi gambar
             ];
-    
+
             $validator = Validator::make($request->all(), $rules);
-    
+
             if ($validator->fails()) {
                 return response()->json([
                     'status'   => false,
@@ -169,41 +169,41 @@ class KelolaDosenController extends Controller
                     'msgField' => $validator->errors()
                 ]);
             }
-    
+
             $dosen = KelolaDosenModel::find($id);
             if ($dosen) {
                 // Update mata kuliah dan bidang minat
                 $dosen->mataKuliah()->associate(MataKuliahModel::find($request->tag_mk));
                 $dosen->bidangMinat()->associate(BidangMinatModel::find($request->tag_bidang_minat));
-    
+
                 // Tangani penggantian gambar
                 if ($request->hasFile('gambar_profil')) {
                     // Hapus gambar lama jika ada
                     if ($dosen->gambar_profil && Storage::disk('public')->exists($dosen->gambar_profil)) {
                         Storage::disk('public')->delete($dosen->gambar_profil);
                     }
-    
+
                     // Simpan gambar baru
                     $path = $request->file('gambar_profil')->store('profile_pictures', 'public');
                     $dosen->gambar_profil = $path;
                 }
-    
+
                 // Update data dosen
                 $dosen->update($request->except(['tag_mk', 'tag_bidang_minat', 'gambar_profil']));
-    
+
                 return response()->json([
                     'status'  => true,
                     'message' => 'Data dosen berhasil diperbarui.'
                 ]);
             }
-    
+
             return response()->json([
                 'status'  => false,
                 'message' => 'Dosen tidak ditemukan'
             ]);
         }
     }
-    
+
 
     public function confirm_ajax(string $id)
     {
@@ -226,74 +226,73 @@ class KelolaDosenController extends Controller
             ]);
         }
     }
-    
-public function export_pdf()
-{
-    // Fetch admin data
-    $dosen = KelolaDosenModel::select('id_dosen', 'id_pengguna', 'nama_lengkap', 'nip', 'nidn', 'tempat_lahir', 'tanggal_lahir', 'no_telepon', 'email')
-        ->with('pengguna')
-        ->get();
+
+    public function export_pdf()
+    {
+        // Fetch admin data
+        $dosen = KelolaDosenModel::select('id_dosen', 'id_pengguna', 'nama_lengkap', 'nip', 'nidn', 'tempat_lahir', 'tanggal_lahir', 'no_telepon', 'email')
+            ->with('pengguna')
+            ->get();
 
 
-    // Share data with the view
-    $pdf = Pdf::loadView('dosen.export_pdf', ['dosen' => $dosen]);
-    $pdf->setPaper('a4', 'landscape'); // Ukuran dan orientasi kertas
+        // Share data with the view
+        $pdf = Pdf::loadView('dosen.export_pdf', ['dosen' => $dosen]);
+        $pdf->setPaper('a4', 'landscape'); // Ukuran dan orientasi kertas
 
-    return $pdf->stream('Data_Dosen_' . date('Y-m-d_H-i-s') . '.pdf');
-}
-public function export_excel()
-{
-    $dosen = KelolaDosenModel::select('id_dosen', 'id_pengguna', 'nama_lengkap', 'nip', 'nidn', 'tempat_lahir', 'tanggal_lahir', 'no_telepon', 'email')
-        ->orderBy('nama_lengkap', 'asc')
-        ->get();
-
-    $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-    $sheet = $spreadsheet->getActiveSheet();
-
-    // Header kolom
-    $sheet->setCellValue('A1', 'No');
-    $sheet->setCellValue('B1', 'ID Dosen');
-    $sheet->setCellValue('C1', 'ID Pengguna');
-    $sheet->setCellValue('D1', 'Nama Lengkap');
-    $sheet->setCellValue('E1', 'NIP');
-    $sheet->setCellValue('F1', 'NIDN');
-    $sheet->setCellValue('G1', 'Tempat Lahir');
-    $sheet->setCellValue('H1', 'Tanggal Lahir');
-    $sheet->setCellValue('I1', 'No Telepon');
-    $sheet->setCellValue('J1', 'Email');
-    $sheet->getStyle('A1:J1')->getFont()->setBold(true);
-
-    // Isi data
-    $row = 2;
-    foreach ($dosen as $index => $data) {
-        $sheet->setCellValue('A' . $row, $index + 1);
-        $sheet->setCellValue('B' . $row, $data->id_dosen);
-        $sheet->setCellValue('C' . $row, $data->id_pengguna);
-        $sheet->setCellValue('D' . $row, $data->nama_lengkap);
-        $sheet->setCellValue('E' . $row, $data->nip);
-        $sheet->setCellValue('F' . $row, $data->nidn);
-        $sheet->setCellValue('G' . $row, $data->tempat_lahir);
-        $sheet->setCellValue('H' . $row, $data->tanggal_lahir);
-        $sheet->setCellValue('I' . $row, $data->no_telepon);
-        $sheet->setCellValue('J' . $row, $data->email);
-        $row++;
+        return $pdf->stream('Data_Dosen_' . date('Y-m-d_H-i-s') . '.pdf');
     }
+    public function export_excel()
+    {
+        $dosen = KelolaDosenModel::select('id_dosen', 'id_pengguna', 'nama_lengkap', 'nip', 'nidn', 'tempat_lahir', 'tanggal_lahir', 'no_telepon', 'email')
+            ->orderBy('nama_lengkap', 'asc')
+            ->get();
 
-    // Auto size kolom
-    foreach (range('A', 'J') as $columnID) {
-        $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Header kolom
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'ID Dosen');
+        $sheet->setCellValue('C1', 'ID Pengguna');
+        $sheet->setCellValue('D1', 'Nama Lengkap');
+        $sheet->setCellValue('E1', 'NIP');
+        $sheet->setCellValue('F1', 'NIDN');
+        $sheet->setCellValue('G1', 'Tempat Lahir');
+        $sheet->setCellValue('H1', 'Tanggal Lahir');
+        $sheet->setCellValue('I1', 'No Telepon');
+        $sheet->setCellValue('J1', 'Email');
+        $sheet->getStyle('A1:J1')->getFont()->setBold(true);
+
+        // Isi data
+        $row = 2;
+        foreach ($dosen as $index => $data) {
+            $sheet->setCellValue('A' . $row, $index + 1);
+            $sheet->setCellValue('B' . $row, $data->id_dosen);
+            $sheet->setCellValue('C' . $row, $data->id_pengguna);
+            $sheet->setCellValue('D' . $row, $data->nama_lengkap);
+            $sheet->setCellValue('E' . $row, $data->nip);
+            $sheet->setCellValue('F' . $row, $data->nidn);
+            $sheet->setCellValue('G' . $row, $data->tempat_lahir);
+            $sheet->setCellValue('H' . $row, $data->tanggal_lahir);
+            $sheet->setCellValue('I' . $row, $data->no_telepon);
+            $sheet->setCellValue('J' . $row, $data->email);
+            $row++;
+        }
+
+        // Auto size kolom
+        foreach (range('A', 'J') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        // Save file Excel
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $filename = 'Data_Dosen_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
+        exit;
     }
-
-    // Save file Excel
-    $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-    $filename = 'Data_Dosen_' . date('Y-m-d_H-i-s') . '.xlsx';
-
-    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    header('Content-Disposition: attachment; filename="' . $filename . '"');
-    header('Cache-Control: max-age=0');
-
-    $writer->save('php://output');
-    exit;
-}
-
 }
