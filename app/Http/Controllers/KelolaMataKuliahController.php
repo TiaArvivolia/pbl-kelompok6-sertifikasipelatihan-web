@@ -167,4 +167,58 @@ class KelolaMataKuliahController extends Controller
 
         return redirect('/');
     }
+    public function export_pdf()
+{
+    $mata_kuliah = MataKuliahModel::select('id_mata_kuliah', 'kode_mk', 'nama_mk')
+        ->orderBy('nama_mk', 'asc')
+        ->get();
+
+    $pdf = Pdf::loadView('mata_kuliah.export_pdf', compact('mata_kuliah'));
+    $pdf->setPaper('a4', 'portrait'); // Set paper size and orientation
+
+    return $pdf->stream('Data_Mata_Kuliah_' . date('Y-m-d_H-i-s') . '.pdf');
+}
+public function export_excel()
+{
+    $mata_kuliah = MataKuliahModel::select('id_mata_kuliah', 'kode_mk', 'nama_mk')
+        ->orderBy('nama_mk', 'asc')
+        ->get();
+
+    $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+
+    // Header columns
+    $sheet->setCellValue('A1', 'No');
+    $sheet->setCellValue('B1', 'ID Mata Kuliah');
+    $sheet->setCellValue('C1', 'Kode Mata Kuliah');
+    $sheet->setCellValue('D1', 'Nama Mata Kuliah');
+    $sheet->getStyle('A1:D1')->getFont()->setBold(true);
+
+    // Data rows
+    $row = 2;
+    foreach ($mata_kuliah as $index => $data) {
+        $sheet->setCellValue('A' . $row, $index + 1);
+        $sheet->setCellValue('B' . $row, $data->id_mata_kuliah);
+        $sheet->setCellValue('C' . $row, $data->kode_mk);
+        $sheet->setCellValue('D' . $row, $data->nama_mk);
+        $row++;
+    }
+
+    // Auto size columns
+    foreach (range('A', 'D') as $columnID) {
+        $sheet->getColumnDimension($columnID)->setAutoSize(true);
+    }
+
+    // Save Excel file
+    $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+    $filename = 'Data_Mata_Kuliah_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Cache-Control: max-age=0');
+
+    $writer->save('php://output');
+    exit;
+}
+
 }

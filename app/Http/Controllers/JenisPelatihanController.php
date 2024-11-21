@@ -149,4 +149,60 @@ class JenisPelatihanController extends Controller
             ]);
         }
     }
+            public function export_pdf()
+        {
+            $jenis_pelatihan = JenisPelatihanModel::select('id_jenis_pelatihan', 'nama_jenis_pelatihan')
+                ->orderBy('nama_jenis_pelatihan', 'asc')
+                ->get();
+
+            // Load view untuk PDF
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('jenis_pelatihan.export_pdf', compact('jenis_pelatihan'));
+            $pdf->setPaper('a4', 'portrait'); // Atur ukuran dan orientasi kertas
+
+            // Stream PDF ke browser
+            return $pdf->stream('Data_Jenis_Pelatihan_' . date('Y-m-d_H-i-s') . '.pdf');
+        }
+
+        public function export_excel()
+{
+    $jenis_pelatihan = JenisPelatihanModel::select('id_jenis_pelatihan', 'nama_jenis_pelatihan')
+        ->orderBy('nama_jenis_pelatihan', 'asc')
+        ->get();
+
+    $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+
+    // Header Kolom
+    $sheet->setCellValue('A1', 'No');
+    $sheet->setCellValue('B1', 'ID Jenis Pelatihan');
+    $sheet->setCellValue('C1', 'Nama Jenis Pelatihan');
+    $sheet->getStyle('A1:C1')->getFont()->setBold(true);
+
+    // Isi Data
+    $row = 2;
+    foreach ($jenis_pelatihan as $index => $data) {
+        $sheet->setCellValue('A' . $row, $index + 1);
+        $sheet->setCellValue('B' . $row, $data->id_jenis_pelatihan);
+        $sheet->setCellValue('C' . $row, $data->nama_jenis_pelatihan);
+        $row++;
+    }
+
+    // Auto size column
+    foreach (range('A', 'C') as $columnID) {
+        $sheet->getColumnDimension($columnID)->setAutoSize(true);
+    }
+
+    // Save Excel ke output
+    $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+    $filename = 'Data_Jenis_Pelatihan_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Cache-Control: max-age=0');
+
+    $writer->save('php://output');
+    exit;
+}
+
+
 }

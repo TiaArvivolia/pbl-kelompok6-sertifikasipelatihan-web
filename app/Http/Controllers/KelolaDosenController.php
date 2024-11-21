@@ -10,8 +10,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
+<<<<<<< HEAD
 use Illuminate\Support\Facades\Storage;
 
+=======
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Barryvdh\DomPDF\Facade\Pdf;
+>>>>>>> 1c5563fd55489ba71a6b0190fa2840e2b00765b7
 
 class KelolaDosenController extends Controller
 {
@@ -226,4 +231,74 @@ class KelolaDosenController extends Controller
             ]);
         }
     }
+    
+public function export_pdf()
+{
+    // Fetch admin data
+    $dosen = KelolaDosenModel::select('id_dosen', 'id_pengguna', 'nama_lengkap', 'nip', 'nidn', 'tempat_lahir', 'tanggal_lahir', 'no_telepon', 'email')
+        ->with('pengguna')
+        ->get();
+
+
+    // Share data with the view
+    $pdf = Pdf::loadView('dosen.export_pdf', ['dosen' => $dosen]);
+    $pdf->setPaper('a4', 'landscape'); // Ukuran dan orientasi kertas
+
+    return $pdf->stream('Data_Dosen_' . date('Y-m-d_H-i-s') . '.pdf');
+}
+public function export_excel()
+{
+    $dosen = KelolaDosenModel::select('id_dosen', 'id_pengguna', 'nama_lengkap', 'nip', 'nidn', 'tempat_lahir', 'tanggal_lahir', 'no_telepon', 'email')
+        ->orderBy('nama_lengkap', 'asc')
+        ->get();
+
+    $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+
+    // Header kolom
+    $sheet->setCellValue('A1', 'No');
+    $sheet->setCellValue('B1', 'ID Dosen');
+    $sheet->setCellValue('C1', 'ID Pengguna');
+    $sheet->setCellValue('D1', 'Nama Lengkap');
+    $sheet->setCellValue('E1', 'NIP');
+    $sheet->setCellValue('F1', 'NIDN');
+    $sheet->setCellValue('G1', 'Tempat Lahir');
+    $sheet->setCellValue('H1', 'Tanggal Lahir');
+    $sheet->setCellValue('I1', 'No Telepon');
+    $sheet->setCellValue('J1', 'Email');
+    $sheet->getStyle('A1:J1')->getFont()->setBold(true);
+
+    // Isi data
+    $row = 2;
+    foreach ($dosen as $index => $data) {
+        $sheet->setCellValue('A' . $row, $index + 1);
+        $sheet->setCellValue('B' . $row, $data->id_dosen);
+        $sheet->setCellValue('C' . $row, $data->id_pengguna);
+        $sheet->setCellValue('D' . $row, $data->nama_lengkap);
+        $sheet->setCellValue('E' . $row, $data->nip);
+        $sheet->setCellValue('F' . $row, $data->nidn);
+        $sheet->setCellValue('G' . $row, $data->tempat_lahir);
+        $sheet->setCellValue('H' . $row, $data->tanggal_lahir);
+        $sheet->setCellValue('I' . $row, $data->no_telepon);
+        $sheet->setCellValue('J' . $row, $data->email);
+        $row++;
+    }
+
+    // Auto size kolom
+    foreach (range('A', 'J') as $columnID) {
+        $sheet->getColumnDimension($columnID)->setAutoSize(true);
+    }
+
+    // Save file Excel
+    $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+    $filename = 'Data_Dosen_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Cache-Control: max-age=0');
+
+    $writer->save('php://output');
+    exit;
+}
+
 }

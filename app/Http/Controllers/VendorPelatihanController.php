@@ -168,4 +168,64 @@ class VendorPelatihanController extends Controller
 
         return redirect('/');
     }
+    public function export_pdf()
+{
+    $vendors = VendorPelatihanModel::select('id_vendor_pelatihan', 'nama', 'alamat', 'kota', 'no_telepon', 'website')
+        ->orderBy('nama', 'asc')
+        ->get();
+
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('vendor_pelatihan.export_pdf', compact('vendors'));
+    $pdf->setPaper('a4', 'portrait'); // Atur ukuran dan orientasi kertas
+
+    return $pdf->stream('Data_Vendor_Pelatihan_' . date('Y-m-d_H-i-s') . '.pdf');
+}
+public function export_excel()
+{
+    $vendors = VendorPelatihanModel::select('id_vendor_pelatihan', 'nama', 'alamat', 'kota', 'no_telepon', 'website')
+        ->orderBy('nama', 'asc')
+        ->get();
+
+    $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+
+    // Header Kolom
+    $sheet->setCellValue('A1', 'No');
+    $sheet->setCellValue('B1', 'ID Vendor Pelatihan');
+    $sheet->setCellValue('C1', 'Nama');
+    $sheet->setCellValue('D1', 'Alamat');
+    $sheet->setCellValue('E1', 'Kota');
+    $sheet->setCellValue('F1', 'No Telepon');
+    $sheet->setCellValue('G1', 'Website');
+    $sheet->getStyle('A1:G1')->getFont()->setBold(true);
+
+    // Isi Data
+    $row = 2;
+    foreach ($vendors as $index => $vendor) {
+        $sheet->setCellValue('A' . $row, $index + 1);
+        $sheet->setCellValue('B' . $row, $vendor->id_vendor_pelatihan);
+        $sheet->setCellValue('C' . $row, $vendor->nama);
+        $sheet->setCellValue('D' . $row, $vendor->alamat);
+        $sheet->setCellValue('E' . $row, $vendor->kota);
+        $sheet->setCellValue('F' . $row, $vendor->no_telepon);
+        $sheet->setCellValue('G' . $row, $vendor->website);
+        $row++;
+    }
+
+    // Auto size column
+    foreach (range('A', 'G') as $columnID) {
+        $sheet->getColumnDimension($columnID)->setAutoSize(true);
+    }
+
+    // Save Excel ke output
+    $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+    $filename = 'Data_Vendor_Pelatihan_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Cache-Control: max-age=0');
+
+    $writer->save('php://output');
+    exit;
+}
+
 }

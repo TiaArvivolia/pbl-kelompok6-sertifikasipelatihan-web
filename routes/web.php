@@ -72,6 +72,8 @@ Route::prefix('jenis_pengguna')->group(function () {
     Route::put('/{id}/update_ajax', [KelolaJenisPenggunaController::class, 'update_ajax']);
     Route::get('/{id}/delete_ajax', [KelolaJenisPenggunaController::class, 'confirm_ajax']);
     Route::delete('/{id}/delete_ajax', [KelolaJenisPenggunaController::class, 'delete_ajax']);
+    Route::get('/export_pdf', [KelolaJenisPenggunaController::class, 'export_pdf']);
+    Route::get('/export_excel', [KelolaJenisPenggunaController::class, 'export_excel']);
 });
 
 // Kelola Pengguna
@@ -85,6 +87,8 @@ Route::prefix('pengguna')->group(function () {
     Route::put('/{id}/update_ajax', [KelolaPenggunaController::class, 'update_ajax']);
     Route::get('/{id}/delete_ajax', [KelolaPenggunaController::class, 'confirm_ajax']);
     Route::delete('/{id}/delete_ajax', [KelolaPenggunaController::class, 'delete_ajax']);
+    Route::get('/export_pdf', [KelolaPenggunaController::class, 'export_pdf']);
+    Route::get('/export_excel', [KelolaPenggunaController::class, 'export_excel']);
 });
 
 // Kelola Admin
@@ -98,6 +102,8 @@ Route::prefix('admin')->group(function () {
     Route::put('/{id}/update_ajax', [KelolaAdminController::class, 'update_ajax']);
     Route::get('/{id}/delete_ajax', [KelolaAdminController::class, 'confirm_ajax']);
     Route::delete('/{id}/delete_ajax', [KelolaAdminController::class, 'delete_ajax']);
+    Route::get('/export_pdf', [KelolaAdminController::class, 'export_pdf']);
+    Route::get('/export_excel', [KelolaAdminController::class, 'export_excel']);
 });
 
 // Kelola Dosen
@@ -111,6 +117,8 @@ Route::prefix('dosen')->group(function () {
     Route::put('/{id}/update_ajax', [KelolaDosenController::class, 'update_ajax']);
     Route::get('/{id}/delete_ajax', [KelolaDosenController::class, 'confirm_ajax']);
     Route::delete('/{id}/delete_ajax', [KelolaDosenController::class, 'delete_ajax']);
+    Route::get('/export_pdf', [KelolaDosenController::class, 'export_pdf']);
+    Route::get('/export_excel', [KelolaDosenController::class, 'export_excel']);
 });
 
 // Kelola Tendik
@@ -124,6 +132,8 @@ Route::prefix('tendik')->group(function () {
     Route::put('/{id}/update_ajax', [KelolaTendikController::class, 'update_ajax']);
     Route::get('/{id}/delete_ajax', [KelolaTendikController::class, 'confirm_ajax']);
     Route::delete('/{id}/delete_ajax', [KelolaTendikController::class, 'delete_ajax']);
+    Route::get('/export_pdf', [KelolaTendikController::class, 'export_pdf']);
+    Route::get('/export_excel', [KelolaTendikController::class, 'export_excel']);
 });
 
 // Kelola Pimpinan
@@ -137,6 +147,8 @@ Route::prefix('pimpinan')->group(function () {
     Route::put('/{id}/update_ajax', [KelolaPimpinanController::class, 'update_ajax']);
     Route::get('/{id}/delete_ajax', [KelolaPimpinanController::class, 'confirm_ajax']);
     Route::delete('/{id}/delete_ajax', [KelolaPimpinanController::class, 'delete_ajax']);
+    Route::get('/export_pdf', [KelolaPimpinanController::class, 'export_pdf']);
+    Route::get('/export_excel', [KelolaPimpinanController::class, 'export_excel']);
 });
 
 // Jenis Pelatihan
@@ -144,12 +156,17 @@ Route::prefix('jenis_pelatihan')->group(function () {
     Route::get('/', [JenisPelatihanController::class, 'index']);
     Route::post('/list', [JenisPelatihanController::class, 'list']);
     Route::get('/create_ajax', [JenisPelatihanController::class, 'create_ajax']);
+    
     Route::post('/ajax', [JenisPelatihanController::class, 'store_ajax']);
     Route::get('/{id}/show_ajax', [JenisPelatihanController::class, 'show_ajax']);
     Route::get('/{id}/edit_ajax', [JenisPelatihanController::class, 'edit_ajax']);
     Route::put('/{id}/update_ajax', [JenisPelatihanController::class, 'update_ajax']);
     Route::get('/{id}/delete_ajax', [JenisPelatihanController::class, 'confirm_ajax']);
     Route::delete('/{id}/delete_ajax', [JenisPelatihanController::class, 'delete_ajax']);
+    Route::get('/export_pdf', [JenisPelatihanController::class, 'export_pdf']);
+    Route::get('/export_excel', [JenisPelatihanController::class, 'export_excel']);
+
+
 });
 
 // Vendor Pelatihan
@@ -163,6 +180,8 @@ Route::prefix('vendor_pelatihan')->group(function () {
     Route::put('/{id}/update_ajax', [VendorPelatihanController::class, 'update_ajax']);
     Route::get('/{id}/delete_ajax', [VendorPelatihanController::class, 'confirm_ajax']);
     Route::delete('/{id}/delete_ajax', [VendorPelatihanController::class, 'delete_ajax']);
+    Route::get('/export_pdf', [VendorPelatihanController::class, 'export_pdf']);
+    Route::get('/export_excel', [VendorPelatihanController::class, 'export_excel']);
 });
 
 // Vendor Sertifikasi
@@ -176,6 +195,8 @@ Route::prefix('vendor_sertifikasi')->group(function () {
     Route::put('/{id}/update_ajax', [VendorSertifikasiController::class, 'update_ajax']);
     Route::get('/{id}/delete_ajax', [VendorSertifikasiController::class, 'confirm_ajax']);
     Route::delete('/{id}/delete_ajax', [VendorSertifikasiController::class, 'delete_ajax']);
+    Route::get('/export_pdf', [VendorSertifikasiController::class, 'export_pdf']);
+    Route::get('/export_excel', [VendorSertifikasiController::class, 'export_excel']);
 });
 
 // Kelola Mata Kuliah
@@ -189,6 +210,8 @@ Route::prefix('mata_kuliah')->name('mata_kuliah')->group(function () {
     Route::put('/{id}/update_ajax', [KelolaMataKuliahController::class, 'update_ajax']);
     Route::get('/{id}/delete_ajax', [KelolaMataKuliahController::class, 'confirm_ajax']);
     Route::delete('/{id}/delete_ajax', [KelolaMataKuliahController::class, 'delete_ajax']);
+    Route::get('/export_pdf', [KelolaMataKuliahController::class, 'export_pdf']);
+    Route::get('/export_excel', [KelolaMataKuliahController::class, 'export_excel']);
 });
 
 // Kelola bidang minat
@@ -202,6 +225,8 @@ Route::prefix('bidang_minat')->name('bidang_minat')->group(function () {
     Route::put('/{id}/update_ajax', [KelolaBidangMinatController::class, 'update_ajax']);
     Route::get('/{id}/delete_ajax', [KelolaBidangMinatController::class, 'confirm_ajax']);
     Route::delete('/{id}/delete_ajax', [KelolaBidangMinatController::class, 'delete_ajax']);
+    Route::get('/export_pdf', [KelolaBidangMinatController::class, 'export_pdf']);
+    Route::get('/export_excel', [KelolaBidangMinatController::class, 'export_excel']);
 });
 
 // Daftar Pelatihan
@@ -215,6 +240,8 @@ Route::prefix('daftar_pelatihan')->group(function () {
     Route::put('/{id}/update_ajax', [DaftarPelatihanController::class, 'update_ajax']);
     Route::get('/{id}/delete_ajax', [DaftarPelatihanController::class, 'confirm_ajax']);
     Route::delete('/{id}/delete_ajax', [DaftarPelatihanController::class, 'delete_ajax']);
+    Route::get('/export_pdf', [DaftarPelatihanController::class, 'export_pdf']);
+    Route::get('/export_excel', [DaftarPelatihanController::class, 'export_excel']);
 });
 
 // Pengajuan Pelatihan
@@ -228,6 +255,8 @@ Route::prefix('pengajuan_pelatihan')->group(function () {
     Route::put('/{id}/update_ajax', [PengajuanPelatihanController::class, 'update_ajax']);
     Route::get('/{id}/delete_ajax', [PengajuanPelatihanController::class, 'confirm_ajax']);
     Route::delete('/{id}/delete_ajax', [PengajuanPelatihanController::class, 'delete_ajax']);
+    Route::get('/export_pdf', [PengajuanPelatihanController::class, 'export_pdf']);
+    Route::get('/export_excel', [PengajuanPelatihanController::class, 'export_excel']);
 });
 
 // Draft Surat Tugas
@@ -261,6 +290,8 @@ Route::prefix('riwayat_pelatihan')->group(function () {
     Route::put('/{id}/update_ajax', [RiwayatPelatihanController::class, 'update_ajax']);
     Route::get('/{id}/delete_ajax', [RiwayatPelatihanController::class, 'confirm_ajax']);
     Route::delete('/{id}/delete_ajax', [RiwayatPelatihanController::class, 'delete_ajax']);
+    Route::get('/export_pdf', [RiwayatPelatihanController::class, 'export_pdf']);
+    Route::get('/export_excel', [RiwayatPelatihanController::class, 'export_excel']);
 });
 
 // Riwayat Sertifikasi
@@ -274,6 +305,8 @@ Route::prefix('riwayat_sertifikasi')->group(function () {
     Route::put('/{id}/update_ajax', [RiwayatSertifikasiController::class, 'update_ajax']);
     Route::get('/{id}/delete_ajax', [RiwayatSertifikasiController::class, 'confirm_ajax']);
     Route::delete('/{id}/delete_ajax', [RiwayatSertifikasiController::class, 'delete_ajax']);
+    Route::get('/export_pdf', [RiwayatSertifikasiController::class, 'export_pdf']);
+    Route::get('/export_excel', [RiwayatSertifikasiController::class, 'export_excel']);
 });
 
 // Route::get('/', function () {
