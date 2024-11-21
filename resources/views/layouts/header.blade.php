@@ -9,7 +9,7 @@
         </li>
         
         <!-- Navigation Links -->
-        <li class="nav-item">
+        {{-- <li class="nav-item">
             <a href="{{ url('/') }}" class="nav-link text-dark font-weight-bold" style="color: #003366; margin-left: 10px;">Home</a>
         </li>
         <li class="nav-item">
@@ -17,7 +17,7 @@
         </li>
         <li class="nav-item">
             <a href="mailto:info@example.com" class="nav-link text-dark font-weight-bold" style="color: #003366; margin-left: 10px;">Email</a>
-        </li>
+        </li> --}}
     </ul>
 
     <!-- Right navbar links -->
@@ -31,33 +31,60 @@
             {{-- <img src="{{ asset('storage/photos/jti.png') }}" alt="JTI Logo" class="img-fluid rounded-circle" style="width: 35px; height: 35px; margin-left: 10px;"> --}}
         </li>
 
-        <!-- User Info Dropdown Menu -->
-        <li class="nav-item dropdown ml-3 d-flex align-items-center">
-            <a class="nav-link" data-toggle="dropdown" href="#">
-                <div class="d-flex align-items-center">
-                    @if (isset(Auth::user()->profile_picture) && Auth::user()->profile_picture)
-                        <img src="{{ asset('storage/' . Auth::user()->profile_picture) }}" 
-                            alt="User Avatar" 
-                            class="img-circle" 
-                            style="width: 30px; height: 30px;">
-                    @else
-                        <i class="fas fa-user-circle" style="font-size: 30px; color: #ccc;"></i>
-                    @endif
-                    <span class="ml-2 text-dark font-weight-bold">
-                        {{ Auth::user()->username ?? 'Guest' }} 
-                        ({{ Auth::user()->level->level_nama ?? 'No Role' }})
-                    </span>
-                </div>
-            </a>
-            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-                <a href="{{ route('profile') }}" class="dropdown-item">
-                    <i class="fas fa-user-circle mr-2"></i> Profile
-                </a>
-                <div class="dropdown-divider"></div>
-                <a href="{{ url('logout') }}" class="dropdown-item">
-                    <i class="fas fa-sign-out-alt mr-2"></i> Logout
-                </a>
+<!-- User Info Dropdown Menu -->
+<li class="nav-item dropdown ml-3 d-flex align-items-center">
+    <a class="nav-link" data-toggle="dropdown" href="#">
+        <div class="d-flex align-items-center">
+            <div class="mr-2" style="margin-top: -5px; margin-bottom: 5px;">
+                @php
+                    $userProfile = null;
+                    // Tentukan model pengguna dan gambar profil sesuai dengan jenis pengguna
+                    $pengguna = Auth::user(); // Ambil pengguna yang sedang login
+                    if ($pengguna->dosen && $pengguna->dosen->gambar_profil) {
+                        $userProfile = $pengguna->dosen->gambar_profil;
+                    } elseif ($pengguna->tendik && $pengguna->tendik->gambar_profil) {
+                        $userProfile = $pengguna->tendik->gambar_profil;
+                    } elseif ($pengguna->admin && $pengguna->admin->gambar_profil) {
+                        $userProfile = $pengguna->admin->gambar_profil;
+                    } elseif ($pengguna->pimpinan && $pengguna->pimpinan->gambar_profil) {
+                        $userProfile = $pengguna->pimpinan->gambar_profil;
+                    }
+                @endphp
+
+                @if ($userProfile)
+                    <img class="img-circle" 
+                    src="{{ asset('storage/' . $userProfile) }}" 
+                    alt="User profile picture"
+                    style="width: 30px; height: 30px; object-fit: cover;">           
+                @else
+                    <i class="fas fa-user-circle" style="font-size: 30px; color: #ccc;"></i>
+                @endif
             </div>
-        </li>
+
+            <div class="d-flex flex-column">
+            <div class="mr-2" style="margin-top: -5px; margin-bottom: 5px;">
+                <span class="text-dark font-weight-bold" style="font-size: 14px;"> <!-- Adjusted font size -->
+                    {{ $pengguna->username ?? 'Guest' }}
+                </span>
+                <span class="text-muted" style="font-size: 12px;"> <!-- Adjusted font size -->
+                    ({{ $pengguna->jenisPengguna->nama_jenis_pengguna ?? 'No Role' }})
+                </span>
+            </div>
+            </div>
+        </div>
+    </a>
+    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+        <a href="{{ route('profile') }}" class="dropdown-item">
+            <i class="fas fa-user-circle mr-2"></i> Profile
+        </a>
+        <div class="dropdown-divider"></div>
+        <a href="{{ url('logout') }}" class="dropdown-item">
+            <i class="fas fa-sign-out-alt mr-2"></i> Logout
+        </a>
+    </div>
+</li>
+
+
     </ul>
 </nav>
+

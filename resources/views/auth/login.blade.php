@@ -4,84 +4,163 @@
 <head>
     <style>
         body {
-            background-image: url('storage/photos/login.png'); 
+            background-image: url('storage/photos/login.png');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            height: 100%;
+            height: 100vh;
             margin: 0;
             padding: 0;
             background-color: #f0f0f0;
+            font-family: 'Source Sans Pro', sans-serif;
         }
 
-        /* Styling untuk kotak login */
-        .login-box, .card {
-            background-color: rgba(255, 255, 255, 0.8);
-            border-radius: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-        }
-
+        /* Styling for the login box */
         .login-box {
             width: 360px;
-            margin: 7% auto;
+            margin: 10% auto;
+            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px; /* Slightly rounder corners for a softer look */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); /* Softer shadow for a more natural depth */
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; /* Smooth transition effects */
         }
 
-        .card-header, .btn {
+        /* Hover effect to scale the login box */
+        .login-box:hover {
+            transform: scale(1.05); /* Slightly increase size */
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); /* Enhance the shadow on hover */
+        }
+
+        /* Styling for the form input fields */
+        .form-control {
             border-radius: 20px;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            margin-bottom: 15px;
+            transition: border-color 0.3s, box-shadow 0.3s; /* Smooth transition for focus */
         }
 
-        /* Styling untuk label di atas input */
-        .input-label {
-            color: red;
-            font-weight: bold;
+        .form-control:focus {
+            border-color: #007bff; /* Highlight border on focus */
+            box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.25); /* Add a soft glow effect */
         }
 
-        /* Logo di pojok kiri dan kanan */
-        .logo-top-left, .logo-top-right {
+        /* Button hover effect */
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            border-radius: 20px;
+            padding: 10px 0;
+            width: 100%;
+            font-size: 16px;
+            transition: background-color 0.3s, border-color 0.3s; /* Smooth transition */
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+            border-color: #0056b3;
+        }
+
+        /* Logo at the top left and right */
+        .logo-top-left,
+        .logo-top-right {
             position: absolute;
             top: 20px;
             width: 80px;
+            z-index: 100;
         }
+
         .logo-top-left {
             left: 20px;
         }
+
         .logo-top-right {
             right: 20px;
         }
+
+
+        .card-header {
+            text-align: center;
+            background-color: transparent;
+            border: none;
+            margin-bottom: 20px;
+        }
+
+        .card-header .h1 {
+            font-size: 2em;
+            font-weight: 700;
+            color: #007bff;
+        }
+
+        .input-label {
+            color: #333;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        
+
+        .row {
+            margin-top: 20px;
+        }
+
+        .icheck-primary label {
+            font-size: 14px;
+        }
+
+        .error-text {
+            font-size: 12px;
+        }
+
+
+        /* Styling for the "Register" link */
+        .register-link {
+            color: #007bff;
+        }
+
+        .register-link:hover {
+            text-decoration: underline;
+        }
     </style>
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login Pengguna</title>
+
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="{{ asset('adminlte/plugins/fontawesome-free/css/all.min.css') }}">
+
     <!-- icheck bootstrap -->
     <link rel="stylesheet" href="{{ asset('adminlte/plugins/icheck-bootstrap/icheck-bootstrap.min.css') }}">
+
     <!-- SweetAlert2 -->
     <link rel="stylesheet" href="{{ asset('adminlte/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css') }}">
+
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ asset('adminlte/dist/css/adminlte.min.css') }}">
 </head>
 
 <body class="hold-transition login-page">
-    <!-- Logo di pojok kiri dan kanan atas -->
+    <!-- Logo at top left and right -->
     <img src="{{ asset('storage/photos/polinema.png') }}" alt="Logo Kiri" class="logo-top-left">
     <img src="{{ asset('storage/photos/jti.png') }}" alt="Logo Kanan" class="logo-top-right">
 
     <div class="login-box">
-        <!-- /.login-logo -->
         <div class="card card-outline card-primary">
-            <div class="card-header text-center">
-                <a href="{{ url('/') }}" class="h1"><b>Masuk</b></a>
+            <div class="card-header">
+                <a href="{{ url('/') }}" class="h1"><b>Login</b></a>
             </div>
             <div class="card-body">
                 <p class="login-box-msg">Sign in to start your session</p>
                 <form action="{{ url('login') }}" method="POST" id="form-login">
                     @csrf
                     <div class="mb-3">
-                        <!-- Label untuk username -->
                         <label for="username" class="input-label">Username</label>
                         <div class="input-group">
                             <input type="text" id="username" name="username" class="form-control" placeholder="Username">
@@ -94,7 +173,6 @@
                         <small id="error-username" class="error-text text-danger"></small>
                     </div>
                     <div class="mb-3">
-                        <!-- Label untuk password -->
                         <label for="password" class="input-label">Password</label>
                         <div class="input-group">
                             <input type="password" id="password" name="password" class="form-control" placeholder="Password">
@@ -113,25 +191,20 @@
                                 <label for="remember">Remember Me</label>
                             </div>
                         </div>
-                        <!-- /.col -->
                         <div class="col-4">
                             <button type="submit" class="btn btn-primary btn-block">Sign In</button>
                         </div>
-                        <!-- /.col -->
                     </div>
-                    <!-- Tambahan untuk teks Registrasi -->
                     <div class="row mt-2">
                         <div class="col-12 text-center">
-                            <p>Belum punya akun? <a href="{{ url('register') }}">Registrasi</a></p>
+                            <p>Belum punya akun? <a href="{{ url('register') }}" class="register-link">Registrasi</a></p>
                         </div>
                     </div>
                 </form>
             </div>
-            <!-- /.card-body -->
         </div>
-        <!-- /.card -->
     </div>
-    <!-- /.login-box -->
+
     <!-- jQuery -->
     <script src="{{ asset('adminlte/plugins/jquery/jquery.min.js') }}"></script>
     <!-- Bootstrap 4 -->

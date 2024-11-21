@@ -162,9 +162,9 @@ class KelolaDosenController extends Controller
                 'username' => 'nullable|string|max:100', // Validasi untuk username
                 'password' => 'nullable|string|min:6', // Validasi untuk password
             ];
-    
+
             $validator = Validator::make($request->all(), $rules);
-    
+
             if ($validator->fails()) {
                 return response()->json([
                     'status'   => false,
@@ -172,58 +172,58 @@ class KelolaDosenController extends Controller
                     'msgField' => $validator->errors()
                 ]);
             }
-    
+
             // Mencari dosen berdasarkan ID
             $dosen = KelolaDosenModel::find($id);
             if ($dosen) {
                 // Update mata kuliah dan bidang minat
                 $dosen->mataKuliah()->associate(MataKuliahModel::find($request->tag_mk));
                 $dosen->bidangMinat()->associate(BidangMinatModel::find($request->tag_bidang_minat));
-    
+
                 // Tangani penggantian gambar profil
                 if ($request->hasFile('gambar_profil')) {
                     if ($dosen->gambar_profil && Storage::disk('public')->exists($dosen->gambar_profil)) {
                         Storage::disk('public')->delete($dosen->gambar_profil);
                     }
-    
+
                     $path = $request->file('gambar_profil')->store('profile_pictures', 'public');
                     $dosen->gambar_profil = $path;
                 }
-    
+
                 // Update data dosen
                 $dosen->update($request->except(['tag_mk', 'tag_bidang_minat', 'gambar_profil', 'username', 'password']));
-    
+
                 // Cek dan update data pengguna (username dan password)
                 if ($request->filled('username') || $request->filled('password')) {
                     $pengguna = Pengguna::where('id_pengguna', $dosen->id_pengguna)->first();
-    
+
                     if ($pengguna) {
                         if ($request->filled('username')) {
                             $pengguna->username = $request->username;
                         }
-    
+
                         if ($request->filled('password')) {
                             // Encrypt password before saving
                             $pengguna->password = bcrypt($request->password);
                         }
-    
+
                         $pengguna->save();
                     }
                 }
-    
+
                 return response()->json([
                     'status'  => true,
                     'message' => 'Data dosen dan pengguna berhasil diperbarui.'
                 ]);
             }
-    
+
             return response()->json([
                 'status'  => false,
                 'message' => 'Dosen tidak ditemukan'
             ]);
         }
     }
-    
+
 
 
     public function confirm_ajax(string $id)

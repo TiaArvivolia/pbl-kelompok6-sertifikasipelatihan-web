@@ -1,12 +1,15 @@
 <?php
+
 namespace App\Http\Controllers;
-use App\Models\pengguna;
+
+use App\Models\Pengguna;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use App\Models\LevelModel;
+
 class AuthController extends Controller
 {
     public function login()
@@ -36,11 +39,22 @@ class AuthController extends Controller
     }
     public function logout(Request $request)
     {
+        // Proses logout
         Auth::logout();
+
+        // Menghapus sesi
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
+        // Mengecek apakah permintaan Ajax
+        if ($request->ajax()) {
+            return response()->json(['message' => 'Logout successful']);
+        }
+
+        // Jika bukan permintaan Ajax, redirect ke halaman login
         return redirect('login');
     }
+
     public function register()
     {
         $level = pengguna::select('peran')->get();
@@ -67,7 +81,7 @@ class AuthController extends Controller
             $data = $request->all();
             $data['password'] = Hash::make($request->password);
             // Simpan data user
-            UserModel::create($data);
+            Pengguna::create($data);
             return response()->json([
                 'status' => true,
                 'message' => 'Data user berhasil disimpan',

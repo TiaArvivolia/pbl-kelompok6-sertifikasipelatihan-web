@@ -10,6 +10,13 @@ class Pengguna extends Authenticatable
     protected $table = 'pengguna';
     protected $primaryKey = 'id_pengguna';
 
+    protected $guarded = [
+        'web' => [
+            'driver' => 'session',
+            'provider' => 'pengguna',
+        ],
+    ];
+
     // Define only the columns that are present in the migration
     protected $fillable = [
         'username',
@@ -41,5 +48,17 @@ class Pengguna extends Authenticatable
     public function tendik()
     {
         return $this->hasOne(KelolaTendikModel::class, 'id_pengguna');
+    }
+
+    // Relasi dengan admin
+    public function admin()
+    {
+        return $this->hasOne(KelolaAdminModel::class, 'id_pengguna');
+    }
+
+    // Relasi dengan pimpinan
+    public function pimpinan()
+    {
+        return $this->hasOne(KelolaPimpinanModel::class, 'id_pengguna');
     }
 }

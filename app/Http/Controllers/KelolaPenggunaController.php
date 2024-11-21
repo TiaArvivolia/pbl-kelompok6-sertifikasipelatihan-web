@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\JenisPenggunaModel;
+use App\Models\KelolaAdminModel;
+use App\Models\KelolaDosenModel;
+use App\Models\KelolaPimpinanModel;
+use App\Models\KelolaTendikModel;
 use App\Models\Pengguna;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
@@ -10,6 +14,8 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class KelolaPenggunaController extends Controller
 {
@@ -181,63 +187,168 @@ class KelolaPenggunaController extends Controller
         }
     }
     public function export_pdf()
-{
-    // Fetch all users and their associated roles
-    $pengguna = Pengguna::select('pengguna.username', 'jenis_pengguna.nama_jenis_pengguna')
-        ->join('jenis_pengguna', 'pengguna.id_jenis_pengguna', '=', 'jenis_pengguna.id_jenis_pengguna')
-        ->orderBy('pengguna.username', 'asc')
-        ->get();
+    {
+        // Fetch all users and their associated roles
+        $pengguna = Pengguna::select('pengguna.username', 'jenis_pengguna.nama_jenis_pengguna')
+            ->join('jenis_pengguna', 'pengguna.id_jenis_pengguna', '=', 'jenis_pengguna.id_jenis_pengguna')
+            ->orderBy('pengguna.username', 'asc')
+            ->get();
 
-    // Generate PDF using DOMPDF
-    $pdf = Pdf::loadView('pengguna.export_pdf', compact('pengguna'));
-    $pdf->setPaper('a4', 'portrait'); // Set paper size and orientation
+        // Generate PDF using DOMPDF
+        $pdf = Pdf::loadView('pengguna.export_pdf', compact('pengguna'));
+        $pdf->setPaper('a4', 'portrait'); // Set paper size and orientation
 
-    // Stream the PDF to the browser
-    return $pdf->stream('Data_Pengguna_' . date('Y-m-d_H-i-s') . '.pdf');
-}
-public function export_excel()
-{
-    // Fetch users with their roles
-    $pengguna = Pengguna::select('pengguna.username', 'jenis_pengguna.nama_jenis_pengguna')
-        ->join('jenis_pengguna', 'pengguna.id_jenis_pengguna', '=', 'jenis_pengguna.id_jenis_pengguna')
-        ->orderBy('pengguna.username', 'asc')
-        ->get();
+        // Stream the PDF to the browser
+        return $pdf->stream('Data_Pengguna_' . date('Y-m-d_H-i-s') . '.pdf');
+    }
+    public function export_excel()
+    {
+        // Fetch users with their roles
+        $pengguna = Pengguna::select('pengguna.username', 'jenis_pengguna.nama_jenis_pengguna')
+            ->join('jenis_pengguna', 'pengguna.id_jenis_pengguna', '=', 'jenis_pengguna.id_jenis_pengguna')
+            ->orderBy('pengguna.username', 'asc')
+            ->get();
 
-    // Create new Spreadsheet
-    $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-    $sheet = $spreadsheet->getActiveSheet();
+        // Create new Spreadsheet
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
 
-    // Column headers
-    $sheet->setCellValue('A1', 'No');
-    $sheet->setCellValue('B1', 'Username');
-    $sheet->setCellValue('C1', 'Role');
-    $sheet->getStyle('A1:C1')->getFont()->setBold(true);
+        // Column headers
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'Username');
+        $sheet->setCellValue('C1', 'Role');
+        $sheet->getStyle('A1:C1')->getFont()->setBold(true);
 
-    // Insert user data
-    $row = 2;
-    foreach ($pengguna as $index => $data) {
-        $sheet->setCellValue('A' . $row, $index + 1);
-        $sheet->setCellValue('B' . $row, $data->username);
-        $sheet->setCellValue('C' . $row, $data->nama_jenis_pengguna);
-        $row++;
+        // Insert user data
+        $row = 2;
+        foreach ($pengguna as $index => $data) {
+            $sheet->setCellValue('A' . $row, $index + 1);
+            $sheet->setCellValue('B' . $row, $data->username);
+            $sheet->setCellValue('C' . $row, $data->nama_jenis_pengguna);
+            $row++;
+        }
+
+        // Auto resize columns
+        foreach (range('A', 'C') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        // Save the Excel file and serve it for download
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $filename = 'Data_Pengguna_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+        // Send the file to the browser
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
+        exit;
     }
 
-    // Auto resize columns
-    foreach (range('A', 'C') as $columnID) {
-        $sheet->getColumnDimension($columnID)->setAutoSize(true);
+    // Menampilkan halaman profil
+    public function showProfile()
+    {
+        $pengguna = Auth::user();
+        $pengguna->load(['admin', 'dosen', 'tendik', 'pimpinan', 'jenisPengguna']);
+
+        $activeMenu = 'profile'; // Set active menu untuk halaman profile
+
+        $breadcrumb = (object) [
+            'title' => 'Profile',
+            'list' => ['Home']
+        ];
+
+        return view('profile', compact('pengguna', 'activeMenu', 'breadcrumb'));
     }
 
-    // Save the Excel file and serve it for download
-    $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-    $filename = 'Data_Pengguna_' . date('Y-m-d_H-i-s') . '.xlsx';
+    public function uploadProfilePicture(Request $request)
+    {
+        // Validasi input untuk gambar profil
+        $request->validate([
+            'gambar_profil'  => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
 
-    // Send the file to the browser
-    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    header('Content-Disposition: attachment; filename="' . $filename . '"');
-    header('Cache-Control: max-age=0');
+        // Temukan pengguna berdasarkan ID
+        $pengguna = Pengguna::findOrFail(auth()->user()->id_pengguna);
 
-    $writer->save('php://output');
-    exit;
-}
+        // Validasi id_jenis_pengguna untuk menentukan jenis pengguna
+        switch ($pengguna->id_jenis_pengguna) {
+            case 1: // Admin
+                $userModel = KelolaAdminModel::class;
+                break;
+            case 2: // Dosen
+                $userModel = KelolaDosenModel::class;
+                break;
+            case 3: // Tendik
+                $userModel = KelolaTendikModel::class;
+                break;
+            case 4: // Pimpinan
+                $userModel = KelolaPimpinanModel::class;
+                break;
+            default:
+                return redirect()->route('profile')->with('error', 'Jenis pengguna tidak valid.');
+        }
 
+        // Temukan model pengguna terkait (Admin/Dosen/Tendik/Pimpinan)
+        $user = $userModel::where('id_pengguna', $pengguna->id_pengguna)->firstOrFail();
+
+        // Proses upload gambar profil
+        if ($request->hasFile('gambar_profil')) {
+            // Hapus gambar profil lama jika ada
+            if ($user->gambar_profil && Storage::disk('public')->exists($user->gambar_profil)) {
+                Storage::disk('public')->delete($user->gambar_profil);
+            }
+
+            // Simpan gambar baru
+            $path = $request->file('gambar_profil')->store('profile_pictures', 'public');
+            $user->gambar_profil = $path;
+        }
+
+        // Simpan perubahan gambar profil
+        $user->save();
+
+        return redirect()->route('profile')->with('success', 'Gambar profil berhasil diperbarui.');
+    }
+
+
+    // Update profile information
+    public function updateProfile(Request $request)
+    {
+        // Validasi input untuk informasi pengguna
+        $request->validate([
+            'username'       => 'sometimes|required|string|min:3|unique:pengguna,username,' . auth()->user()->id_pengguna . ',id_pengguna',
+        ]);
+
+        // Temukan pengguna berdasarkan ID
+        $pengguna = Pengguna::findOrFail(auth()->user()->id_pengguna);
+
+        // Pembaruan informasi pengguna
+        if ($request->filled('username')) {
+            $pengguna->username = $request->username;
+        }
+
+        $pengguna->save();
+
+        return redirect()->route('profile')->with('success', 'Informasi pengguna berhasil diperbarui.');
+    }
+
+
+    // Change user password
+    public function changePassword(Request $request)
+    {
+        // Validasi input untuk password baru
+        $request->validate([
+            'password'       => 'required|confirmed|min:6',
+        ]);
+
+        // Temukan pengguna berdasarkan ID
+        $pengguna = Pengguna::findOrFail(auth()->user()->id_pengguna);
+
+        // Update password pengguna
+        $pengguna->password = bcrypt($request->password);
+        $pengguna->save();
+
+        return redirect()->route('profile')->with('success', 'Password berhasil diubah.');
+    }
 }
