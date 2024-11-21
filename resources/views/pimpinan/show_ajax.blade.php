@@ -62,7 +62,11 @@
                     <tr>
                         <th class="text-right col-3">Gambar Profil :</th>
                         <td class="col-9">
-                            <img src="{{ asset('storage/' . $pimpinan->gambar_profil) }}" alt="Gambar Profil" class="img-fluid" width="150">
+                            @if($pimpinan->gambar_profil)
+                                <img src="{{ asset('storage/' . $pimpinan->gambar_profil) }}" alt="Gambar Profil" class="img-fluid" width="150">
+                            @else
+                                <span>-</span>
+                            @endif
                         </td>
                     </tr>
                 </table>

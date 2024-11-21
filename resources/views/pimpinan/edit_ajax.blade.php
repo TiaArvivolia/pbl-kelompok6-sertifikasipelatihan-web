@@ -58,23 +58,24 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group">
+                        {{-- <div class="form-group">
                             <label>ID Pengguna</label>
                             <input value="{{ $pimpinan->id_pengguna }}" type="text" name="id_pengguna" id="id_pengguna" class="form-control" required>
                             <small id="error-id_pengguna" class="error-text form-text text-danger"></small>
-                        </div>
+                        </div> --}}
                         <div class="form-group">
                             <label>Username</label>
                             <input value="{{ $pimpinan->username }}" type="text" name="username" id="username" class="form-control" required>
                             <small id="error-username" class="error-text form-text text-danger"></small>
                         </div>
                         <div class="form-group">
-                            <label>Gambar Profil</label>
-                            <input type="file" name="gambar_profil" id="gambar_profil" class="form-control" accept="image/*">
-                            <small id="error-gambar_profil" class="error-text form-text text-danger"></small>
-                        </div>
-                        <div class="form-group">
-                            <img src="{{ asset('storage/' . $pimpinan->gambar_profil) }}" alt="Profil Image" width="100" height="100" id="preview-gambar">
+                            <label for="gambar_profil">Gambar Profil</label>
+                            <div>
+                                @if($pimpinan->gambar_profil)
+                                    <img src="{{ asset('storage/' . $pimpinan->gambar_profil) }}" alt="Gambar Profil" width="150" height="150" class="img-thumbnail">
+                                @endif
+                            </div>
+                            <input type="file" name="gambar_profil" class="form-control mt-2">
                         </div>
                     </div>
                 </div>

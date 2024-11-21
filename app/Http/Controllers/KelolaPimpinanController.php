@@ -6,6 +6,7 @@ use App\Models\KelolaPimpinanModel;
 use App\Models\Pengguna;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -123,12 +124,14 @@ class KelolaPimpinanController extends Controller
     public function update_ajax(Request $request, $id)
     {
         if ($request->ajax() || $request->wantsJson()) {
+            // Menambahkan aturan validasi untuk gambar profil
             $rules = [
                 'nama_lengkap' => 'required|string|max:100',
                 'nip'          => 'required|string|max:20',
                 'nidn'         => 'nullable|string|max:20',
                 'no_telepon'   => 'nullable|string|max:20',
                 'email'        => 'nullable|string|email|max:100',
+                'gambar_profil' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validasi gambar
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -141,9 +144,24 @@ class KelolaPimpinanController extends Controller
                 ]);
             }
 
+            // Mencari data pimpinan berdasarkan ID
             $pimpinan = KelolaPimpinanModel::find($id);
             if ($pimpinan) {
-                $pimpinan->update($request->all());
+                // Menangani penggantian gambar profil jika ada
+                if ($request->hasFile('gambar_profil')) {
+                    // Menghapus gambar lama jika ada
+                    if ($pimpinan->gambar_profil && Storage::disk('public')->exists($pimpinan->gambar_profil)) {
+                        Storage::disk('public')->delete($pimpinan->gambar_profil);
+                    }
+
+                    // Menyimpan gambar baru
+                    $path = $request->file('gambar_profil')->store('profile_pictures', 'public');
+                    $pimpinan->gambar_profil = $path;
+                }
+
+                // Update data pimpinan selain gambar profil
+                $pimpinan->update($request->except(['gambar_profil']));
+
                 return response()->json([
                     'status'  => true,
                     'message' => 'Data pimpinan berhasil diperbarui.'
@@ -156,6 +174,7 @@ class KelolaPimpinanController extends Controller
             ]);
         }
     }
+
 
     // Display delete confirmation for Pimpinan via AJAX
     public function confirm_ajax(string $id)
