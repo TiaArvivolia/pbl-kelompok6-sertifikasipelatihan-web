@@ -193,8 +193,6 @@ class KelolaAdminController extends Controller
     }
 
 
-
-
     // Menampilkan konfirmasi penghapusan pengguna dengan AJAX
     public function confirm_ajax(string $id)
     {

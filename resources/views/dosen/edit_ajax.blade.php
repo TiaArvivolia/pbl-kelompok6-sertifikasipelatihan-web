@@ -92,6 +92,21 @@
                     <small id="error-id_bidang_minat" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
+                    <label>Username</label>
+                    <input value="{{ $dosen->pengguna->username }}" type="text" name="username" id="username" class="form-control" maxlength="50">
+                    <small id="error-username" class="error-text form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label>Password (Opsional)</label>
+                    <input type="password" name="password" id="password" class="form-control" minlength="8">
+                    <small id="error-password" class="error-text form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label>Konfirmasi Password</label>
+                    <input type="password" name="password_confirmation" id="password_confirmation" class="form-control">
+                    <small id="error-password_confirmation" class="error-text form-text text-danger"></small>
+                </div> 
+                <div class="form-group">
                     <label for="gambar_profil">Gambar Profil</label>
                     <div>
                         @if($dosen->gambar_profil)
