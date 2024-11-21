@@ -143,6 +143,7 @@ class KelolaTendikController extends Controller
     public function update_ajax(Request $request, $id)
     {
         if ($request->ajax() || $request->wantsJson()) {
+            // Validation rules
             $rules = [
                 'nama_lengkap' => 'required|string|max:100',
                 'nip'  => 'required|string|max:20',
@@ -150,6 +151,8 @@ class KelolaTendikController extends Controller
                 'email' => 'nullable|string|email|max:100',
                 'tag_bidang_minat' => 'required|exists:bidang_minat,id_bidang_minat',
                 'gambar_profil' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validasi gambar
+                'username' => 'nullable|string|max:100', // Validasi untuk username
+                'password' => 'nullable|string|min:6', // Validasi untuk password
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -162,6 +165,7 @@ class KelolaTendikController extends Controller
                 ]);
             }
 
+            // Mencari tendik berdasarkan ID
             $tendik = KelolaTendikModel::find($id);
             if ($tendik) {
                 // Update bidang minat
@@ -169,22 +173,37 @@ class KelolaTendikController extends Controller
 
                 // Tangani penggantian gambar profil
                 if ($request->hasFile('gambar_profil')) {
-                    // Hapus gambar lama jika ada
                     if ($tendik->gambar_profil && Storage::disk('public')->exists($tendik->gambar_profil)) {
                         Storage::disk('public')->delete($tendik->gambar_profil);
                     }
 
-                    // Simpan gambar baru
                     $path = $request->file('gambar_profil')->store('profile_pictures', 'public');
                     $tendik->gambar_profil = $path;
                 }
 
                 // Update data tendik
-                $tendik->update($request->except(['tag_bidang_minat', 'gambar_profil'])); // Update data lain selain gambar dan bidang minat
+                $tendik->update($request->except(['tag_bidang_minat', 'gambar_profil', 'username', 'password']));
+
+                // Cek dan update data pengguna (username dan password)
+                if ($request->filled('username') || $request->filled('password')) {
+                    $pengguna = Pengguna::where('id_pengguna', $tendik->id_pengguna)->first(); // Assuming id_pengguna is the foreign key
+                    if ($pengguna) {
+                        if ($request->filled('username')) {
+                            $pengguna->username = $request->username;
+                        }
+
+                        if ($request->filled('password')) {
+                            // Enkripsi password sebelum disimpan
+                            $pengguna->password = bcrypt($request->password);
+                        }
+
+                        $pengguna->save();
+                    }
+                }
 
                 return response()->json([
                     'status'  => true,
-                    'message' => 'Data tendik berhasil diperbarui.'
+                    'message' => 'Data tendik dan pengguna berhasil diperbarui.'
                 ]);
             }
 
@@ -194,6 +213,7 @@ class KelolaTendikController extends Controller
             ]);
         }
     }
+
 
 
     public function confirm_ajax(string $id)

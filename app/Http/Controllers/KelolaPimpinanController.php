@@ -124,14 +124,16 @@ class KelolaPimpinanController extends Controller
     public function update_ajax(Request $request, $id)
     {
         if ($request->ajax() || $request->wantsJson()) {
-            // Menambahkan aturan validasi untuk gambar profil
+            // Validation rules
             $rules = [
                 'nama_lengkap' => 'required|string|max:100',
-                'nip'          => 'required|string|max:20',
-                'nidn'         => 'nullable|string|max:20',
-                'no_telepon'   => 'nullable|string|max:20',
-                'email'        => 'nullable|string|email|max:100',
-                'gambar_profil' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validasi gambar
+                'nip'  => 'required|string|max:20',
+                'nidn' => 'nullable|string|max:20',
+                'no_telepon'  => 'nullable|string|max:20',
+                'email' => 'nullable|string|email|max:100',
+                'gambar_profil' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Gambar validasi
+                'username' => 'nullable|string|max:100', // Validasi untuk username
+                'password' => 'nullable|string|min:6|confirmed', // Validasi untuk password
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -144,10 +146,10 @@ class KelolaPimpinanController extends Controller
                 ]);
             }
 
-            // Mencari data pimpinan berdasarkan ID
+            // Mencari pimpinan berdasarkan ID
             $pimpinan = KelolaPimpinanModel::find($id);
             if ($pimpinan) {
-                // Menangani penggantian gambar profil jika ada
+                // Tangani penggantian gambar profil jika ada
                 if ($request->hasFile('gambar_profil')) {
                     // Menghapus gambar lama jika ada
                     if ($pimpinan->gambar_profil && Storage::disk('public')->exists($pimpinan->gambar_profil)) {
@@ -160,11 +162,29 @@ class KelolaPimpinanController extends Controller
                 }
 
                 // Update data pimpinan selain gambar profil
-                $pimpinan->update($request->except(['gambar_profil']));
+                $pimpinan->update($request->except(['gambar_profil', 'username', 'password']));
+
+                // Cek dan update data pengguna (username dan password)
+                if ($request->filled('username') || $request->filled('password')) {
+                    $pengguna = Pengguna::where('id_pengguna', $pimpinan->id_pengguna)->first();
+
+                    if ($pengguna) {
+                        if ($request->filled('username')) {
+                            $pengguna->username = $request->username;
+                        }
+
+                        if ($request->filled('password')) {
+                            // Encrypt password before saving
+                            $pengguna->password = bcrypt($request->password);
+                        }
+
+                        $pengguna->save();
+                    }
+                }
 
                 return response()->json([
                     'status'  => true,
-                    'message' => 'Data pimpinan berhasil diperbarui.'
+                    'message' => 'Data pimpinan dan pengguna berhasil diperbarui.'
                 ]);
             }
 
@@ -174,6 +194,7 @@ class KelolaPimpinanController extends Controller
             ]);
         }
     }
+
 
 
     // Display delete confirmation for Pimpinan via AJAX
