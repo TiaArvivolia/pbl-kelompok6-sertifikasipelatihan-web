@@ -17,7 +17,7 @@
         </div>
     </div>
 @else
-<form action="{{ url('/dosen/' . $dosen->id_dosen . '/update_ajax') }}" method="POST" id="form-edit-dosen">
+<form action="{{ url('/dosen/' . $dosen->id_dosen . '/update_ajax') }}" method="POST" id="form-edit-dosen" enctype="multipart/form-data">
     @csrf
     @method('PUT')
     <div id="modal-master" class="modal-dialog modal-lg" role="document">
@@ -91,15 +91,24 @@
                     </select>
                     <small id="error-id_bidang_minat" class="error-text form-text text-danger"></small>
                 </div>
+                <div class="form-group">
+                    <label for="gambar_profil">Gambar Profil</label>
+                    <div>
+                        @if($dosen->gambar_profil)
+                            <img src="{{ asset('storage/' . $dosen->gambar_profil) }}" alt="Gambar Profil" width="150" height="150" class="img-thumbnail">
+                        @endif
+                    </div>
+                    <input type="file" name="gambar_profil" class="form-control mt-2">
+                </div>
                 
                 
                 
-                     
+{{--                      
                 <div class="form-group">
                     <label>Gambar Profil</label>
                     <input type="file" name="gambar_profil" id="gambar_profil" class="form-control">
                     <small id="error-gambar_profil" class="error-text form-text text-danger"></small>
-                </div>
+                </div> --}}
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-warning" data-dismiss="modal">Batal</button>

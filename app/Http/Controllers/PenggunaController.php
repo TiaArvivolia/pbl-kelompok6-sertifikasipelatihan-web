@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Pengguna;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\DataTables; // Ensure you have Yajra DataTables package installed
 
@@ -209,5 +211,75 @@ class PenggunaController extends Controller
     public function export_pdf()
     {
         // Logic untuk mengekspor data ke file PDF
+    }
+
+
+    // Menampilkan halaman profil
+    public function showProfile()
+    {
+        $user = Auth::user(); // Mendapatkan user yang sedang login
+        $activeMenu = 'profile'; // Set active menu untuk halaman profile
+
+        $breadcrumb = (object) [
+            'title' => 'Profile',
+            'list' => ['Home']
+        ];
+
+        return view('profile', compact('user', 'activeMenu', 'breadcrumb'));
+    }
+
+    public function uploadProfilePicture(Request $request)
+    {
+        $request->validate([
+            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $user = Auth::user();
+
+        // Hapus gambar profil lama jika ada
+        if ($user->profile_picture) {
+            Storage::delete($user->profile_picture);
+        }
+
+        // Simpan gambar baru
+        $path = $request->file('profile_picture')->store('profile_pictures');
+
+        // Update path di database
+        $user->profile_picture = $path;
+        $user->save();
+
+        return redirect()->route('profile')->with('success', 'Profile picture updated successfully.');
+    }
+
+    // Update profile information
+    public function updateProfile(Request $request)
+    {
+        $request->validate([
+            'username' => 'required|string|min:3|unique:m_user,username,' . Auth::id() . ',user_id',
+            'nama'     => 'required|string|max:100',
+        ]);
+
+        $user = Auth::user();
+        $user->update([
+            'username' => $request->username,
+            'nama'     => $request->nama,
+        ]);
+
+        return redirect()->route('profile')->with('success', 'Profile updated successfully.');
+    }
+
+    // Change user password
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|confirmed|min:6',
+        ]);
+
+        $user = Auth::user();
+        $user->update([
+            'password' => bcrypt($request->password),
+        ]);
+
+        return redirect()->route('profile')->with('success', 'Password changed successfully.');
     }
 }

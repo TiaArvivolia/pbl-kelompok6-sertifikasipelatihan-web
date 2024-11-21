@@ -26,11 +26,12 @@
             <thead>
                 <tr>
                     <th>No</th>
+                    <th>Profil</th>
                     <th>Nama Lengkap</th>
                     <th>NIP</th>
                     <th>NIDN</th>
                     <th>No Telepon</th>
-                    <th>Email</th>
+                    {{-- <th>Email</th> --}}
                     {{-- <th>ID Pengguna</th> <!-- Added ID Pengguna Column --> --}}
                     <th>Username</th> <!-- Added Username Column -->
                     <th>Aksi</th>
@@ -74,6 +75,12 @@ $(document).ready(function(){
                 searchable: false
             },
             {
+                data: 'gambar_profil',
+                name: 'gambar_profil',
+                orderable: false,
+                searchable: false
+            },
+            {
                 data: "nama_lengkap",
                 orderable: true,
                 searchable: true
@@ -93,11 +100,11 @@ $(document).ready(function(){
                 orderable: true,
                 searchable: true
             },
-            {
-                data: "email",
-                orderable: true,
-                searchable: true
-            },
+            // {
+            //     data: "email",
+            //     orderable: true,
+            //     searchable: true
+            // },
             // {
             //     data: "pengguna.id_pengguna", // Displaying ID Pengguna
             //     orderable: false,

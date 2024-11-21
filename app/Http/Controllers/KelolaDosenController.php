@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Storage;
+
 
 class KelolaDosenController extends Controller
 {
@@ -38,14 +40,21 @@ class KelolaDosenController extends Controller
 
         return DataTables::of($dosen)
             ->addIndexColumn()
+            ->addColumn('gambar_profil', function ($dosen) {
+                // Cek apakah ada gambar_profil
+                if ($dosen->gambar_profil) {
+                    $url = asset('storage/' . $dosen->gambar_profil); // Pastikan folder `storage` bisa diakses
+                    return '<img src="' . $url . '"  width="150" height="150" class="img-thumbnail">';
+                }
+                return '<span class="text-muted">Tidak ada gambar</span>'; // Placeholder jika gambar kosong
+            })
             ->addColumn('aksi', function ($dosen) {
                 $btn = '<button onclick="modalAction(\'' . url('/dosen/' . $dosen->id_dosen . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/dosen/' . $dosen->id_dosen . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/dosen/' . $dosen->id_dosen . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Hapus</button>';
-
                 return $btn;
             })
-            ->rawColumns(['aksi']) // Ensure action column supports HTML
+            ->rawColumns(['gambar_profil', 'aksi']) // Pastikan kolom 'gambar_profil' mendukung HTML
             ->make(true);
     }
 
@@ -99,7 +108,7 @@ class KelolaDosenController extends Controller
             'email' => $request->input('email'),
             'tag_mk' => $request->input('tag_mk'),
             'tag_bidang_minat' => $request->input('tag_bidang_minat'),
-            'gambar_profil' => $request->file('gambar_profil') ? $request->file('gambar_profil')->store('profile_pictures') : null, // Handle optional profile picture upload
+            'gambar_profil' => $request->file('gambar_profil') ? $request->file('gambar_profil')->store('profile_pictures', 'public') : null, // Handle optional profile picture upload
         ]);
 
         // Return a successful response
@@ -146,12 +155,13 @@ class KelolaDosenController extends Controller
                 'nidn' => 'required|string|max:20',
                 'no_telepon'  => 'nullable|string|max:20',
                 'email' => 'nullable|string|email|max:100',
-                'tag_mk' => 'required|exists:mata_kuliah,id_mata_kuliah',  // Menambahkan validasi untuk tag_mk
-                'tag_bidang_minat' => 'required|exists:bidang_minat,id_bidang_minat', // Validasi untuk tag_bidang_minat
+                'tag_mk' => 'required|exists:mata_kuliah,id_mata_kuliah',
+                'tag_bidang_minat' => 'required|exists:bidang_minat,id_bidang_minat',
+                'gambar_profil' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validasi gambar
             ];
-
+    
             $validator = Validator::make($request->all(), $rules);
-
+    
             if ($validator->fails()) {
                 return response()->json([
                     'status'   => false,
@@ -159,27 +169,41 @@ class KelolaDosenController extends Controller
                     'msgField' => $validator->errors()
                 ]);
             }
-
+    
             $dosen = KelolaDosenModel::find($id);
             if ($dosen) {
-                // Menangani update untuk tag_mk dan tag_bidang_minat
-                $dosen->mataKuliah()->associate(MataKuliahModel::find($request->tag_mk));  // Mengupdate relasi Mata Kuliah
-                $dosen->bidangMinat()->associate(BidangMinatModel::find($request->tag_bidang_minat)); // Mengupdate relasi Bidang Minat
-
-                $dosen->update($request->except(['tag_mk', 'tag_bidang_minat'])); // Mengupdate kolom lainnya selain relasi
-
+                // Update mata kuliah dan bidang minat
+                $dosen->mataKuliah()->associate(MataKuliahModel::find($request->tag_mk));
+                $dosen->bidangMinat()->associate(BidangMinatModel::find($request->tag_bidang_minat));
+    
+                // Tangani penggantian gambar
+                if ($request->hasFile('gambar_profil')) {
+                    // Hapus gambar lama jika ada
+                    if ($dosen->gambar_profil && Storage::disk('public')->exists($dosen->gambar_profil)) {
+                        Storage::disk('public')->delete($dosen->gambar_profil);
+                    }
+    
+                    // Simpan gambar baru
+                    $path = $request->file('gambar_profil')->store('profile_pictures', 'public');
+                    $dosen->gambar_profil = $path;
+                }
+    
+                // Update data dosen
+                $dosen->update($request->except(['tag_mk', 'tag_bidang_minat', 'gambar_profil']));
+    
                 return response()->json([
                     'status'  => true,
                     'message' => 'Data dosen berhasil diperbarui.'
                 ]);
             }
-
+    
             return response()->json([
                 'status'  => false,
                 'message' => 'Dosen tidak ditemukan'
             ]);
         }
     }
+    
 
     public function confirm_ajax(string $id)
     {

@@ -37,6 +37,14 @@ class KelolaTendikController extends Controller
 
         return DataTables::of($tendik)
             ->addIndexColumn()
+            ->addColumn('gambar_profil', function ($tendik) {
+                // Cek apakah ada gambar_profil
+                if ($tendik->gambar_profil) {
+                    $url = asset('storage/' . $tendik->gambar_profil); // Pastikan folder `storage` bisa diakses
+                    return '<img src="' . $url . '"  width="150" height="150" class="img-thumbnail">';
+                }
+                return '<span class="text-muted">Tidak ada gambar</span>'; // Placeholder jika gambar kosong
+            })
             ->addColumn('aksi', function ($tendik) {
                 $btn = '<button onclick="modalAction(\'' . url('/tendik/' . $tendik->id_tendik . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/tendik/' . $tendik->id_tendik . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
@@ -44,7 +52,7 @@ class KelolaTendikController extends Controller
 
                 return $btn;
             })
-            ->rawColumns(['aksi']) // Ensure action column supports HTML
+            ->rawColumns(['gambar_profil', 'aksi']) // Pastikan kolom 'gambar_profil' mendukung HTML
             ->make(true);
     }
 

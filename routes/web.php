@@ -47,6 +47,17 @@ Route::get('login', [AuthController::class, 'login'])->name('login');
 Route::post('login', [AuthController::class, 'postlogin']);
 Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
 
+Route::get('/profile', [UserController::class, 'showProfile'])->name('profile');
+
+// Route untuk update profil (termasuk upload gambar)
+Route::post('/profile/upload', [UserController::class, 'uploadProfilePicture'])->name('profile.upload');
+
+// Route untuk update informasi pengguna
+Route::put('/profile/update', [UserController::class, 'updateProfile'])->name('profile.update');
+
+// Route untuk mengubah password
+Route::post('/profile/change-password', [UserController::class, 'changePassword'])->name('profile.changePassword');
+
 Route::middleware(['auth'])->group(function () {});
 Route::get('/', [WelcomeController::class, 'index']);
 

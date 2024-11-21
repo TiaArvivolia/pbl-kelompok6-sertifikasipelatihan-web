@@ -36,6 +36,14 @@ class KelolaPimpinanController extends Controller
 
         return DataTables::of($pimpinan)
             ->addIndexColumn()
+            ->addColumn('gambar_profil', function ($pimpinan) {
+                // Cek apakah ada gambar_profil
+                if ($pimpinan->gambar_profil) {
+                    $url = asset('storage/' . $pimpinan->gambar_profil); // Pastikan folder `storage` bisa diakses
+                    return '<img src="' . $url . '"  width="150" height="150" class="img-thumbnail">';
+                }
+                return '<span class="text-muted">Tidak ada gambar</span>'; // Placeholder jika gambar kosong
+            })
             ->addColumn('aksi', function ($pimpinan) {
                 $btn = '<button onclick="modalAction(\'' . url('/pimpinan/' . $pimpinan->id_pimpinan . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/pimpinan/' . $pimpinan->id_pimpinan . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
@@ -43,7 +51,7 @@ class KelolaPimpinanController extends Controller
 
                 return $btn;
             })
-            ->rawColumns(['aksi'])
+            ->rawColumns(['gambar_profil', 'aksi']) // Pastikan kolom 'gambar_profil' mendukung HTML
             ->make(true);
     }
 

@@ -78,13 +78,13 @@
                     <small id="error-masa_berlaku" class="error-text form-text text-danger"></small>
                 </div>
 
-                <div class="form-group">
+                {{-- <div class="form-group">
                     <label>Penyelenggara</label>
                     <input type="text" name="penyelenggara" id="penyelenggara" class="form-control" required>
                     <small id="error-penyelenggara" class="error-text form-text text-danger"></small>
-                </div>
+                </div> --}}
 
-                {{-- <div class="form-group">
+                <div class="form-group">
                     <label>Penyelenggara</label>
                     <select name="penyelenggara" id="penyelenggara" class="form-control">
                         <option value="">- Pilih Penyelenggara -</option>
@@ -93,11 +93,10 @@
                         @endforeach
                     </select>
                     <small id="error-penyelenggara" class="error-text form-text text-danger"></small>
-                </div> --}}
+                </div>
 
                 <div class="form-group">
-                    <label>Dokumen Sertifikat</label>
-                    <input type="file" name="dokumen_sertifikat" id="dokumen_sertifikat" class="form-control">
+                    <label>Dokumen Sertifgamaokumen_sertifikat" id="dokumen_sertifikat" class="form-control">
                     <small id="error-dokumen_sertifikat" class="error-text form-text text-danger"></small>
                 </div>
 

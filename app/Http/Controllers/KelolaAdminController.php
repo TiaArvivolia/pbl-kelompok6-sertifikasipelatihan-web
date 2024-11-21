@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Storage;
 
 class KelolaAdminController extends Controller
 {
@@ -37,6 +38,14 @@ class KelolaAdminController extends Controller
 
         return DataTables::of($admin)
             ->addIndexColumn()
+            ->addColumn('gambar_profil', function ($admin) {
+                // Cek apakah ada gambar_profil
+                if ($admin->gambar_profil) {
+                    $url = asset('storage/' . $admin->gambar_profil); // Pastikan folder `storage` bisa diakses
+                    return '<img src="' . $url . '"  width="150" height="150" class="img-thumbnail">';
+                }
+                return '<span class="text-muted">Tidak ada gambar</span>'; // Placeholder jika gambar kosong
+            })
             ->addColumn('aksi', function ($admin) {
                 $btn = '<button onclick="modalAction(\'' . url('/admin/' . $admin->id_admin . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/admin/' . $admin->id_admin . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
@@ -44,7 +53,7 @@ class KelolaAdminController extends Controller
 
                 return $btn;
             })
-            ->rawColumns(['aksi']) // Ensure action column supports HTML
+            ->rawColumns(['gambar_profil', 'aksi']) // Pastikan kolom 'gambar_profil' mendukung HTML
             ->make(true);
     }
 
@@ -82,14 +91,14 @@ class KelolaAdminController extends Controller
             'nip' => $request->input('nip'),
             'no_telepon' => $request->input('no_telepon'),
             'email' => $request->input('email'),
-            'gambar_profil' => $request->file('gambar_profil') ? $request->file('gambar_profil')->store('profile_pictures') : null, // Simpan file jika ada
+            'gambar_profil' => $request->file('gambar_profil') ? $request->file('gambar_profil')->store('profile_pictures', 'public') : null, // Simpan file jika ada
         ]);
 
         return response()->json([
             'status' => true,
             'message' => 'Data admin berhasil disimpan!',
         ]);
-        
+
         return redirect('/');
     }
 
@@ -119,7 +128,7 @@ class KelolaAdminController extends Controller
                 'email' => 'required|string|email|max:100',
                 'username' => 'nullable|string|max:50|unique:pengguna,username,' . $id . ',id_pengguna',
                 'password' => 'nullable|string|min:8|confirmed',
-                'gambar_profil' => 'nullable|file|mimes:jpeg,png,jpg|max:2048', // Validasi file
+                'gambar_profil' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validasi file gambar
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -136,24 +145,20 @@ class KelolaAdminController extends Controller
             $admin = KelolaAdminModel::find($id);
 
             if ($admin) {
+                // Tangani penggantian gambar
+                if ($request->hasFile('gambar_profil')) {
+                    // Hapus gambar lama jika ada
+                    if ($admin->gambar_profil && Storage::disk('public')->exists($admin->gambar_profil)) {
+                        Storage::disk('public')->delete($admin->gambar_profil);
+                    }
+
+                    // Simpan gambar baru
+                    $path = $request->file('gambar_profil')->store('profile_pictures', 'public');
+                    $admin->gambar_profil = $path;
+                }
+
                 // Update data admin
                 $admin->update($request->only(['nama_lengkap', 'nip', 'no_telepon', 'email']));
-
-                // Tangani unggahan file
-                if ($request->hasFile('gambar_profil')) {
-                    $file = $request->file('gambar_profil');
-                    $fileName = time() . '_' . $file->getClientOriginalName();
-                    $filePath = $file->storeAs('uploads/admin', $fileName, 'public');
-
-                    // // Hapus file lama jika ada
-                    // if ($admin->gambar_profil && \Storage::exists('public/' . $admin->gambar_profil)) {
-                    //     \Storage::delete('public/' . $admin->gambar_profil);
-                    // }
-
-                    // Simpan path file baru
-                    $admin->gambar_profil = $filePath;
-                    $admin->save();
-                }
 
                 // Update tabel pengguna
                 $pengguna = $admin->pengguna; // Relasi ke model Pengguna
@@ -170,9 +175,13 @@ class KelolaAdminController extends Controller
                     }
                 }
 
+                // Ambil data terbaru admin untuk ditampilkan di index
+                $updatedAdmin = KelolaAdminModel::with('pengguna')->find($id);
+
                 return response()->json([
                     'status'  => true,
                     'message' => 'Data admin berhasil diperbarui.',
+                    'data'    => $updatedAdmin, // Kirim data terbaru untuk auto-reload di front-end
                 ]);
             }
 
@@ -182,6 +191,8 @@ class KelolaAdminController extends Controller
             ]);
         }
     }
+
+
 
 
     // Menampilkan konfirmasi penghapusan pengguna dengan AJAX
