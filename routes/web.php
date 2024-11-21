@@ -156,7 +156,7 @@ Route::prefix('jenis_pelatihan')->group(function () {
     Route::get('/', [JenisPelatihanController::class, 'index']);
     Route::post('/list', [JenisPelatihanController::class, 'list']);
     Route::get('/create_ajax', [JenisPelatihanController::class, 'create_ajax']);
-    
+
     Route::post('/ajax', [JenisPelatihanController::class, 'store_ajax']);
     Route::get('/{id}/show_ajax', [JenisPelatihanController::class, 'show_ajax']);
     Route::get('/{id}/edit_ajax', [JenisPelatihanController::class, 'edit_ajax']);
@@ -165,8 +165,6 @@ Route::prefix('jenis_pelatihan')->group(function () {
     Route::delete('/{id}/delete_ajax', [JenisPelatihanController::class, 'delete_ajax']);
     Route::get('/export_pdf', [JenisPelatihanController::class, 'export_pdf']);
     Route::get('/export_excel', [JenisPelatihanController::class, 'export_excel']);
-
-
 });
 
 // Vendor Pelatihan

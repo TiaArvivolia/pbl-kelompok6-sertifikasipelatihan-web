@@ -6,17 +6,12 @@ use App\Models\BidangMinatModel;
 use App\Models\KelolaDosenModel;
 use App\Models\MataKuliahModel;
 use App\Models\Pengguna;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
-<<<<<<< HEAD
-use Illuminate\Support\Facades\Storage;
-
-=======
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use Barryvdh\DomPDF\Facade\Pdf;
->>>>>>> 1c5563fd55489ba71a6b0190fa2840e2b00765b7
 
 class KelolaDosenController extends Controller
 {
