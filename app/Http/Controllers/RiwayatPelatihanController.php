@@ -10,6 +10,7 @@ use App\Models\RiwayatPelatihanModel;
 use App\Models\VendorPelatihanModel;
 use App\Models\VendorSertifikasiModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -90,8 +91,7 @@ class RiwayatPelatihanController extends Controller
             'tanggal_selesai' => 'nullable|date|after_or_equal:tanggal_mulai',
             'lokasi' => 'nullable|string|max:100',
             'penyelenggara' => 'required|exists:vendor_pelatihan,id_vendor_pelatihan',
-            // 'penyelenggara' => 'nullable|string|max:100',
-            'dokumen_pelatihan' => 'nullable|mimes:jpg,jpeg,png,gif,bmp,pdf,docx,xlsx',
+            'dokumen_pelatihan' => 'nullable|mimes:jpg,jpeg,png,gif,bmp,pdf,docx,xlsx|max:10240', // Maksimum ukuran file 10MB
             'tag_mk' => 'nullable|exists:mata_kuliah,id_mata_kuliah',
             'tag_bidang_minat' => 'nullable|exists:bidang_minat,id_bidang_minat'
         ];
@@ -106,12 +106,36 @@ class RiwayatPelatihanController extends Controller
             ]);
         }
 
-        RiwayatPelatihanModel::create($request->all());
+        // Menangani dokumen pelatihan jika ada
+        $dokumenPath = null;
+        if ($request->hasFile('dokumen_pelatihan') && $request->file('dokumen_pelatihan')->isValid()) {
+            // Mengambil file yang diunggah
+            $file = $request->file('dokumen_pelatihan');
+            // Menyimpan file di folder 'dokumen_pelatihan' di storage/public dan mendapatkan path file
+            $dokumenPath = $file->store('dokumen_pelatihan', 'public');
+        }
+
+        // Menyimpan data riwayat pelatihan
+        RiwayatPelatihanModel::create([
+            'id_pengguna' => $request->id_pengguna,
+            'id_pelatihan' => $request->id_pelatihan,
+            'level_pelatihan' => $request->level_pelatihan,
+            'nama_pelatihan' => $request->nama_pelatihan,
+            'tanggal_mulai' => $request->tanggal_mulai,
+            'tanggal_selesai' => $request->tanggal_selesai,
+            'lokasi' => $request->lokasi,
+            'penyelenggara' => $request->penyelenggara,
+            'dokumen_pelatihan' => $dokumenPath, // Menyimpan path dokumen pelatihan di database
+            'tag_mk' => $request->tag_mk,
+            'tag_bidang_minat' => $request->tag_bidang_minat,
+        ]);
+
         return response()->json([
             'status' => true,
             'message' => 'Riwayat Pelatihan berhasil disimpan'
         ]);
     }
+
 
     public function show_ajax($id)
     {
@@ -164,6 +188,7 @@ class RiwayatPelatihanController extends Controller
 
     public function update_ajax(Request $request, $id)
     {
+        // Validasi input
         $rules = [
             'id_pengguna' => 'exists:pengguna,id_pengguna',
             'id_pelatihan' => 'nullable|exists:daftar_pelatihan,id_pelatihan',
@@ -173,7 +198,7 @@ class RiwayatPelatihanController extends Controller
             'tanggal_selesai' => 'nullable|date|after_or_equal:tanggal_mulai',
             'lokasi' => 'nullable|string|max:100',
             // 'penyelenggara' => 'nullable|string|max:100',
-            'dokumen_pelatihan' => 'nullable|string|max:255',
+            'dokumen_pelatihan' => 'nullable|mimes:jpg,jpeg,png,gif,bmp,pdf,docx,xlsx|max:10240', // Validasi untuk dokumen
             'tag_mk' => 'nullable|exists:mata_kuliah,id_mata_kuliah',
             'tag_bidang_minat' => 'nullable|exists:bidang_minat,id_bidang_minat'
         ];
@@ -188,9 +213,39 @@ class RiwayatPelatihanController extends Controller
             ]);
         }
 
+        // Cari riwayat pelatihan berdasarkan ID
         $pelatihan = RiwayatPelatihanModel::find($id);
         if ($pelatihan) {
-            $pelatihan->update($request->all());
+            // Menangani dokumen pelatihan jika ada file yang diunggah
+            $dokumenPath = $pelatihan->dokumen_pelatihan; // Ambil dokumen yang lama (jika ada)
+
+            // Cek apakah dokumen lama ada dan hapus sebelum mengupdate
+            if ($dokumenPath && Storage::exists('public/' . $dokumenPath)) {
+                Storage::delete('public/' . $dokumenPath); // Hapus dokumen lama
+            }
+
+            // Menangani dokumen pelatihan baru jika ada file yang diunggah
+            if ($request->hasFile('dokumen_pelatihan') && $request->file('dokumen_pelatihan')->isValid()) {
+                // Mengambil file yang diunggah
+                $file = $request->file('dokumen_pelatihan');
+                // Menyimpan file di folder 'dokumen' di storage/public dan mendapatkan path file
+                $dokumenPath = $file->store('dokumen_pelatihan', 'public');
+            }
+
+            // Perbarui riwayat pelatihan dengan data baru
+            $pelatihan->update([
+                'id_pengguna' => $request->id_pengguna,
+                'id_pelatihan' => $request->id_pelatihan,
+                'level_pelatihan' => $request->level_pelatihan,
+                'nama_pelatihan' => $request->nama_pelatihan,
+                'tanggal_mulai' => $request->tanggal_mulai,
+                'tanggal_selesai' => $request->tanggal_selesai,
+                'lokasi' => $request->lokasi,
+                'penyelenggara' => $request->penyelenggara,
+                'dokumen_pelatihan' => $dokumenPath, // Menyimpan path dokumen yang baru
+                'tag_mk' => $request->tag_mk,
+                'tag_bidang_minat' => $request->tag_bidang_minat
+            ]);
 
             return response()->json([
                 'status' => true,
@@ -203,6 +258,7 @@ class RiwayatPelatihanController extends Controller
             'message' => 'Riwayat Pelatihan tidak ditemukan'
         ]);
     }
+
 
     public function confirm_ajax(string $id)
     {

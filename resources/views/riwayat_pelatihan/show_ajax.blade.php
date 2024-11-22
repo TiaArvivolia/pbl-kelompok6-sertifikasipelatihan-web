@@ -32,10 +32,6 @@
                         <td class="col-9">{{ $pelatihan->id_riwayat }}</td>
                     </tr>
                     <tr>
-                        <th class="text-right col-3">ID Pengguna :</th>
-                        <td class="col-9">{{ $pelatihan->pengguna->id_pengguna }}</td>
-                    </tr>
-                    <tr>
                         <th class="text-right col-3">Nama Pengguna :</th>
                         <td class="col-9">
                             {{ $pelatihan->pengguna->dosen ? $pelatihan->pengguna->dosen->nama_lengkap : ($pelatihan->pengguna->tendik ? $pelatihan->pengguna->tendik->nama_lengkap : 'Tidak Tersedia') }}

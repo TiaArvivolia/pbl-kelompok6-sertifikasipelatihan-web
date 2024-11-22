@@ -33,40 +33,43 @@
                     <h5><i class="icon fas fa-exclamation-triangle"></i> Konfirmasi !!!</h5>
                     Apakah Anda ingin menghapus data berikut?
                 </div>
-                <table class="table table-sm table-bordered table-striped">
-                    <tr>
-                        <th class="text-right col-3">ID Riwayat Pelatihan :</th>
-                        <td class="col-9">{{ $pelatihan->id_riwayat }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right col-3">ID Pengguna :</th>
-                        <td class="col-9">{{ $pelatihan->id_pengguna }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right col-3">Nama Pelatihan :</th>
-                        <td class="col-9">{{ $pelatihan->nama_pelatihan }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right col-3">Tanggal Mulai :</th>
-                        <td class="col-9">{{ $pelatihan->tanggal_mulai }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right col-3">Tanggal Selesai :</th>
-                        <td class="col-9">{{ $pelatihan->tanggal_selesai }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right col-3">Lokasi :</th>
-                        <td class="col-9">{{ $pelatihan->lokasi }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right col-3">Penyelenggara :</th>
-                        <td class="col-9">{{ $pelatihan->penyelenggara }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right col-3">Dokumen Pelatihan :</th>
-                        <td class="col-9">{{ $pelatihan->dokumen_pelatihan }}</td>
-                    </tr>
-                </table>
+                
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered table-striped">
+                        <tr>
+                            <th class="text-right col-3">ID Riwayat Pelatihan :</th>
+                            <td class="col-9">{{ $pelatihan->id_riwayat }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right col-3">ID Pengguna :</th>
+                            <td class="col-9">{{ $pelatihan->id_pengguna }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right col-3">Nama Pelatihan :</th>
+                            <td class="col-9">{{ $pelatihan->nama_pelatihan }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right col-3">Tanggal Mulai :</th>
+                            <td class="col-9">{{ $pelatihan->tanggal_mulai }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right col-3">Tanggal Selesai :</th>
+                            <td class="col-9">{{ $pelatihan->tanggal_selesai }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right col-3">Lokasi :</th>
+                            <td class="col-9">{{ $pelatihan->lokasi }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right col-3">Penyelenggara :</th>
+                            <td class="col-9">{{ $pelatihan->penyelenggara }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-right col-3">Dokumen Pelatihan :</th>
+                            <td class="col-9">{{ $pelatihan->dokumen_pelatihan }}</td>
+                        </tr>
+                    </table>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" data-dismiss="modal" class="btn btn-warning">Batal</button>
