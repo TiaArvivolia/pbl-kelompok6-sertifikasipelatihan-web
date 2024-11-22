@@ -26,8 +26,8 @@ class RiwayatPelatihanModel extends Model
         'lokasi',
         'penyelenggara',
         'dokumen_pelatihan',
-        'tag_mk',
-        'tag_bidang_minat',
+        'mk_list',
+        'bidang_minat_list',
     ];
 
     // Define relationships

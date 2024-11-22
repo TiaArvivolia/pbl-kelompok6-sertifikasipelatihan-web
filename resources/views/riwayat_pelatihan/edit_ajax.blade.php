@@ -98,45 +98,34 @@
                     </select>                                                  
                     <small id="error-id_pengguna" class="error-text form-text text-danger"></small>
                 </div>
-                {{-- <div class="form-group">
-                    <label>Pelatihan</label>
-                    <select name="id_pelatihan" id="id_pelatihan" class="form-control">
-                        <option value="">Pilih Pelatihan</option>
-                        @foreach($pelatihan as $p)
-                            <option value="{{ $p->id_pelatihan }}" 
-                                {{ $pelatihan->id_pelatihan == $p->id_pelatihan ? 'selected' : '' }}>
-                                {{ $p->nama_pelatihan }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <small id="error-id_pelatihan" class="error-text form-text text-danger"></small>
-                </div> --}}
-                <div class="form-group">
-                    <label>Mata Kuliah</label>
-                    <select name="tag_mk" id="tag_mk" class="form-control">
-                        <option value="">Pilih Mata Kuliah</option>
-                        @foreach($mataKuliah as $mk)
-                            <option value="{{ $mk->id_mata_kuliah }}" 
-                                {{ $pelatihan->tag_mk == $mk->id_mata_kuliah ? 'selected' : '' }}>
-                                {{ $mk->nama_mk }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <small id="error-tag_mk" class="error-text form-text text-danger"></small>
-                </div>
-                <div class="form-group">
-                    <label>Bidang Minat</label>
-                    <select name="tag_bidang_minat" id="tag_bidang_minat" class="form-control">
-                        <option value="">Pilih Bidang Minat</option>
-                        @foreach($bidangMinat as $bm)
-                            <option value="{{ $bm->id_bidang_minat }}" 
-                                {{ $pelatihan->tag_bidang_minat == $bm->id_bidang_minat ? 'selected' : '' }}>
-                                {{ $bm->nama_bidang_minat }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <small id="error-tag_bidang_minat" class="error-text form-text text-danger"></small>
-                </div>
+                    <!-- Input untuk Mata Kuliah -->
+                    <div class="form-group">
+                        <label>Mata Kuliah</label>
+                        <select name="mk_list[]" id="mk_list" class="form-control" multiple required>
+                            @foreach($mataKuliah as $mk)
+                                <option value="{{ $mk->id_mata_kuliah }}" 
+                                    {{ in_array($mk->id_mata_kuliah, json_decode($pelatihan->mk_list ?? '[]')) ? 'selected' : '' }}>
+                                    {{ $mk->nama_mk }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <small id="error-mk_list" class="error-text form-text text-danger"></small>
+                    </div>
+    
+                    <!-- Input untuk Bidang Minat -->
+                    <div class="form-group">
+                        <label>Bidang Minat</label>
+                        <select name="bidang_minat_list[]" id="bidang_minat_list" class="form-control" multiple required>
+                            @foreach($bidangMinat as $bm)
+                                <option value="{{ $bm->id_bidang_minat }}" 
+                                    {{ in_array($bm->id_bidang_minat, json_decode($pelatihan->bidang_minat_list ?? '[]')) ? 'selected' : '' }}>
+                                    {{ $bm->nama_bidang_minat }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <small id="error-bidang_minat_list" class="error-text form-text text-danger"></small>
+                    </div> 
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-warning" data-dismiss="modal">Batal</button>
@@ -148,6 +137,16 @@
 
 <script>
 $(document).ready(function() {
+    $('#mk_list').select2({
+        width: '100%', // Full width
+        allowClear: true
+    });
+
+    // Initialize select2 for the bidang minat (bidang_minat_list) field
+    $('#bidang_minat_list').select2({
+        width: '100%', // Full width
+        allowClear: true
+    });
     $("#form-edit-riwayat-pelatihan").validate({
         rules: {
             nama_pelatihan: { required: true, maxlength: 100 },
@@ -159,8 +158,6 @@ $(document).ready(function() {
             dokumen_pelatihan: { extension: "pdf|doc|docx|jpg|jpeg|png" },
             id_pengguna: { required: true },
             id_pelatihan: { required: true },
-            tag_mk: { required: true },
-            tag_bidang_minat: { required: true }
         },
         submitHandler: function(form) {
             $.ajax({

@@ -92,8 +92,10 @@ class RiwayatPelatihanController extends Controller
             'lokasi' => 'nullable|string|max:100',
             'penyelenggara' => 'required|exists:vendor_pelatihan,id_vendor_pelatihan',
             'dokumen_pelatihan' => 'nullable|mimes:jpg,jpeg,png,gif,bmp,pdf,docx,xlsx|max:10240', // Maksimum ukuran file 10MB
-            'tag_mk' => 'nullable|exists:mata_kuliah,id_mata_kuliah',
-            'tag_bidang_minat' => 'nullable|exists:bidang_minat,id_bidang_minat'
+            'mk_list' => 'nullable|array', // Ensure mk_list is an array if provided
+            'mk_list.*' => 'exists:mata_kuliah,id_mata_kuliah', // Each mata kuliah in mk_list must exist
+            'bidang_minat_list' => 'nullable|array', // Ensure bidang_minat_list is an array if provided
+            'bidang_minat_list.*' => 'exists:bidang_minat,id_bidang_minat', // Each bidang minat in bidang_minat_list must exist
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -126,8 +128,8 @@ class RiwayatPelatihanController extends Controller
             'lokasi' => $request->lokasi,
             'penyelenggara' => $request->penyelenggara,
             'dokumen_pelatihan' => $dokumenPath, // Menyimpan path dokumen pelatihan di database
-            'tag_mk' => $request->tag_mk,
-            'tag_bidang_minat' => $request->tag_bidang_minat,
+            'mk_list' => $request->has('mk_list') ? json_encode($request->input('mk_list')) : null, // Store mk_list as JSON
+            'bidang_minat_list' => $request->has('bidang_minat_list') ? json_encode($request->input('bidang_minat_list')) : null, // Store bidang_minat_list as JSON
         ]);
 
         return response()->json([
@@ -155,19 +157,43 @@ class RiwayatPelatihanController extends Controller
             return response()->json(['error' => 'Data yang anda cari tidak ditemukan'], 404);
         }
 
-        return view('riwayat_pelatihan.show_ajax', compact('pelatihan'));
+        // Decode the JSON for mk_list and retrieve mata kuliah names
+        $mataKuliahNames = [];
+        if ($pelatihan->mk_list) {
+            $mkListArray = json_decode($pelatihan->mk_list);
+            foreach ($mkListArray as $idMk) {
+                $mataKuliah = MataKuliahModel::find($idMk);
+                if ($mataKuliah) {
+                    $mataKuliahNames[] = $mataKuliah->nama_mk;
+                }
+            }
+        }
+
+        // Decode the JSON for bidang_minat_list and retrieve bidang minat names
+        $bidangMinatNames = [];
+        if ($pelatihan->bidang_minat_list) {
+            $bidangMinatListArray = json_decode($pelatihan->bidang_minat_list);
+            foreach ($bidangMinatListArray as $idBidangMinat) {
+                $bidangMinat = BidangMinatModel::find($idBidangMinat);
+                if ($bidangMinat) {
+                    $bidangMinatNames[] = $bidangMinat->nama_bidang_minat;
+                }
+            }
+        }
+
+        return view('riwayat_pelatihan.show_ajax', compact('pelatihan', 'mataKuliahNames', 'bidangMinatNames'));
     }
 
     public function edit_ajax(string $id)
     {
-        // Eager loading the 'pengguna' with its related 'dosen' and 'tendik' models
+        // Filter 'pengguna' dengan relasi 'dosen' dan 'tendik', lalu memuat relasi terkait
         $pelatihan = RiwayatPelatihanModel::with([
-            'pengguna.dosen',
-            'pengguna.tendik',
-            'mataKuliah',
-            'bidangMinat',
-            'daftarPelatihan',
-            'penyelenggara'
+            'pengguna.dosen',      // Relasi pengguna -> dosen
+            'pengguna.tendik',     // Relasi pengguna -> tendik
+            'mataKuliah',          // Relasi mata kuliah
+            'bidangMinat',         // Relasi bidang minat
+            'daftarPelatihan',     // Relasi daftar pelatihan
+            'penyelenggara'        // Relasi penyelenggara
         ])->find($id);
 
         if (!$pelatihan) {
@@ -197,10 +223,12 @@ class RiwayatPelatihanController extends Controller
             'tanggal_mulai' => 'nullable|date',
             'tanggal_selesai' => 'nullable|date|after_or_equal:tanggal_mulai',
             'lokasi' => 'nullable|string|max:100',
-            // 'penyelenggara' => 'nullable|string|max:100',
-            'dokumen_pelatihan' => 'nullable|mimes:jpg,jpeg,png,gif,bmp,pdf,docx,xlsx|max:10240', // Validasi untuk dokumen
-            'tag_mk' => 'nullable|exists:mata_kuliah,id_mata_kuliah',
-            'tag_bidang_minat' => 'nullable|exists:bidang_minat,id_bidang_minat'
+            'penyelenggara' => 'nullable|string|max:100',
+            'dokumen_pelatihan' => 'nullable|mimes:jpg,jpeg,png,gif,bmp,pdf,docx,xlsx|max:10240',
+            'mk_list' => 'nullable|array',
+            'mk_list.*' => 'exists:mata_kuliah,id_mata_kuliah',
+            'bidang_minat_list' => 'nullable|array',
+            'bidang_minat_list.*' => 'exists:bidang_minat,id_bidang_minat',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -215,49 +243,56 @@ class RiwayatPelatihanController extends Controller
 
         // Cari riwayat pelatihan berdasarkan ID
         $pelatihan = RiwayatPelatihanModel::find($id);
-        if ($pelatihan) {
-            // Menangani dokumen pelatihan jika ada file yang diunggah
-            $dokumenPath = $pelatihan->dokumen_pelatihan; // Ambil dokumen yang lama (jika ada)
-
-            // Cek apakah dokumen lama ada dan hapus sebelum mengupdate
-            if ($dokumenPath && Storage::exists('public/' . $dokumenPath)) {
-                Storage::delete('public/' . $dokumenPath); // Hapus dokumen lama
-            }
-
-            // Menangani dokumen pelatihan baru jika ada file yang diunggah
-            if ($request->hasFile('dokumen_pelatihan') && $request->file('dokumen_pelatihan')->isValid()) {
-                // Mengambil file yang diunggah
-                $file = $request->file('dokumen_pelatihan');
-                // Menyimpan file di folder 'dokumen' di storage/public dan mendapatkan path file
-                $dokumenPath = $file->store('dokumen_pelatihan', 'public');
-            }
-
-            // Perbarui riwayat pelatihan dengan data baru
-            $pelatihan->update([
-                'id_pengguna' => $request->id_pengguna,
-                'id_pelatihan' => $request->id_pelatihan,
-                'level_pelatihan' => $request->level_pelatihan,
-                'nama_pelatihan' => $request->nama_pelatihan,
-                'tanggal_mulai' => $request->tanggal_mulai,
-                'tanggal_selesai' => $request->tanggal_selesai,
-                'lokasi' => $request->lokasi,
-                'penyelenggara' => $request->penyelenggara,
-                'dokumen_pelatihan' => $dokumenPath, // Menyimpan path dokumen yang baru
-                'tag_mk' => $request->tag_mk,
-                'tag_bidang_minat' => $request->tag_bidang_minat
-            ]);
-
+        if (!$pelatihan) {
             return response()->json([
-                'status' => true,
-                'message' => 'Riwayat Pelatihan berhasil diperbarui.'
+                'status' => false,
+                'message' => 'Riwayat Pelatihan tidak ditemukan.'
             ]);
         }
 
+        // Update dokumen pelatihan jika ada
+        $dokumenPath = $pelatihan->dokumen_pelatihan;
+        if ($request->hasFile('dokumen_pelatihan') && $request->file('dokumen_pelatihan')->isValid()) {
+            // Hapus dokumen lama jika ada
+            if ($dokumenPath && Storage::exists('public/' . $dokumenPath)) {
+                Storage::delete('public/' . $dokumenPath);
+            }
+            // Simpan dokumen baru
+            $dokumenPath = $request->file('dokumen_pelatihan')->store('dokumen_pelatihan', 'public');
+        }
+
+        // Update data pelatihan
+        $updateData = [
+            'id_pengguna' => $request->id_pengguna,
+            'id_pelatihan' => $request->id_pelatihan,
+            'level_pelatihan' => $request->level_pelatihan,
+            'nama_pelatihan' => $request->nama_pelatihan,
+            'tanggal_mulai' => $request->tanggal_mulai,
+            'tanggal_selesai' => $request->tanggal_selesai,
+            'lokasi' => $request->lokasi,
+            'penyelenggara' => $request->penyelenggara,
+            'dokumen_pelatihan' => $dokumenPath,
+        ];
+
+        // Update mk_list jika ada
+        if ($request->filled('mk_list')) {
+            $updateData['mk_list'] = json_encode($request->mk_list);
+        }
+
+        // Update bidang_minat_list jika ada
+        if ($request->filled('bidang_minat_list')) {
+            $updateData['bidang_minat_list'] = json_encode($request->bidang_minat_list);
+        }
+
+        // Simpan pembaruan ke database
+        $pelatihan->update($updateData);
+
         return response()->json([
-            'status' => false,
-            'message' => 'Riwayat Pelatihan tidak ditemukan'
+            'status' => true,
+            'message' => 'Riwayat Pelatihan berhasil diperbarui.'
         ]);
     }
+
 
 
     public function confirm_ajax(string $id)
