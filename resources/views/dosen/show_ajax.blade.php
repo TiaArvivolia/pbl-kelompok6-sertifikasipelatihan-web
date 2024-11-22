@@ -69,14 +69,35 @@
                         <th class="text-right col-3">Email :</th>
                         <td class="col-9">{{ $dosen->email ?? '-' }}</td>
                     </tr>
-                    <tr>
+                    {{-- <tr>
                         <th class="text-right col-3">Mata Kuliah :</th>
                         <td class="col-9">{{ $dosen->mataKuliah ? $dosen->mataKuliah->nama_mk : '-' }}</td>
                     </tr>
                     <tr>
                         <th class="text-right col-3">Bidang Minat :</th>
                         <td class="col-9">{{ $dosen->bidangMinat ? $dosen->bidangMinat->nama_bidang_minat : '-' }}</td>
-                    </tr>                    
+                    </tr>                     --}}
+                    <tr>
+                        <th class="text-right col-3">Mata Kuliah:</th>
+                        <td class="col-9">
+                            @if($dosen->mk_list && count($mataKuliahNames) > 0)
+                                {{ implode(', ', $mataKuliahNames) }}
+                            @else
+                                <span>-</span>
+                            @endif
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <th class="text-right col-3">Bidang Minat:</th>
+                        <td class="col-9">
+                            @if($dosen->bidang_minat_list && count($bidangMinatNames) > 0)
+                                {{ implode(', ', $bidangMinatNames) }}
+                            @else
+                                <span>-</span>
+                            @endif
+                        </td>
+                    </tr>
                     <tr>
                         <th class="text-right col-3">Gambar Profil :</th>
                         <td class="col-9">

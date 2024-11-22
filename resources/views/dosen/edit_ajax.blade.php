@@ -64,7 +64,34 @@
                     <input value="{{ $dosen->email }}" type="email" name="email" id="email" class="form-control" required>
                     <small id="error-email" class="error-text form-text text-danger"></small>
                 </div>
+                <!-- Input untuk Mata Kuliah -->
                 <div class="form-group">
+                    <label>Mata Kuliah</label>
+                    <select name="mk_list[]" id="mk_list" class="form-control" multiple required>
+                        @foreach($mataKuliah as $mk)
+                            <option value="{{ $mk->id_mata_kuliah }}" 
+                                {{ in_array($mk->id_mata_kuliah, json_decode($dosen->mk_list ?? '[]')) ? 'selected' : '' }}>
+                                {{ $mk->nama_mk }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <small id="error-mk_list" class="error-text form-text text-danger"></small>
+                </div>
+
+                <!-- Input untuk Bidang Minat -->
+                <div class="form-group">
+                    <label>Bidang Minat</label>
+                    <select name="bidang_minat_list[]" id="bidang_minat_list" class="form-control" multiple required>
+                        @foreach($bidangMinat as $bm)
+                            <option value="{{ $bm->id_bidang_minat }}" 
+                                {{ in_array($bm->id_bidang_minat, json_decode($dosen->bidang_minat_list ?? '[]')) ? 'selected' : '' }}>
+                                {{ $bm->nama_bidang_minat }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <small id="error-bidang_minat_list" class="error-text form-text text-danger"></small>
+                </div>
+                {{-- <div class="form-group">
                     <label>Mata Kuliah</label>
                     <select name="tag_mk" id="tag_mk" class="form-control" required>
                         <option value="">Pilih Mata Kuliah</option>
@@ -90,7 +117,7 @@
                         @endforeach
                     </select>
                     <small id="error-id_bidang_minat" class="error-text form-text text-danger"></small>
-                </div>
+                </div> --}}
                 <div class="form-group">
                     <label>Username</label>
                     <input value="{{ $dosen->pengguna->username }}" type="text" name="username" id="username" class="form-control" maxlength="50">
@@ -132,6 +159,16 @@
 
 <script>
 $(document).ready(function() {
+    $('#mk_list').select2({
+        width: '100%', // Full width
+        allowClear: true
+    });
+
+    // Initialize select2 for the bidang minat (bidang_minat_list) field
+    $('#bidang_minat_list').select2({
+        width: '100%', // Full width
+        allowClear: true
+    });
     $("#form-edit-dosen").validate({
         rules: {
             nama_lengkap: { required: true, minlength: 3, maxlength: 100 },
@@ -141,8 +178,6 @@ $(document).ready(function() {
             tanggal_lahir: { required: true },
             no_telepon: { required: true, maxlength: 15 },
             email: { required: true, email: true },
-            tag_mk: { required: true, maxlength: 100 },
-            tag_bidang_minat: { required: true, maxlength: 100 },
             gambar_profil: { extension: "jpg|jpeg|png|gif|bmp" }
         },
         submitHandler: function(form) {
