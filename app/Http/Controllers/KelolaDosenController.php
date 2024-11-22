@@ -85,8 +85,10 @@ class KelolaDosenController extends Controller
             'nidn' => 'required|string|max:20',
             'no_telepon' => 'nullable|string|max:20',
             'email' => 'nullable|string|email|max:100',
-            'tag_mk' => 'required|exists:mata_kuliah,id_mata_kuliah', // Validates mata kuliah tag
-            'tag_bidang_minat' => 'required|exists:bidang_minat,id_bidang_minat', // Validates bidang minat tag
+            'mk_list' => 'nullable|array', // Ensure mk_list is an array if provided
+            'mk_list.*' => 'exists:mata_kuliah,id_mata_kuliah', // Each mata kuliah in mk_list must exist
+            'bidang_minat_list' => 'nullable|array', // Ensure bidang_minat_list is an array if provided
+            'bidang_minat_list.*' => 'exists:bidang_minat,id_bidang_minat', // Each bidang minat in bidang_minat_list must exist
         ]);
 
         // Insert into the pengguna table and get the ID
@@ -96,8 +98,8 @@ class KelolaDosenController extends Controller
             'id_jenis_pengguna' => 2, // Set as dosen (id_jenis_pengguna for dosen)
         ]);
 
-        // Save dosen details to the kelola_dosen table
-        DB::table('dosen')->insert([
+        // Prepare data for the dosen table
+        $dosenData = [
             'id_pengguna' => $id_pengguna,
             'nama_lengkap' => $request->input('nama_lengkap'),
             'nip' => $request->input('nip'),
@@ -106,19 +108,21 @@ class KelolaDosenController extends Controller
             'tanggal_lahir' => $request->input('tanggal_lahir'),
             'no_telepon' => $request->input('no_telepon'),
             'email' => $request->input('email'),
-            'tag_mk' => $request->input('tag_mk'),
-            'tag_bidang_minat' => $request->input('tag_bidang_minat'),
             'gambar_profil' => $request->file('gambar_profil') ? $request->file('gambar_profil')->store('profile_pictures', 'public') : null, // Handle optional profile picture upload
-        ]);
+            'mk_list' => $request->has('mk_list') ? json_encode($request->input('mk_list')) : null, // Store mk_list as JSON
+            'bidang_minat_list' => $request->has('bidang_minat_list') ? json_encode($request->input('bidang_minat_list')) : null, // Store bidang_minat_list as JSON
+        ];
+
+        // Save dosen details to the kelola_dosen table
+        DB::table('dosen')->insert($dosenData);
 
         // Return a successful response
         return response()->json([
             'status' => true,
             'message' => 'Data dosen berhasil disimpan'
         ]);
-
-        return redirect('/');
     }
+
 
     public function show_ajax($id)
     {
@@ -129,7 +133,31 @@ class KelolaDosenController extends Controller
             return response()->json(['error' => 'Data yang anda cari tidak ditemukan'], 404);
         }
 
-        return view('dosen.show_ajax', compact('dosen'));
+        // Decode the JSON for mk_list and retrieve mata kuliah names
+        $mataKuliahNames = [];
+        if ($dosen->mk_list) {
+            $mkListArray = json_decode($dosen->mk_list);
+            foreach ($mkListArray as $idMk) {
+                $mataKuliah = MataKuliahModel::find($idMk);
+                if ($mataKuliah) {
+                    $mataKuliahNames[] = $mataKuliah->nama_mk;
+                }
+            }
+        }
+
+        // Decode the JSON for bidang_minat_list and retrieve bidang minat names
+        $bidangMinatNames = [];
+        if ($dosen->bidang_minat_list) {
+            $bidangMinatListArray = json_decode($dosen->bidang_minat_list);
+            foreach ($bidangMinatListArray as $idBidangMinat) {
+                $bidangMinat = BidangMinatModel::find($idBidangMinat);
+                if ($bidangMinat) {
+                    $bidangMinatNames[] = $bidangMinat->nama_bidang_minat;
+                }
+            }
+        }
+
+        return view('dosen.show_ajax', compact('dosen', 'mataKuliahNames', 'bidangMinatNames'));
     }
 
     public function edit_ajax(string $id)
@@ -156,11 +184,13 @@ class KelolaDosenController extends Controller
                 'nidn' => 'required|string|max:20',
                 'no_telepon'  => 'nullable|string|max:20',
                 'email' => 'nullable|string|email|max:100',
-                'tag_mk' => 'required|exists:mata_kuliah,id_mata_kuliah',
-                'tag_bidang_minat' => 'required|exists:bidang_minat,id_bidang_minat',
-                'gambar_profil' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Gambar validasi
-                'username' => 'nullable|string|max:100', // Validasi untuk username
-                'password' => 'nullable|string|min:6', // Validasi untuk password
+                'gambar_profil' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+                'username' => 'nullable|string|max:100',
+                'password' => 'nullable|string|min:6',
+                'mk_list' => 'nullable|array', // Mata kuliah list harus array jika diberikan
+                'mk_list.*' => 'exists:mata_kuliah,id_mata_kuliah', // Validasi setiap id di mk_list
+                'bidang_minat_list' => 'nullable|array', // Bidang minat list harus array jika diberikan
+                'bidang_minat_list.*' => 'exists:bidang_minat,id_bidang_minat', // Validasi setiap id di bidang_minat_list
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -173,12 +203,19 @@ class KelolaDosenController extends Controller
                 ]);
             }
 
-            // Mencari dosen berdasarkan ID
+            // Temukan data dosen berdasarkan ID
             $dosen = KelolaDosenModel::find($id);
+
             if ($dosen) {
-                // Update mata kuliah dan bidang minat
-                $dosen->mataKuliah()->associate(MataKuliahModel::find($request->tag_mk));
-                $dosen->bidangMinat()->associate(BidangMinatModel::find($request->tag_bidang_minat));
+                // Update mata kuliah list
+                if ($request->filled('mk_list')) {
+                    $dosen->mk_list = json_encode($request->mk_list); // Simpan sebagai JSON
+                }
+
+                // Update bidang minat list
+                if ($request->filled('bidang_minat_list')) {
+                    $dosen->bidang_minat_list = json_encode($request->bidang_minat_list); // Simpan sebagai JSON
+                }
 
                 // Tangani penggantian gambar profil
                 if ($request->hasFile('gambar_profil')) {
@@ -191,7 +228,7 @@ class KelolaDosenController extends Controller
                 }
 
                 // Update data dosen
-                $dosen->update($request->except(['tag_mk', 'tag_bidang_minat', 'gambar_profil', 'username', 'password']));
+                $dosen->update($request->except(['mk_list', 'bidang_minat_list', 'gambar_profil', 'username', 'password']));
 
                 // Cek dan update data pengguna (username dan password)
                 if ($request->filled('username') || $request->filled('password')) {
@@ -223,6 +260,7 @@ class KelolaDosenController extends Controller
             ]);
         }
     }
+
 
 
 
