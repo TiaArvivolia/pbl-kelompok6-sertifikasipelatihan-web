@@ -118,17 +118,19 @@ class KelolaAdminController extends Controller
         return view('admin.edit_ajax', ['admin' => $admin, 'pengguna' => $pengguna]);
     }
 
+    // Update Admin data via AJAX
     public function update_ajax(Request $request, $id)
     {
         if ($request->ajax() || $request->wantsJson()) {
+            // Validation rules
             $rules = [
                 'nama_lengkap' => 'required|string|max:100',
                 'nip'  => 'required|string|max:20',
-                'no_telepon'  => 'required|string|max:15',
-                'email' => 'required|string|email|max:100',
-                'username' => 'nullable|string|max:50|unique:pengguna,username,' . $id . ',id_pengguna',
-                'password' => 'nullable|string|min:8|confirmed',
-                'gambar_profil' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validasi file gambar
+                'no_telepon'  => 'nullable|string|max:20',
+                'email' => 'nullable|string|email|max:100',
+                'gambar_profil' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Gambar validasi
+                'username' => 'nullable|string|max:100', // Validasi untuk username
+                'password' => 'nullable|string|min:6|confirmed', // Validasi untuk password
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -137,61 +139,58 @@ class KelolaAdminController extends Controller
                 return response()->json([
                     'status'   => false,
                     'message'  => 'Validasi gagal.',
-                    'msgField' => $validator->errors(),
+                    'msgField' => $validator->errors()
                 ]);
             }
 
-            // Cari data admin
+            // Mencari admin berdasarkan ID
             $admin = KelolaAdminModel::find($id);
-
             if ($admin) {
-                // Tangani penggantian gambar
+                // Tangani penggantian gambar profil jika ada
                 if ($request->hasFile('gambar_profil')) {
-                    // Hapus gambar lama jika ada
+                    // Menghapus gambar lama jika ada
                     if ($admin->gambar_profil && Storage::disk('public')->exists($admin->gambar_profil)) {
                         Storage::disk('public')->delete($admin->gambar_profil);
                     }
 
-                    // Simpan gambar baru
+                    // Menyimpan gambar baru
                     $path = $request->file('gambar_profil')->store('profile_pictures', 'public');
                     $admin->gambar_profil = $path;
                 }
 
-                // Update data admin
-                $admin->update($request->only(['nama_lengkap', 'nip', 'no_telepon', 'email']));
+                // Update data admin selain gambar profil
+                $admin->update($request->except(['gambar_profil', 'username', 'password']));
 
-                // Update tabel pengguna
-                $pengguna = $admin->pengguna; // Relasi ke model Pengguna
-                if ($pengguna) {
-                    $penggunaData = [];
-                    if ($request->filled('username')) {
-                        $penggunaData['username'] = $request->input('username');
-                    }
-                    if ($request->filled('password')) {
-                        $penggunaData['password'] = bcrypt($request->input('password')); // Hash password
-                    }
-                    if (!empty($penggunaData)) {
-                        $pengguna->update($penggunaData);
+                // Cek dan update data pengguna (username dan password)
+                if ($request->filled('username') || $request->filled('password')) {
+                    $pengguna = Pengguna::where('id_pengguna', $admin->id_pengguna)->first();
+
+                    if ($pengguna) {
+                        if ($request->filled('username')) {
+                            $pengguna->username = $request->username;
+                        }
+
+                        if ($request->filled('password')) {
+                            // Encrypt password before saving
+                            $pengguna->password = bcrypt($request->password);
+                        }
+
+                        $pengguna->save();
                     }
                 }
 
-                // Ambil data terbaru admin untuk ditampilkan di index
-                $updatedAdmin = KelolaAdminModel::with('pengguna')->find($id);
-
                 return response()->json([
                     'status'  => true,
-                    'message' => 'Data admin berhasil diperbarui.',
-                    'data'    => $updatedAdmin, // Kirim data terbaru untuk auto-reload di front-end
+                    'message' => 'Data admin dan pengguna berhasil diperbarui.'
                 ]);
             }
 
             return response()->json([
                 'status'  => false,
-                'message' => 'Admin tidak ditemukan.',
+                'message' => 'Admin tidak ditemukan'
             ]);
         }
     }
-
 
     // Menampilkan konfirmasi penghapusan pengguna dengan AJAX
     public function confirm_ajax(string $id)
@@ -218,68 +217,66 @@ class KelolaAdminController extends Controller
         }
     }
 
-public function export_pdf()
-{
-    // Fetch admin data
-    $admins = KelolaAdminModel::select('id_admin', 'id_pengguna', 'nama_lengkap', 'nip', 'no_telepon', 'email')
-        ->with('pengguna')
-        ->get();
+    public function export_pdf()
+    {
+        // Fetch admin data
+        $admins = KelolaAdminModel::select('id_admin', 'id_pengguna', 'nama_lengkap', 'nip', 'no_telepon', 'email')
+            ->with('pengguna')
+            ->get();
 
 
-    // Share data with the view
-    $pdf = Pdf::loadView('admin.export_pdf', ['admins' => $admins]);
-    $pdf->setPaper('a4', 'portrait'); // Ukuran dan orientasi kertas
+        // Share data with the view
+        $pdf = Pdf::loadView('admin.export_pdf', ['admins' => $admins]);
+        $pdf->setPaper('a4', 'portrait'); // Ukuran dan orientasi kertas
 
-    return $pdf->stream('Data_Admin_' . date('Y-m-d_H-i-s') . '.pdf');
-}
-public function export_excel()
-{
-    $admins = KelolaAdminModel::select('id_admin', 'id_pengguna', 'nama_lengkap', 'nip', 'no_telepon', 'email')
-        ->orderBy('nama_lengkap', 'asc')
-        ->get();
-
-    $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-    $sheet = $spreadsheet->getActiveSheet();
-
-    // Header kolom
-    $sheet->setCellValue('A1', 'No');
-    $sheet->setCellValue('B1', 'ID Admin');
-    $sheet->setCellValue('C1', 'ID Pengguna');
-    $sheet->setCellValue('D1', 'Nama Lengkap');
-    $sheet->setCellValue('E1', 'NIP');
-    $sheet->setCellValue('F1', 'No Telepon');
-    $sheet->setCellValue('G1', 'Email');
-    $sheet->getStyle('A1:G1')->getFont()->setBold(true);
-
-    // Isi data
-    $row = 2;
-    foreach ($admins as $index => $data) {
-        $sheet->setCellValue('A' . $row, $index + 1);
-        $sheet->setCellValue('B' . $row, $data->id_admin);
-        $sheet->setCellValue('C' . $row, $data->id_pengguna);
-        $sheet->setCellValue('D' . $row, $data->nama_lengkap);
-        $sheet->setCellValue('E' . $row, $data->nip);
-        $sheet->setCellValue('F' . $row, $data->no_telepon);
-        $sheet->setCellValue('G' . $row, $data->email);
-        $row++;
+        return $pdf->stream('Data_Admin_' . date('Y-m-d_H-i-s') . '.pdf');
     }
+    public function export_excel()
+    {
+        $admins = KelolaAdminModel::select('id_admin', 'id_pengguna', 'nama_lengkap', 'nip', 'no_telepon', 'email')
+            ->orderBy('nama_lengkap', 'asc')
+            ->get();
 
-    // Auto size kolom
-    foreach (range('A', 'G') as $columnID) {
-        $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Header kolom
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'ID Admin');
+        $sheet->setCellValue('C1', 'ID Pengguna');
+        $sheet->setCellValue('D1', 'Nama Lengkap');
+        $sheet->setCellValue('E1', 'NIP');
+        $sheet->setCellValue('F1', 'No Telepon');
+        $sheet->setCellValue('G1', 'Email');
+        $sheet->getStyle('A1:G1')->getFont()->setBold(true);
+
+        // Isi data
+        $row = 2;
+        foreach ($admins as $index => $data) {
+            $sheet->setCellValue('A' . $row, $index + 1);
+            $sheet->setCellValue('B' . $row, $data->id_admin);
+            $sheet->setCellValue('C' . $row, $data->id_pengguna);
+            $sheet->setCellValue('D' . $row, $data->nama_lengkap);
+            $sheet->setCellValue('E' . $row, $data->nip);
+            $sheet->setCellValue('F' . $row, $data->no_telepon);
+            $sheet->setCellValue('G' . $row, $data->email);
+            $row++;
+        }
+
+        // Auto size kolom
+        foreach (range('A', 'G') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        // Save file Excel
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $filename = 'Data_Admin_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
+        exit;
     }
-
-    // Save file Excel
-    $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-    $filename = 'Data_Admin_' . date('Y-m-d_H-i-s') . '.xlsx';
-
-    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    header('Content-Disposition: attachment; filename="' . $filename . '"');
-    header('Cache-Control: max-age=0');
-
-    $writer->save('php://output');
-    exit;
-}
-
-
 }

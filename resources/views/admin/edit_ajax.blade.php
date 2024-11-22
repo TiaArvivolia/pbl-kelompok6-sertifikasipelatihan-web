@@ -94,7 +94,7 @@ $(document).ready(function() {
             username: { maxlength: 50 },
             password: { minlength: 8 },
             password_confirmation: { equalTo: "#password" }
-            gambar_profil: { extension: "jpg|jpeg|png|gif|bmp" }
+            // gambar_profil: { extension: "jpg|jpeg|png|gif|bmp" }
         },
         messages: {
             password_confirmation: {
