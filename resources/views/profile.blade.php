@@ -85,7 +85,7 @@
         <div class="col-md-6 col-lg-4 mt-4 mt-md-0">
             <div class="card shadow-sm border-0 rounded">
                 <div class="card-header text-center">
-                    <h4 class="card-title">Update Profile</h4>
+                    <h4 class="card-title">Update Username</h4>
                 </div>
                 <div class="card-body">
                     <form action="{{ route('profile.update') }}" method="POST">
@@ -112,7 +112,7 @@
                             <label for="username">Username:</label>
                             <input type="text" name="username" class="form-control" value="{{ $pengguna->username }}" required>
                         </div>
-                        <button type="submit" class="btn btn-success w-100">Update Profile</button>
+                        <button type="submit" class="btn btn-success w-100">Update Username</button>
                     </form>
                 </div>
             </div>

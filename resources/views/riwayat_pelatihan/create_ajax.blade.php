@@ -12,11 +12,13 @@
             <div class="modal-body">
 
                 <div class="form-group">
-                    <label>ID Pengguna</label>
+                    <label>Pengguna</label>
                     <select name="id_pengguna" id="id_pengguna" class="form-control" required>
                         <option value="">- Pilih Pengguna -</option>
                         @foreach($pengguna as $p)
-                            <option value="{{ $p->id_pengguna }}">{{ $p->username }}</option>
+                            <option value="{{ $p->id_pengguna }}">
+                                {{ $p->dosen?->nama_lengkap ?? $p->tendik?->nama_lengkap }}
+                            </option>
                         @endforeach
                     </select>
                     <small id="error-id_pengguna" class="error-text form-text text-danger"></small>
@@ -58,7 +60,12 @@
 
                 <div class="form-group">
                     <label>Penyelenggara</label>
-                    <input type="text" name="penyelenggara" id="penyelenggara" class="form-control">
+                    <select name="penyelenggara" id="penyelenggara" class="form-control">
+                        <option value="">- Pilih Penyelenggara -</option>
+                        @foreach($penyelenggara as $vendor)
+                            <option value="{{ $vendor->id_vendor_pelatihan }}">{{ $vendor->nama }}</option>
+                        @endforeach
+                    </select>
                     <small id="error-penyelenggara" class="error-text form-text text-danger"></small>
                 </div>
 

@@ -75,7 +75,13 @@
                     </tr>
                     <tr>
                         <th class="text-right col-3">Penyelenggara :</th>
-                        <td class="col-9">{{ $sertifikasi->penyelenggara }}</td>
+                        <td class="col-9">
+                            @if(is_object($sertifikasi->penyelenggara))
+                                {{ $sertifikasi->penyelenggara->nama }}
+                            @else
+                                Tidak tersedia
+                            @endif
+                        </td>
                     </tr>
                     <tr>
                         <th class="text-right col-3">Dokumen Sertifikat :</th>

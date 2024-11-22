@@ -7,6 +7,8 @@ use App\Models\MataKuliahModel;
 use App\Models\Pengguna;
 use App\Models\DaftarPelatihanModel;
 use App\Models\RiwayatPelatihanModel;
+use App\Models\VendorPelatihanModel;
+use App\Models\VendorSertifikasiModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
@@ -64,12 +66,17 @@ class RiwayatPelatihanController extends Controller
 
     public function create_ajax()
     {
-        $pengguna = Pengguna::all();
+        // Mengambil data pengguna yang memiliki relasi dengan dosen atau tendik
+        $pengguna = Pengguna::with(['dosen', 'tendik'])
+            ->whereHas('dosen')
+            ->orWhereHas('tendik')
+            ->get();
         $mataKuliah = MataKuliahModel::all();
         $bidangMinat = BidangMinatModel::all();
         $daftarPelatihan = DaftarPelatihanModel::all();
+        $penyelenggara = VendorPelatihanModel::all();
 
-        return view('riwayat_pelatihan.create_ajax', compact('pengguna', 'mataKuliah', 'bidangMinat', 'daftarPelatihan'));
+        return view('riwayat_pelatihan.create_ajax', compact('pengguna', 'mataKuliah', 'bidangMinat', 'daftarPelatihan', 'penyelenggara'));
     }
 
     public function store_ajax(Request $request)
@@ -82,7 +89,8 @@ class RiwayatPelatihanController extends Controller
             'tanggal_mulai' => 'nullable|date',
             'tanggal_selesai' => 'nullable|date|after_or_equal:tanggal_mulai',
             'lokasi' => 'nullable|string|max:100',
-            'penyelenggara' => 'nullable|string|max:100',
+            'penyelenggara' => 'required|exists:vendor_pelatihan,id_vendor_pelatihan',
+            // 'penyelenggara' => 'nullable|string|max:100',
             'dokumen_pelatihan' => 'nullable|mimes:jpg,jpeg,png,gif,bmp,pdf,docx,xlsx',
             'tag_mk' => 'nullable|exists:mata_kuliah,id_mata_kuliah',
             'tag_bidang_minat' => 'nullable|exists:bidang_minat,id_bidang_minat'
@@ -115,7 +123,8 @@ class RiwayatPelatihanController extends Controller
             'daftarPelatihan',
             'pengguna.dosen',
             'pengguna.tendik',
-            'pengguna.jenisPengguna'
+            'pengguna.jenisPengguna',
+            'penyelenggara'
         ])->find($id);
 
         if (!$pelatihan) {
@@ -133,7 +142,8 @@ class RiwayatPelatihanController extends Controller
             'pengguna.tendik',
             'mataKuliah',
             'bidangMinat',
-            'daftarPelatihan'
+            'daftarPelatihan',
+            'penyelenggara'
         ])->find($id);
 
         if (!$pelatihan) {
@@ -145,9 +155,10 @@ class RiwayatPelatihanController extends Controller
         $mataKuliah = MataKuliahModel::all();
         $bidangMinat = BidangMinatModel::all();
         $daftarPelatihan = DaftarPelatihanModel::all();
+        $penyelenggara = VendorPelatihanModel::all();
 
         // Pass all the variables to the view
-        return view('riwayat_pelatihan.edit_ajax', compact('pelatihan', 'pengguna', 'mataKuliah', 'bidangMinat', 'daftarPelatihan'));
+        return view('riwayat_pelatihan.edit_ajax', compact('pelatihan', 'pengguna', 'mataKuliah', 'bidangMinat', 'daftarPelatihan', 'penyelenggara'));
     }
 
 
@@ -161,7 +172,7 @@ class RiwayatPelatihanController extends Controller
             'tanggal_mulai' => 'nullable|date',
             'tanggal_selesai' => 'nullable|date|after_or_equal:tanggal_mulai',
             'lokasi' => 'nullable|string|max:100',
-            'penyelenggara' => 'nullable|string|max:100',
+            // 'penyelenggara' => 'nullable|string|max:100',
             'dokumen_pelatihan' => 'nullable|string|max:255',
             'tag_mk' => 'nullable|exists:mata_kuliah,id_mata_kuliah',
             'tag_bidang_minat' => 'nullable|exists:bidang_minat,id_bidang_minat'

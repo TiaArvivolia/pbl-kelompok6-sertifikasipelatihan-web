@@ -50,4 +50,10 @@ class RiwayatPelatihanModel extends Model
     {
         return $this->belongsTo(BidangMinatModel::class, 'tag_bidang_minat', 'id_bidang_minat');
     }
+
+    // Definisikan relasi ke model VendorPelatihan
+    public function penyelenggara()
+    {
+        return $this->belongsTo(VendorPelatihanModel::class, 'penyelenggara', 'id_vendor_pelatihan');
+    }
 }

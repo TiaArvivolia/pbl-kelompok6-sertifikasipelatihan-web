@@ -96,9 +96,10 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Dokumen Sertifgamaokumen_sertifikat" id="dokumen_sertifikat" class="form-control">
+                    <label for="dokumen_sertifikat">Dokumen Sertifikat</label>
+                    <input type="file" name="dokumen_sertifikat" id="dokumen_sertifikat" class="form-control">
                     <small id="error-dokumen_sertifikat" class="error-text form-text text-danger"></small>
-                </div>
+                </div>                
 
                 <div class="form-group">
                     <label>Tag Mata Kuliah</label>

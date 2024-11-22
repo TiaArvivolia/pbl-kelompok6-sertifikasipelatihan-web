@@ -147,7 +147,7 @@ class RiwayatSertifikasiController extends Controller
             'mataKuliah',
             'bidangMinat',
             'daftarPelatihan',
-            'penyelenggara'
+            'penyelenggara',
         ])->find($id);
 
         if (!$sertifikasi) {

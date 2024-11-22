@@ -49,9 +49,19 @@
                         <th class="text-right col-3">Nama Pelatihan :</th>
                         <td class="col-9">{{ $pelatihan->nama_pelatihan }}</td>
                     </tr>
-                    <tr>
+                    {{-- <tr>
                         <th class="text-right col-3">Penyelenggara :</th>
                         <td class="col-9">{{ $pelatihan->penyelenggara }}</td>
+                    </tr> --}}
+                    <tr>
+                        <th class="text-right col-3">Penyelenggara :</th>
+                        <td class="col-9">
+                            @if($pelatihan->penyelenggara && is_object($pelatihan->penyelenggara))
+                                {{ $pelatihan->penyelenggara->nama }}
+                            @else
+                                Data penyelenggara tidak ditemukan
+                            @endif
+                        </td>
                     </tr>
                     <tr>
                         <th class="text-right col-3">Level Pelatihan :</th>

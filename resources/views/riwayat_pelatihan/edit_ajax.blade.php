@@ -58,9 +58,22 @@
                     <input value="{{ $pelatihan->lokasi }}" type="text" name="lokasi" id="lokasi" class="form-control">
                     <small id="error-lokasi" class="error-text form-text text-danger"></small>
                 </div>
-                <div class="form-group">
+                {{-- <div class="form-group">
                     <label>Penyelenggara</label>
                     <input value="{{ $pelatihan->penyelenggara }}" type="text" name="penyelenggara" id="penyelenggara" class="form-control">
+                    <small id="error-penyelenggara" class="error-text form-text text-danger"></small>
+                </div> --}}
+                <div class="form-group">
+                    <label>Penyelenggara</label>
+                    <select name="penyelenggara" id="penyelenggara" class="form-control">
+                        <option value="">Pilih Penyelenggara</option>
+                        @foreach($penyelenggara as $p)
+                            <option value="{{ $p->id_vendor_pelatihan }}" 
+                                {{ $pelatihan->penyelenggara == $p->id_vendor_pelatihan ? 'selected' : '' }}>
+                                {{ $p->nama }}
+                            </option>
+                        @endforeach
+                    </select>
                     <small id="error-penyelenggara" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">

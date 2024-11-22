@@ -28,7 +28,7 @@
                         <th>No</th>
                         <th>Nama Pengguna</th> <!-- Kolom Nama Pengguna -->
                         <th>Nama Pelatihan</th>
-                        <th>Penyelenggara</th>
+                        {{-- <th>Penyelenggara</th> --}}
                         <th>Level Pelatihan</th>
                         <th>Tanggal Mulai</th>
                         <th>Tanggal Selesai</th>
@@ -80,11 +80,6 @@ $(document).ready(function(){
             },
             {
                 data: "nama_pelatihan",
-                orderable: true,
-                searchable: true
-            },
-            {
-                data: "penyelenggara",
                 orderable: true,
                 searchable: true
             },

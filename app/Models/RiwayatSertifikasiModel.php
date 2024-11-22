@@ -46,11 +46,11 @@ class RiwayatSertifikasiModel extends Model
         return $this->belongsTo(DaftarPelatihanModel::class, 'id_pelatihan', 'id_pelatihan');
     }
 
-    // Define the relationship to the VendorSertifikasi model (penyelenggara)
-    // public function penyelenggara()
-    // {
-    //     return $this->belongsTo(VendorSertifikasiModel::class, 'penyelenggara', 'id_vendor_sertifikasi');
-    // }
+    // Definisikan relasi ke model VendorSertifikasi
+    public function penyelenggara()
+    {
+        return $this->belongsTo(VendorSertifikasiModel::class, 'penyelenggara', 'id_vendor_sertifikasi');
+    }
 
     // Define the relationship to the MataKuliah model
     public function mataKuliah()
@@ -62,10 +62,5 @@ class RiwayatSertifikasiModel extends Model
     public function bidangMinat()
     {
         return $this->belongsTo(BidangMinatModel::class, 'tag_bidang_minat', 'id_bidang_minat');
-    }
-
-    public function penyelenggara()
-    {
-        return $this->belongsTo(VendorSertifikasiModel::class, 'penyelenggara', 'id_vendor_sertifikasi');
     }
 }
