@@ -34,7 +34,7 @@
                     <small id="error-level_sertifikasi" class="error-text form-text text-danger"></small>
                 </div>
 
-                <div class="form-group">
+                {{-- <div class="form-group">
                     <label>Diselenggarakan Oleh</label>
                     <select name="diselenggarakan_oleh" id="diselenggarakan_oleh" class="form-control" required>
                         <option value="">- Pilih Penyelenggara -</option>
@@ -42,7 +42,7 @@
                         <option value="Ikut Pelatihan">Ikut Pelatihan</option>
                     </select>
                     <small id="error-diselenggarakan_oleh" class="error-text form-text text-danger"></small>
-                </div>
+                </div> --}}
                 
                 <div class="form-group">
                     <label>Jenis Sertifikasi</label>

@@ -85,7 +85,6 @@ class RiwayatSertifikasiController extends Controller
         $rules = [
             'id_pengguna' => 'required|exists:pengguna,id_pengguna',
             'level_sertifikasi' => 'required|in:Nasional,Internasional',
-            'diselenggarakan_oleh' => 'required|in:Mandiri,Ikut Pelatihan',
             'jenis_sertifikasi' => 'required|in:Profesi,Keahlian',
             'nama_sertifikasi' => 'nullable|string|max:100',
             'no_sertifikat' => 'required|string|max:100',
@@ -120,7 +119,6 @@ class RiwayatSertifikasiController extends Controller
         RiwayatSertifikasiModel::create([
             'id_pengguna' => $request->id_pengguna,
             'level_sertifikasi' => $request->level_sertifikasi,
-            'diselenggarakan_oleh' => $request->diselenggarakan_oleh,
             'jenis_sertifikasi' => $request->jenis_sertifikasi,
             'nama_sertifikasi' => $request->nama_sertifikasi,
             'no_sertifikat' => $request->no_sertifikat,
@@ -191,7 +189,6 @@ class RiwayatSertifikasiController extends Controller
             'id_pengguna' => 'exists:pengguna,id_pengguna',
             'id_pelatihan' => 'nullable|exists:daftar_pelatihan,id_pelatihan',
             'level_sertifikasi' => 'required|in:Nasional,Internasional',
-            'diselenggarakan_oleh' => 'required|in:Mandiri,Ikut Pelatihan',
             'jenis_sertifikasi' => 'required|in:Profesi,Keahlian',
             'nama_sertifikasi' => 'nullable|string|max:100',
             'no_sertifikat' => 'required|string|max:100',
@@ -236,7 +233,6 @@ class RiwayatSertifikasiController extends Controller
                 'id_pengguna' => $request->id_pengguna,
                 'id_pelatihan' => $request->id_pelatihan,
                 'level_sertifikasi' => $request->level_sertifikasi,
-                'diselenggarakan_oleh' => $request->diselenggarakan_oleh,
                 'jenis_sertifikasi' => $request->jenis_sertifikasi,
                 'nama_sertifikasi' => $request->nama_sertifikasi,
                 'no_sertifikat' => $request->no_sertifikat,

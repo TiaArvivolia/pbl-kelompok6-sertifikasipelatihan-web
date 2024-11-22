@@ -32,10 +32,6 @@
                         <td class="col-9">{{ $sertifikasi->id_riwayat }}</td>
                     </tr>
                     <tr>
-                        <th class="text-right col-3">ID Pengguna :</th>
-                        <td class="col-9">{{ $sertifikasi->pengguna->id_pengguna }}</td>
-                    </tr>
-                    <tr>
                         <th class="text-right col-3">Nama Pengguna :</th>
                         <td class="col-9">
                             {{ $sertifikasi->pengguna->dosen ? $sertifikasi->pengguna->dosen->nama_lengkap : ($sertifikasi->pengguna->tendik ? $sertifikasi->pengguna->tendik->nama_lengkap : 'Tidak Tersedia') }}
@@ -52,10 +48,6 @@
                     <tr>
                         <th class="text-right col-3">Level Sertifikasi :</th>
                         <td class="col-9">{{ $sertifikasi->level_sertifikasi }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-right col-3">Diselenggarakan Oleh :</th>
-                        <td class="col-9">{{ $sertifikasi->diselenggarakan_oleh }}</td>
                     </tr>
                     <tr>
                         <th class="text-right col-3">Jenis Sertifikasi :</th>

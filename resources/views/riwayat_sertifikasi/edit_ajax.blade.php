@@ -59,15 +59,6 @@
                     <small id="error-no_sertifikat" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
-                    <label>Diselenggarakan Oleh</label>
-                    <select name="diselenggarakan_oleh" id="diselenggarakan_oleh" class="form-control" required>
-                        <option value="">Pilih Diselenggarakan Oleh</option>
-                        <option value="Mandiri" {{ $sertifikasi->diselenggarakan_oleh == 'Mandiri' ? 'selected' : '' }}>Mandiri</option>
-                        <option value="Ikut Pelatihan" {{ $sertifikasi->diselenggarakan_oleh == 'Ikut Pelatihan' ? 'selected' : '' }}>Ikut Pelatihan</option>
-                    </select>
-                    <small id="error-diselenggarakan_oleh" class="error-text form-text text-danger"></small>
-                </div>
-                <div class="form-group">
                     <label>Jenis Sertifikasi</label>
                     <input value="{{ $sertifikasi->jenis_sertifikasi }}" type="text" name="jenis_sertifikasi" id="jenis_sertifikasi" class="form-control" required>
                     <small id="error-jenis_sertifikasi" class="error-text form-text text-danger"></small>
@@ -156,7 +147,7 @@ $(document).ready(function() {
             tanggal_terbit: { required: true },
             masa_berlaku: { required: true },
             no_sertifikat: { required: true, maxlength: 100 },
-            diselenggarakan_oleh: { required: true },
+            // diselenggarakan_oleh: { required: true },
             penyelenggara: { maxlength: 100 },
             dokumen_sertifikat: { extension: "pdf|doc|docx|jpg|jpeg|png" },
             id_pengguna: { required: true },
