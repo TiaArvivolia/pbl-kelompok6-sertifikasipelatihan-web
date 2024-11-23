@@ -287,6 +287,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/export_pdf', [RiwayatSertifikasiController::class, 'export_pdf']);
         Route::get('/export_excel', [RiwayatSertifikasiController::class, 'export_excel']);
     });
+    
+    // Statistik sertifikasi
+    Route::get('statistik_sertifikasi', [StatistikSertifikasiController::class, 'index']);
 });
 
 
@@ -305,7 +308,6 @@ Route::prefix('draft-surat-tugas')->name('draft-surat-tugas')->group(function ()
 });
 
 // Statistik sertifikasi
-Route::get('statistik-sertifikasi', [VendorSertifikasiController::class, 'index']);
 Route::get('statistik-sertifikasi/create', [VendorSertifikasiController::class, 'create']);
 Route::get('statistik-sertifikasi/{id}', [VendorSertifikasiController::class, 'show']);
 Route::get('statistik-sertifikasi/{id}/edit', [VendorSertifikasiController::class, 'edit']);

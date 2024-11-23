@@ -78,6 +78,12 @@
                     <small id="error-masa_berlaku" class="error-text form-text text-danger"></small>
                 </div>
 
+                <div class="form-group">
+                    <label>Tahun Periode</label>
+                    <input type="number" name="tahun_periode" id="tahun_periode" class="form-control">
+                    <small id="error-tahun_periode" class="error-text form-text text-danger"></small>
+                </div>
+
                 {{-- <div class="form-group">
                     <label>Penyelenggara</label>
                     <input type="text" name="penyelenggara" id="penyelenggara" class="form-control" required>

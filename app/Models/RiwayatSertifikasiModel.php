@@ -30,6 +30,7 @@ class RiwayatSertifikasiModel extends Model
         'dokumen_sertifikat',
         'mk_list',
         'bidang_minat_list',
+        'tahun_periode'
     ];
 
     // Define the relationship to the Pengguna model

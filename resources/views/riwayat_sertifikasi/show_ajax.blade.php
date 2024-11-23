@@ -66,6 +66,10 @@
                         <td class="col-9">{{ $sertifikasi->masa_berlaku ? \Carbon\Carbon::parse($sertifikasi->masa_berlaku)->format('d-m-Y') : '-' }}</td>
                     </tr>
                     <tr>
+                        <th class="text-right col-3">Tahun Periode :</th>
+                        <td class="col-9">{{ $sertifikasi->tahun_periode }}</td>
+                    </tr>
+                    <tr>
                         <th class="text-right col-3">Penyelenggara :</th>
                         <td class="col-9">
                             @if(is_object($sertifikasi->penyelenggara))

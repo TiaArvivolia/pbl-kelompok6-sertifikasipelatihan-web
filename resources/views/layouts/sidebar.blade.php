@@ -222,20 +222,15 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('/draft-surat-tugas') }}" class="nav-link {{ $activeMenu == 'draftSuratTugas' ? 'active' : '' }}">
-              <p>Draft Surat Tugas</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ url('/statistik-sertifikasi') }}" class="nav-link {{ $activeMenu == 'statistik' ? 'active' : '' }}">
+            <a href="{{ url('/statistik_sertifikasi') }}" class="nav-link {{ $activeMenu == 'statistik' ? 'active' : '' }}">
               <p>Statistik Sertifikasi</p>
             </a>
           </li>
-          <li class="nav-item">
-            <a href="{{ url('/pelatihan-sertifikasi') }}" class="nav-link {{ $activeMenu == 'pelatihan' ? 'active' : '' }}">
-              <p>Pelatihan & Sertifikasi</p>
+          {{-- <li class="nav-item">
+            <a href="{{ url('/draft-surat-tugas') }}" class="nav-link {{ $activeMenu == 'draftSuratTugas' ? 'active' : '' }}">
+              <p>Draft Surat Tugas</p>
             </a>
-          </li>
+          </li> --}}
           <li class="nav-item">
             <a href="{{ url('/kelola-periode') }}" class="nav-link {{ $activeMenu == 'periode' ? 'active' : '' }}">
               <p>Kelola Periode</p>

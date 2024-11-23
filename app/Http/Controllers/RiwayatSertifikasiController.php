@@ -95,6 +95,7 @@ class RiwayatSertifikasiController extends Controller
             'mk_list.*' => 'exists:mata_kuliah,id_mata_kuliah', // Each mata kuliah in mk_list must exist
             'bidang_minat_list' => 'nullable|array', // Ensure bidang_minat_list is an array if provided
             'bidang_minat_list.*' => 'exists:bidang_minat,id_bidang_minat', // Each bidang minat in bidang_minat_list must exist
+            
         ];
 
 
@@ -130,6 +131,7 @@ class RiwayatSertifikasiController extends Controller
             'dokumen_sertifikat' => $dokumenPath, // Menyimpan path dokumen di database
             'mk_list' => $request->has('mk_list') ? json_encode($request->input('mk_list')) : null, // Store mk_list as JSON
             'bidang_minat_list' => $request->has('bidang_minat_list') ? json_encode($request->input('bidang_minat_list')) : null, // Store bidang_minat_list as JSON
+            'tahun_periode' => $request->tahun_periode,
         ]);
         return response()->json([
             'status' => true,
@@ -266,6 +268,7 @@ class RiwayatSertifikasiController extends Controller
                 'masa_berlaku' => $request->masa_berlaku,
                 'penyelenggara' => $request->penyelenggara,
                 'dokumen_sertifikat' => $dokumenPath, // Menyimpan path dokumen yang baru
+                'tahun_periode' => $request->tahun_periode,
             ];
 
             // Update mk_list jika ada

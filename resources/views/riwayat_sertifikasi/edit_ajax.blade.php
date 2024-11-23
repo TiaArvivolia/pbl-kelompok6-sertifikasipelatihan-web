@@ -54,6 +54,11 @@
                     <small id="error-masa_berlaku" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
+                    <label>Tahun Periode</label>
+                    <input value="{{ $sertifikasi->tahun_periode }}" type="number" name="tahun_periode" id="tahun_periode" class="form-control">
+                    <small id="error-tahun_periode" class="error-text form-text text-danger"></small>
+                </div>
+                <div class="form-group">
                     <label>No Sertifikat</label>
                     <input value="{{ $sertifikasi->no_sertifikat }}" type="text" name="no_sertifikat" id="no_sertifikat" class="form-control" required>
                     <small id="error-no_sertifikat" class="error-text form-text text-danger"></small>
