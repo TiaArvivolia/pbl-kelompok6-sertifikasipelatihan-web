@@ -91,8 +91,10 @@ class RiwayatSertifikasiController extends Controller
             'tanggal_terbit' => 'required|date',
             'masa_berlaku' => 'nullable|date|after:tanggal_terbit',
             'dokumen_sertifikat' => 'nullable|mimes:jpg,jpeg,png,gif,bmp,pdf,docx,xlsx|max:10240', // Maksimum ukuran file 10MB
-            // 'tag_mk' => 'nullable|array', // Menggunakan array untuk tag_mk
-            // 'tag_bidang_minat' => 'nullable|array', // Menggunakan array untuk tag_bidang_minat
+            'mk_list' => 'nullable|array', // Ensure mk_list is an array if provided
+            'mk_list.*' => 'exists:mata_kuliah,id_mata_kuliah', // Each mata kuliah in mk_list must exist
+            'bidang_minat_list' => 'nullable|array', // Ensure bidang_minat_list is an array if provided
+            'bidang_minat_list.*' => 'exists:bidang_minat,id_bidang_minat', // Each bidang minat in bidang_minat_list must exist
         ];
 
 
@@ -126,10 +128,8 @@ class RiwayatSertifikasiController extends Controller
             'masa_berlaku' => $request->masa_berlaku,
             'penyelenggara' => $request->penyelenggara,
             'dokumen_sertifikat' => $dokumenPath, // Menyimpan path dokumen di database
-            'tag_mk' => $request->tag_mk,
-            'tag_bidang_minat' => $request->tag_bidang_minat,
-            // 'tag_mk_json' => $request->has('tag_mk') ? json_encode($request->tag_mk) : null, // Menyimpan array tag_mk sebagai JSON
-            // 'tag_bidang_minat_json' => $request->has('tag_bidang_minat') ? json_encode($request->tag_bidang_minat) : null, // Menyimpan array tag_bidang_minat sebagai JSON
+            'mk_list' => $request->has('mk_list') ? json_encode($request->input('mk_list')) : null, // Store mk_list as JSON
+            'bidang_minat_list' => $request->has('bidang_minat_list') ? json_encode($request->input('bidang_minat_list')) : null, // Store bidang_minat_list as JSON
         ]);
         return response()->json([
             'status' => true,
@@ -152,7 +152,31 @@ class RiwayatSertifikasiController extends Controller
             return response()->json(['error' => 'Data yang anda cari tidak ditemukan'], 404);
         }
 
-        return view('riwayat_sertifikasi.show_ajax', compact('sertifikasi'));
+        // Decode the JSON for mk_list and retrieve mata kuliah names
+        $mataKuliahNames = [];
+        if ($sertifikasi->mk_list) {
+            $mkListArray = json_decode($sertifikasi->mk_list);
+            foreach ($mkListArray as $idMk) {
+                $mataKuliah = MataKuliahModel::find($idMk);
+                if ($mataKuliah) {
+                    $mataKuliahNames[] = $mataKuliah->nama_mk;
+                }
+            }
+        }
+
+        // Decode the JSON for bidang_minat_list and retrieve bidang minat names
+        $bidangMinatNames = [];
+        if ($sertifikasi->bidang_minat_list) {
+            $bidangMinatListArray = json_decode($sertifikasi->bidang_minat_list);
+            foreach ($bidangMinatListArray as $idBidangMinat) {
+                $bidangMinat = BidangMinatModel::find($idBidangMinat);
+                if ($bidangMinat) {
+                    $bidangMinatNames[] = $bidangMinat->nama_bidang_minat;
+                }
+            }
+        }
+
+        return view('riwayat_sertifikasi.show_ajax', compact('sertifikasi', 'mataKuliahNames', 'bidangMinatNames'));
     }
 
     public function edit_ajax(string $id)
@@ -195,8 +219,10 @@ class RiwayatSertifikasiController extends Controller
             'tanggal_terbit' => 'required|date',
             'masa_berlaku' => 'nullable|date|after:tanggal_terbit',
             'dokumen_sertifikat' => 'nullable|mimes:jpg,jpeg,png,gif,bmp,pdf,docx,xlsx|max:10240', // Validasi untuk dokumen
-            'tag_mk' => 'nullable|exists:mata_kuliah,id_mata_kuliah',
-            'tag_bidang_minat' => 'nullable|exists:bidang_minat,id_bidang_minat'
+            'mk_list' => 'nullable|array',
+            'mk_list.*' => 'exists:mata_kuliah,id_mata_kuliah',
+            'bidang_minat_list' => 'nullable|array',
+            'bidang_minat_list.*' => 'exists:bidang_minat,id_bidang_minat',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -229,7 +255,7 @@ class RiwayatSertifikasiController extends Controller
             }
 
             // Perbarui riwayat sertifikasi dengan data baru
-            $sertifikasi->update([
+            $updateData = [
                 'id_pengguna' => $request->id_pengguna,
                 'id_pelatihan' => $request->id_pelatihan,
                 'level_sertifikasi' => $request->level_sertifikasi,
@@ -240,9 +266,20 @@ class RiwayatSertifikasiController extends Controller
                 'masa_berlaku' => $request->masa_berlaku,
                 'penyelenggara' => $request->penyelenggara,
                 'dokumen_sertifikat' => $dokumenPath, // Menyimpan path dokumen yang baru
-                'tag_mk' => $request->tag_mk,
-                'tag_bidang_minat' => $request->tag_bidang_minat
-            ]);
+            ];
+
+            // Update mk_list jika ada
+            if ($request->filled('mk_list')) {
+                $updateData['mk_list'] = json_encode($request->mk_list);
+            }
+
+            // Update bidang_minat_list jika ada
+            if ($request->filled('bidang_minat_list')) {
+                $updateData['bidang_minat_list'] = json_encode($request->bidang_minat_list);
+            }
+
+            // Simpan pembaruan ke database
+            $sertifikasi->update($updateData);
 
             return response()->json([
                 'status' => true,

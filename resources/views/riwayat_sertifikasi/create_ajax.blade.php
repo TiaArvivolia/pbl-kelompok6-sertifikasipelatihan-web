@@ -102,26 +102,26 @@
                 </div>                
 
                 <div class="form-group">
-                    <label>Tag Mata Kuliah</label>
-                    <select name="tag_mk" id="tag_mk" class="form-control">
+                    <label>Mata Kuliah</label>
+                    <select name="mk_list[]" id="mk_list" class="form-control" multiple required>
                         <option value="">- Pilih Mata Kuliah -</option>
                         @foreach($mataKuliah as $mk)
                             <option value="{{ $mk->id_mata_kuliah }}">{{ $mk->nama_mk }}</option>
                         @endforeach
                     </select>
-                    <small id="error-tag_mk" class="error-text form-text text-danger"></small>
+                    <small id="error-mk_list" class="error-text form-text text-danger"></small>
                 </div>
-
+                
                 <div class="form-group">
-                    <label>Tag Bidang Minat</label>
-                    <select name="tag_bidang_minat" id="tag_bidang_minat" class="form-control">
+                    <label>Bidang Minat</label>
+                    <select name="bidang_minat_list[]" id="bidang_minat_list" class="form-control" multiple required>
                         <option value="">- Pilih Bidang Minat -</option>
                         @foreach($bidangMinat as $bm)
                             <option value="{{ $bm->id_bidang_minat }}">{{ $bm->nama_bidang_minat }}</option>
                         @endforeach
                     </select>
-                    <small id="error-tag_bidang_minat" class="error-text form-text text-danger"></small>
-                </div>
+                    <small id="error-bidang_minat_list" class="error-text form-text text-danger"></small>
+                </div>  
 
                 {{-- <div class="form-group">
                     <label>Tag Mata Kuliah</label>
@@ -153,16 +153,16 @@
 </form>
 <script>
     $(document).ready(function() {
-        // $('#tag_mk').select2({
-        //     width: '100%', // Full width
-        //     allowClear: true
-        // });
+        $('#mk_list').select2({
+            width: '100%', // Full width
+            allowClear: true
+        });
 
-        // // Inisialisasi Select2 untuk Tag Bidang Minat
-        // $('#tag_bidang_minat').select2({
-        //     width: '100%', // Full width
-        //     allowClear: true
-        // });
+        // Initialize select2 for the bidang minat (bidang_minat_list) field
+        $('#bidang_minat_list').select2({
+            width: '100%', // Full width
+            allowClear: true
+        });
         $("#form-tambah-riwayat-sertifikasi").validate({
             rules: {
                 id_pengguna: { required: true },

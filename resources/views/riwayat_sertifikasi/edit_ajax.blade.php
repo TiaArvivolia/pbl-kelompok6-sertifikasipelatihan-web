@@ -103,32 +103,33 @@
                     </select>                                                  
                     <small id="error-id_pengguna" class="error-text form-text text-danger"></small>
                 </div>
+                <!-- Input untuk Mata Kuliah -->
                 <div class="form-group">
                     <label>Mata Kuliah</label>
-                    <select name="tag_mk" id="tag_mk" class="form-control">
-                        <option value="">Pilih Mata Kuliah</option>
+                    <select name="mk_list[]" id="mk_list" class="form-control" multiple required>
                         @foreach($mataKuliah as $mk)
                             <option value="{{ $mk->id_mata_kuliah }}" 
-                                {{ $sertifikasi->tag_mk == $mk->id_mata_kuliah ? 'selected' : '' }}>
+                                {{ in_array($mk->id_mata_kuliah, json_decode($sertifikasi->mk_list ?? '[]')) ? 'selected' : '' }}>
                                 {{ $mk->nama_mk }}
                             </option>
                         @endforeach
                     </select>
-                    <small id="error-tag_mk" class="error-text form-text text-danger"></small>
+                    <small id="error-mk_list" class="error-text form-text text-danger"></small>
                 </div>
+
+                <!-- Input untuk Bidang Minat -->
                 <div class="form-group">
                     <label>Bidang Minat</label>
-                    <select name="tag_bidang_minat" id="tag_bidang_minat" class="form-control">
-                        <option value="">Pilih Bidang Minat</option>
+                    <select name="bidang_minat_list[]" id="bidang_minat_list" class="form-control" multiple required>
                         @foreach($bidangMinat as $bm)
                             <option value="{{ $bm->id_bidang_minat }}" 
-                                {{ $sertifikasi->tag_bidang_minat == $bm->id_bidang_minat ? 'selected' : '' }}>
+                                {{ in_array($bm->id_bidang_minat, json_decode($sertifikasi->bidang_minat_list ?? '[]')) ? 'selected' : '' }}>
                                 {{ $bm->nama_bidang_minat }}
                             </option>
                         @endforeach
                     </select>
-                    <small id="error-tag_bidang_minat" class="error-text form-text text-danger"></small>
-                </div>
+                    <small id="error-bidang_minat_list" class="error-text form-text text-danger"></small>
+                </div> 
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-warning" data-dismiss="modal">Batal</button>
@@ -140,6 +141,16 @@
 
 <script>
 $(document).ready(function() {
+    $('#mk_list').select2({
+        width: '100%', // Full width
+        allowClear: true
+    });
+
+    // Initialize select2 for the bidang minat (bidang_minat_list) field
+    $('#bidang_minat_list').select2({
+        width: '100%', // Full width
+        allowClear: true
+    });
     $("#form-edit-riwayat-sertifikasi").validate({
         rules: {
             nama_sertifikasi: { required: true, maxlength: 100 },

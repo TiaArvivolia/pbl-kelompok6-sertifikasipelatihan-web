@@ -24,8 +24,8 @@ class DaftarPelatihanModel extends Model
         'biaya',
         'jml_jam',
         'id_vendor_pelatihan',
-        'tag_mk',
-        'tag_bidang_minat',
+        'mk_list',
+        'bidang_minat_list',
     ];
 
     // Relasi ke tabel 'vendor_pelatihan'

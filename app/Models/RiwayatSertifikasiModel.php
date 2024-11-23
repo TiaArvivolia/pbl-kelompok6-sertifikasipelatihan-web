@@ -28,10 +28,8 @@ class RiwayatSertifikasiModel extends Model
         'masa_berlaku',
         'penyelenggara',
         'dokumen_sertifikat',
-        'tag_mk',
-        'tag_bidang_minat',
-        'tag_mk_json',
-        'tag_bidang_minat_json',
+        'mk_list',
+        'bidang_minat_list',
     ];
 
     // Define the relationship to the Pengguna model

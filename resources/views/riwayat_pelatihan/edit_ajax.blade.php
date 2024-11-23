@@ -98,34 +98,33 @@
                     </select>                                                  
                     <small id="error-id_pengguna" class="error-text form-text text-danger"></small>
                 </div>
-                    <!-- Input untuk Mata Kuliah -->
-                    <div class="form-group">
-                        <label>Mata Kuliah</label>
-                        <select name="mk_list[]" id="mk_list" class="form-control" multiple required>
-                            @foreach($mataKuliah as $mk)
-                                <option value="{{ $mk->id_mata_kuliah }}" 
-                                    {{ in_array($mk->id_mata_kuliah, json_decode($pelatihan->mk_list ?? '[]')) ? 'selected' : '' }}>
-                                    {{ $mk->nama_mk }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <small id="error-mk_list" class="error-text form-text text-danger"></small>
-                    </div>
-    
-                    <!-- Input untuk Bidang Minat -->
-                    <div class="form-group">
-                        <label>Bidang Minat</label>
-                        <select name="bidang_minat_list[]" id="bidang_minat_list" class="form-control" multiple required>
-                            @foreach($bidangMinat as $bm)
-                                <option value="{{ $bm->id_bidang_minat }}" 
-                                    {{ in_array($bm->id_bidang_minat, json_decode($pelatihan->bidang_minat_list ?? '[]')) ? 'selected' : '' }}>
-                                    {{ $bm->nama_bidang_minat }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <small id="error-bidang_minat_list" class="error-text form-text text-danger"></small>
-                    </div> 
+                <!-- Input untuk Mata Kuliah -->
+                <div class="form-group">
+                    <label>Mata Kuliah</label>
+                    <select name="mk_list[]" id="mk_list" class="form-control" multiple required>
+                        @foreach($mataKuliah as $mk)
+                            <option value="{{ $mk->id_mata_kuliah }}" 
+                                {{ in_array($mk->id_mata_kuliah, json_decode($pelatihan->mk_list ?? '[]')) ? 'selected' : '' }}>
+                                {{ $mk->nama_mk }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <small id="error-mk_list" class="error-text form-text text-danger"></small>
+                </div>
 
+                <!-- Input untuk Bidang Minat -->
+                <div class="form-group">
+                    <label>Bidang Minat</label>
+                    <select name="bidang_minat_list[]" id="bidang_minat_list" class="form-control" multiple required>
+                        @foreach($bidangMinat as $bm)
+                            <option value="{{ $bm->id_bidang_minat }}" 
+                                {{ in_array($bm->id_bidang_minat, json_decode($pelatihan->bidang_minat_list ?? '[]')) ? 'selected' : '' }}>
+                                {{ $bm->nama_bidang_minat }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <small id="error-bidang_minat_list" class="error-text form-text text-danger"></small>
+                </div> 
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-warning" data-dismiss="modal">Batal</button>
