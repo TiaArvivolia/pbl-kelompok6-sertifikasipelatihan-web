@@ -68,12 +68,25 @@
                         <td class="col-9">{{ $pelatihan->vendorPelatihan ? $pelatihan->vendorPelatihan->nama : '-' }}</td>
                     </tr>
                     <tr>
-                        <th class="text-right col-3">Mata Kuliah :</th>
-                        <td class="col-9">{{ $pelatihan->mataKuliah ? $pelatihan->mataKuliah->nama_mk : '-' }}</td>
+                        <th class="text-right col-3">Mata Kuliah:</th>
+                        <td class="col-9">
+                            @if($pelatihan->mk_list && count($mataKuliahNames) > 0)
+                                {{ implode(', ', $mataKuliahNames) }}
+                            @else
+                                <span>-</span>
+                            @endif
+                        </td>
                     </tr>
+                    
                     <tr>
-                        <th class="text-right col-3">Bidang Minat :</th>
-                        <td class="col-9">{{ $pelatihan->bidangMinat ? $pelatihan->bidangMinat->nama_bidang_minat : '-' }}</td>
+                        <th class="text-right col-3">Bidang Minat:</th>
+                        <td class="col-9">
+                            @if($pelatihan->bidang_minat_list && count($bidangMinatNames) > 0)
+                                {{ implode(', ', $bidangMinatNames) }}
+                            @else
+                                <span>-</span>
+                            @endif
+                        </td>
                     </tr>
                 </table>
             </div>

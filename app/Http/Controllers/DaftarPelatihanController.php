@@ -33,20 +33,20 @@ class DaftarPelatihanController extends Controller
     public function list(Request $request)
     {
         $pelatihan = DaftarPelatihanModel::select(
-            'id_pelatihan', 
-            'nama_pelatihan', 
-            'level_pelatihan', 
-            'tanggal_mulai', 
-            'tanggal_selesai', 
-            'kuota', 
-            'lokasi', 
-            'biaya', 
-            'jml_jam', 
-            'id_vendor_pelatihan', 
-            'tag_mk', 
+            'id_pelatihan',
+            'nama_pelatihan',
+            'level_pelatihan',
+            'tanggal_mulai',
+            'tanggal_selesai',
+            'kuota',
+            'lokasi',
+            'biaya',
+            'jml_jam',
+            'id_vendor_pelatihan',
+            'tag_mk',
             'tag_bidang_minat'
         )
-        ->with(['vendorPelatihan', 'mataKuliah', 'bidangMinat']);
+            ->with(['vendorPelatihan', 'mataKuliah', 'bidangMinat']);
 
         return DataTables::of($pelatihan)
             ->addIndexColumn()
@@ -74,20 +74,24 @@ class DaftarPelatihanController extends Controller
     public function store_ajax(Request $request)
     {
         if ($request->ajax() || $request->wantsJson()) {
+            // Definisikan aturan validasi
             $rules = [
                 'nama_pelatihan'    => 'required|string|max:100',
-                'level_pelatihan' => 'required|in:Nasional,Internasional',
-                'tanggal_mulai' => 'nullable|date',
-                'tanggal_selesai' => 'nullable|date',
-                'kuota'  => 'nullable|integer',
-                'lokasi' => 'nullable|string|max:100',
-                'biaya' => 'nullable|numeric',
-                'jml_jam' => 'nullable|integer',
+                'level_pelatihan'   => 'required|in:Nasional,Internasional',
+                'tanggal_mulai'     => 'nullable|date',
+                'tanggal_selesai'   => 'nullable|date',
+                'kuota'             => 'nullable|integer',
+                'lokasi'            => 'nullable|string|max:100',
+                'biaya'             => 'nullable|numeric',
+                'jml_jam'           => 'nullable|integer',
                 'id_vendor_pelatihan' => 'required|exists:vendor_pelatihan,id_vendor_pelatihan',
-                'tag_mk' => 'nullable|exists:mata_kuliah,id_mata_kuliah',
-                'tag_bidang_minat' => 'nullable|exists:bidang_minat,id_bidang_minat',
+                'mk_list'           => 'nullable|array', // Pastikan mk_list adalah array jika ada
+                'mk_list.*'         => 'exists:mata_kuliah,id_mata_kuliah', // Validasi setiap elemen mk_list
+                'bidang_minat_list' => 'nullable|array', // Pastikan bidang_minat_list adalah array jika ada
+                'bidang_minat_list.*' => 'exists:bidang_minat,id_bidang_minat', // Validasi setiap elemen bidang_minat_list
             ];
 
+            // Lakukan validasi
             $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
@@ -98,13 +102,21 @@ class DaftarPelatihanController extends Controller
                 ]);
             }
 
-            DaftarPelatihanModel::create($request->all());
+            // Persiapkan data untuk disimpan
+            $data = $request->all();
+            $data['mk_list'] = $request->has('mk_list') ? json_encode($request->input('mk_list')) : null; // Ubah mk_list menjadi JSON
+            $data['bidang_minat_list'] = $request->has('bidang_minat_list') ? json_encode($request->input('bidang_minat_list')) : null; // Ubah bidang_minat_list menjadi JSON
+
+            // Simpan data ke database
+            DaftarPelatihanModel::create($data);
 
             return response()->json([
                 'status' => true,
                 'message' => 'Data pelatihan berhasil disimpan'
             ]);
         }
+
+        // Jika bukan permintaan AJAX, arahkan ke halaman utama
         return redirect('/');
     }
 
@@ -116,7 +128,31 @@ class DaftarPelatihanController extends Controller
             return response()->json(['error' => 'Data yang anda cari tidak ditemukan'], 404);
         }
 
-        return view('daftar_pelatihan.show_ajax', compact('pelatihan'));
+        // Decode the JSON for mk_list and retrieve mata kuliah names
+        $mataKuliahNames = [];
+        if ($pelatihan->mk_list) {
+            $mkListArray = json_decode($pelatihan->mk_list);
+            foreach ($mkListArray as $idMk) {
+                $mataKuliah = MataKuliahModel::find($idMk);
+                if ($mataKuliah) {
+                    $mataKuliahNames[] = $mataKuliah->nama_mk;
+                }
+            }
+        }
+
+        // Decode the JSON for bidang_minat_list and retrieve bidang minat names
+        $bidangMinatNames = [];
+        if ($pelatihan->bidang_minat_list) {
+            $bidangMinatListArray = json_decode($pelatihan->bidang_minat_list);
+            foreach ($bidangMinatListArray as $idBidangMinat) {
+                $bidangMinat = BidangMinatModel::find($idBidangMinat);
+                if ($bidangMinat) {
+                    $bidangMinatNames[] = $bidangMinat->nama_bidang_minat;
+                }
+            }
+        }
+
+        return view('daftar_pelatihan.show_ajax', compact('pelatihan', 'mataKuliahNames', 'bidangMinatNames'));
     }
 
     public function edit_ajax(string $id)
@@ -136,20 +172,24 @@ class DaftarPelatihanController extends Controller
     public function update_ajax(Request $request, $id)
     {
         if ($request->ajax() || $request->wantsJson()) {
+            // Definisikan aturan validasi
             $rules = [
-                'nama_pelatihan'    => 'required|string|max:100',
-                'level_pelatihan' => 'required|in:Nasional,Internasional',
-                'tanggal_mulai' => 'nullable|date',
-                'tanggal_selesai' => 'nullable|date',
-                'kuota'  => 'nullable|integer',
-                'lokasi' => 'nullable|string|max:100',
-                'biaya' => 'nullable|numeric',
-                'jml_jam' => 'nullable|integer',
+                'nama_pelatihan'     => 'required|string|max:100',
+                'level_pelatihan'    => 'required|in:Nasional,Internasional',
+                'tanggal_mulai'      => 'nullable|date',
+                'tanggal_selesai'    => 'nullable|date',
+                'kuota'              => 'nullable|integer',
+                'lokasi'             => 'nullable|string|max:100',
+                'biaya'              => 'nullable|numeric',
+                'jml_jam'            => 'nullable|integer',
                 'id_vendor_pelatihan' => 'required|exists:vendor_pelatihan,id_vendor_pelatihan',
-                'tag_mk' => 'nullable|exists:mata_kuliah,id_mata_kuliah',
-                'tag_bidang_minat' => 'nullable|exists:bidang_minat,id_bidang_minat',
+                'mk_list'            => 'nullable|array',
+                'mk_list.*'          => 'exists:mata_kuliah,id_mata_kuliah',
+                'bidang_minat_list'  => 'nullable|array',
+                'bidang_minat_list.*' => 'exists:bidang_minat,id_bidang_minat',
             ];
 
+            // Lakukan validasi
             $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
@@ -160,9 +200,22 @@ class DaftarPelatihanController extends Controller
                 ]);
             }
 
+            // Cari data pelatihan berdasarkan ID
             $pelatihan = DaftarPelatihanModel::find($id);
             if ($pelatihan) {
-                $pelatihan->update($request->all());
+                // Siapkan data yang akan di-update
+                $data = $request->except(['mk_list', 'bidang_minat_list']); // Kecualikan data array
+
+                if ($request->filled('mk_list')) {
+                    $data['mk_list'] = json_encode($request->mk_list); // Simpan `mk_list` sebagai JSON
+                }
+
+                if ($request->filled('bidang_minat_list')) {
+                    $data['bidang_minat_list'] = json_encode($request->bidang_minat_list); // Simpan `bidang_minat_list` sebagai JSON
+                }
+
+                // Update data ke database
+                $pelatihan->update($data);
 
                 return response()->json([
                     'status'  => true,
@@ -170,12 +223,17 @@ class DaftarPelatihanController extends Controller
                 ]);
             }
 
+            // Jika data pelatihan tidak ditemukan
             return response()->json([
                 'status'  => false,
-                'message' => 'Pelatihan tidak ditemukan'
+                'message' => 'Data pelatihan tidak ditemukan.'
             ]);
         }
+
+        // Jika bukan permintaan AJAX, arahkan ke halaman utama
+        return redirect('/');
     }
+
 
     public function confirm_ajax(string $id)
     {
