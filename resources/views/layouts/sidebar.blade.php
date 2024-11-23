@@ -240,12 +240,12 @@
       </li>
 
       <!-- Button Logout -->
-      <li class="nav-item">
+      {{-- <li class="nav-item">
           <a href="#" class="nav-link" onclick="logout()">
               <i class="nav-icon fas fa-sign-out-alt"></i>
               <p>Logout</p>
           </a>
-      </li>
+      </li> --}}
     </ul>
   </nav>
 </div>
