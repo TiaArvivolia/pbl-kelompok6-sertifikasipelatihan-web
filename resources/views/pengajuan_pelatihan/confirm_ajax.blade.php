@@ -48,8 +48,30 @@
                     </tr>
                     <tr>
                         <th class="text-right col-3">Status :</th>
-                        <td class="col-9">{{ $pengajuan->status }}</td>
-                    </tr>
+                        <td class="col-9">
+                            @php
+                                $statusClass = '';
+                                $statusText = $pengajuan->status;
+                    
+                                switch ($pengajuan->status) {
+                                    case 'Menunggu':
+                                        $statusClass = 'bg-warning'; // Yellow
+                                        break;
+                                    case 'Disetujui':
+                                        $statusClass = 'bg-success'; // Green
+                                        break;
+                                    case 'Ditolak':
+                                        $statusClass = 'bg-danger'; // Red
+                                        break;
+                                    default:
+                                        $statusClass = 'bg-secondary'; // Default (Gray) if status is unknown
+                                        $statusText = 'Tidak Diketahui';
+                                        break;
+                                }
+                            @endphp
+                            <span class="badge {{ $statusClass }}">{{ $statusText }}</span>
+                        </td>
+                    </tr>                    
                     <tr>
                         <th class="text-right col-3">Catatan :</th>
                         <td class="col-9">{{ $pengajuan->catatan }}</td>

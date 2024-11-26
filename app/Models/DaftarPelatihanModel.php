@@ -45,4 +45,10 @@ class DaftarPelatihanModel extends Model
     {
         return $this->belongsTo(BidangMinatModel::class, 'tag_bidang_minat', 'id_bidang_minat');
     }
+
+    // Relationship with the 'pengajuan' model (foreign key: id_pelatihan)
+    public function pengajuan()
+    {
+        return $this->hasOne(PengajuanPelatihanModel::class, 'id_pelatihan', 'id_pelatihan');
+    }
 }

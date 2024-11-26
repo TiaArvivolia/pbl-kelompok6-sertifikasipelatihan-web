@@ -29,7 +29,6 @@ class DaftarPelatihanController extends Controller
         return view('daftar_pelatihan.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'activeMenu' => $activeMenu]);
     }
 
-    // Ambil data pelatihan dalam bentuk JSON untuk DataTables
     public function list(Request $request)
     {
         $pelatihan = DaftarPelatihanModel::select(
@@ -45,8 +44,7 @@ class DaftarPelatihanController extends Controller
             'id_vendor_pelatihan',
             'tag_mk',
             'tag_bidang_minat'
-        )
-            ->with(['vendorPelatihan', 'mataKuliah', 'bidangMinat']);
+        )->with(['pengajuan', 'vendorPelatihan', 'mataKuliah', 'bidangMinat']);
 
         return DataTables::of($pelatihan)
             ->addIndexColumn()
@@ -54,10 +52,23 @@ class DaftarPelatihanController extends Controller
                 $btn = '<button onclick="modalAction(\'' . url('/daftar_pelatihan/' . $pelatihan->id_pelatihan . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/daftar_pelatihan/' . $pelatihan->id_pelatihan . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/daftar_pelatihan/' . $pelatihan->id_pelatihan . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Hapus</button>';
-
                 return $btn;
             })
-            ->rawColumns(['aksi']) // Ensure action column supports HTML
+            ->addColumn('pengajuan', function ($pelatihan) {
+                if (isset($pelatihan->pengajuan)) {
+                    $pengajuan = $pelatihan->pengajuan;
+                    $btn = '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/' . $pengajuan->id_pengajuan . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
+                    $btn .= '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/' . $pengajuan->id_pengajuan . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
+                    $btn .= '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/' . $pengajuan->id_pengajuan . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Hapus</button>';
+                    return $btn;
+                }
+
+                // Jika tidak ada pengajuan, tambahkan tombol untuk membuat pengajuan baru
+                return '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/create_ajax') . '\')" class="btn btn-success btn-sm">
+                            <i class="fas fa-plus"></i> Tambah Pengajuan Pelatihan
+                        </button>';
+            })
+            ->rawColumns(['aksi', 'pengajuan'])
             ->make(true);
     }
 

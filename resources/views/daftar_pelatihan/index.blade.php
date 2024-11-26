@@ -30,10 +30,11 @@
                         <th>Nama Pelatihan</th>
                         <th>Tanggal Mulai</th>
                         <th>Tanggal Selesai</th>
-                        <th>Kuota</th>
-                        <th>Lokasi</th>
+                        {{-- <th>Kuota</th> --}}
+                        {{-- <th>Lokasi</th> --}}
                         <th>Vendor Pelatihan</th>
                         <th>Aksi</th>
+                        <th>Pengajuan Pelatihan</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -95,22 +96,18 @@ $(document).ready(function(){
                 searchable: true
             },
             {
-                data: "kuota",
-                orderable: true,
-                searchable: true
-            },
-            {
-                data: "lokasi",
-                orderable: true,
-                searchable: true
-            },
-            {
                 data: "vendor_pelatihan.nama", // Assuming the vendor has a name attribute
                 orderable: true,
                 searchable: true
             },
             {
                 data: "aksi",
+                className: "text-center",
+                orderable: false,
+                searchable: false
+            },
+            {
+                data: "pengajuan",
                 className: "text-center",
                 orderable: false,
                 searchable: false

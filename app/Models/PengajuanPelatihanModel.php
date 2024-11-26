@@ -17,10 +17,10 @@ class PengajuanPelatihanModel extends Model
 
     // Define the fields that can be mass-assigned
     protected $fillable = [
-        'id_pengguna', 
-        'id_pelatihan', 
-        'tanggal_pengajuan', 
-        'status', 
+        'id_pengguna',
+        'id_pelatihan',
+        'tanggal_pengajuan',
+        'status',
         'catatan',
         'id_peserta'
     ];
