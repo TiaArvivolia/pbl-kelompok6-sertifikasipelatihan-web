@@ -21,7 +21,7 @@
             <div class="alert alert-danger">{{ session('error') }}</div>
         @endif
         <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover table-sm" id="table_vendor_sertifikasi">
+        <table class="table table-bordered table-striped table-hover table-sm" id="table_vendor_sertifikasi" style="width: 100%;">
             <thead>
                 <tr>
                     <th class="text-center" style="width: 5%;">No</th>
