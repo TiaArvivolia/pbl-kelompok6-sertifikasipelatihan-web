@@ -64,10 +64,14 @@
                     <small id="error-no_sertifikat" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
-                    <label>Jenis Sertifikasi</label>
-                    <input value="{{ $sertifikasi->jenis_sertifikasi }}" type="text" name="jenis_sertifikasi" id="jenis_sertifikasi" class="form-control" required>
+                    <label for="jenis_sertifikasi">Jenis Sertifikasi</label>
+                    <select name="jenis_sertifikasi" id="jenis_sertifikasi" class="form-control" required>
+                        <option value="" disabled selected>Pilih Jenis Sertifikasi</option>
+                        <option value="Keahlian" {{ $sertifikasi->jenis_sertifikasi == 'Keahlian' ? 'selected' : '' }}>Keahlian</option>
+                        <option value="Profesi" {{ $sertifikasi->jenis_sertifikasi == 'Profesi' ? 'selected' : '' }}>Profesi</option>
+                    </select>
                     <small id="error-jenis_sertifikasi" class="error-text form-text text-danger"></small>
-                </div>
+                </div>                
                 {{-- <div class="form-group">
                     <label>Penyelenggara</label>
                     <input value="{{ $sertifikasi->penyelenggara }}" type="text" name="penyelenggara" id="penyelenggara" class="form-control" required>

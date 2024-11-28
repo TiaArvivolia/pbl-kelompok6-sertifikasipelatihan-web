@@ -256,6 +256,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/{id}/delete_ajax', [PengajuanPelatihanController::class, 'delete_ajax']);
         Route::get('/export_pdf', [PengajuanPelatihanController::class, 'export_pdf']);
         Route::get('/export_excel', [PengajuanPelatihanController::class, 'export_excel']);
+        Route::get('/{id}/export_word', [PengajuanPelatihanController::class, 'export_word'])->name('pengajuan_pelatihan.export_word');
     });
 
     // Riwayat Pelatihan

@@ -8,6 +8,8 @@ use App\Models\PengajuanPelatihanModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
+use PhpOffice\PhpWord\PhpWord;
+use PhpOffice\PhpWord\IOFactory;
 
 class PengajuanPelatihanController extends Controller
 {
@@ -36,22 +38,20 @@ class PengajuanPelatihanController extends Controller
         return DataTables::of($query)
             ->addIndexColumn()
             ->addColumn('nama_lengkap', function ($pengajuan) {
-                // Mengambil peserta dari kolom JSON id_peserta
                 $pesertaIds = json_decode($pengajuan->id_peserta);
                 $namaPeserta = [];
-
-                // Loop untuk mengambil nama lengkap peserta
                 if ($pesertaIds) {
                     foreach ($pesertaIds as $index => $id) {
-                        // Mengambil nama lengkap berdasarkan id pengguna (dosen atau tendik)
                         $peserta = Pengguna::find($id);
-                        $namaPeserta[] = ($index + 1) . ') ' .
-                            ($peserta->dosen ? $peserta->dosen->nama_lengkap : ($peserta->tendik ? $peserta->tendik->nama_lengkap : 'Tidak Dikenal'));
+                        if ($peserta) {
+                            $namaPeserta[] = ($index + 1) . ') ' .
+                                ($peserta->dosen ? $peserta->dosen->nama_lengkap : ($peserta->tendik ? $peserta->tendik->nama_lengkap : 'Tidak Dikenal'));
+                        } else {
+                            $namaPeserta[] = ($index + 1) . ') Tidak Ditemukan';
+                        }
                     }
                 }
-
-                // Gabungkan nama peserta menjadi satu string dengan nomor urut dan pemisah baris baru
-                return implode('<br>', $namaPeserta); // Menggunakan <br> untuk memisahkan nama di baris baru
+                return implode('<br>', $namaPeserta);
             })
             ->addColumn('nama_pelatihan', function ($pengajuan) {
                 return $pengajuan->daftarPelatihan ? $pengajuan->daftarPelatihan->nama_pelatihan : '-';
@@ -60,10 +60,13 @@ class PengajuanPelatihanController extends Controller
                 $btn = '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/' . $pengajuan->id_pengajuan . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/' . $pengajuan->id_pengajuan . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/' . $pengajuan->id_pengajuan . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Hapus</button> ';
-
                 return $btn;
             })
-            ->rawColumns(['aksi', 'nama_lengkap']) // pastikan kolom nama_lengkap di rawColumns
+            ->addColumn('draft', function ($pengajuan) {
+                $btn = '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/' . $pengajuan->id_pengajuan . '/export_word') . '\')" class="btn btn-primary btn-sm"><i class="fa fa-download"></i> Detail</button> ';
+                return $btn;
+            })
+            ->rawColumns(['aksi', 'nama_lengkap', 'draft']) // pastikan kolom nama_lengkap di rawColumns
             ->make(true);
     }
 
@@ -221,4 +224,75 @@ class PengajuanPelatihanController extends Controller
             ]);
         }
     }
+    
+    public function export_word()
+    {
+        $pengajuan = PengajuanPelatihanModel::with(['pengguna', 'daftarPelatihan'])
+            ->orderBy('id_pengajuan')
+            ->get();
+    
+        // Inisialisasi PhpWord
+        $phpWord = new PhpWord();
+        $section = $phpWord->addSection();
+    
+        // Header
+        $header = $section->addTable();
+        $header->addRow();
+        $header->addCell(1200)->addImage(asset('polinema-bw.png'), [
+            'width' => 100,
+            'height' => 80,
+            'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER
+        ]);
+        $cell = $header->addCell(9200);
+        $cell->addText('KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI', ['size' => 11], ['alignment' => 'center']);
+        $cell->addText('POLITEKNIK NEGERI MALANG', ['size' => 13, 'bold' => true], ['alignment' => 'center']);
+        $cell->addText('Jl. Soekarno-Hatta No. 9 Malang 65141', ['size' => 10], ['alignment' => 'center']);
+        $cell->addText('Telepon (0341) 404424 Pes. 101-105, 0341-404420, Fax. (0341) 404420', ['size' => 10], ['alignment' => 'center']);
+        $cell->addText('Laman: www.polinema.ac.id', ['size' => 10], ['alignment' => 'center']);
+    
+        $section->addTextBreak();
+    
+        // Judul
+        $section->addText('LAPORAN DATA PENGAJUAN PELATIHAN', ['size' => 14, 'bold' => true], ['alignment' => 'center']);
+        $section->addTextBreak(2);
+    
+        // Tabel Data
+        $table = $section->addTable(['borderSize' => 6, 'borderColor' => '000000', 'alignment' => 'center', 'cellMargin' => 50]);
+    
+        // Header Tabel
+        $table->addRow();
+        $table->addCell(500, ['bgColor' => 'cccccc'])->addText('No', ['bold' => true], ['alignment' => 'center']);
+        $table->addCell(2000, ['bgColor' => 'cccccc'])->addText('Nama Pengguna', ['bold' => true], ['alignment' => 'center']);
+        $table->addCell(2000, ['bgColor' => 'cccccc'])->addText('Nama Pelatihan', ['bold' => true], ['alignment' => 'center']);
+        $table->addCell(2000, ['bgColor' => 'cccccc'])->addText('Tanggal Pengajuan', ['bold' => true], ['alignment' => 'center']);
+        $table->addCell(2000, ['bgColor' => 'cccccc'])->addText('Status', ['bold' => true], ['alignment' => 'center']);
+        $table->addCell(3000, ['bgColor' => 'cccccc'])->addText('Catatan', ['bold' => true], ['alignment' => 'center']);
+    
+        // Isi Tabel
+        foreach ($pengajuan as $key => $item) {
+            $namaPengguna = $item->pengguna->dosen
+                ? $item->pengguna->dosen->nama_lengkap
+                : ($item->pengguna->tendik ? $item->pengguna->tendik->nama_lengkap : 'Tidak Dikenal');
+            $namaPelatihan = $item->daftarPelatihan ? $item->daftarPelatihan->nama_pelatihan : '-';
+    
+            $table->addRow();
+            $table->addCell(500)->addText($key + 1, [], ['alignment' => 'center']);
+            $table->addCell(2000)->addText($namaPengguna);
+            $table->addCell(2000)->addText($namaPelatihan);
+            $table->addCell(2000)->addText($item->tanggal_pengajuan);
+            $table->addCell(2000)->addText($item->status);
+            $table->addCell(3000)->addText($item->catatan ?? '-');
+        }
+    
+        // Simpan dan Unduh
+        $fileName = 'Laporan_Pengajuan_Pelatihan_' . date('Y-m-d_H-i-s') . '.docx';
+        $filePath = storage_path('app/public/' . $fileName);
+        $writer = IOFactory::createWriter($phpWord, 'Word2007');
+        $writer->save($filePath);
+    
+        return response()->download($filePath)->deleteFileAfterSend(true);
+    }
+    
+    
+    
 }

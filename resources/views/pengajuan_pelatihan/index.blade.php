@@ -30,6 +30,7 @@
                         <th>Nama Pelatihan</th>
                         <th>Peserta Pelatihan</th> <!-- Kolom Nama Pengguna -->
                         <th>Status</th>
+                        <th>Draft Surat Tugas</th>
                         {{-- <th>Catatan</th> --}}
                         <th>Aksi</th>
                     </tr>
@@ -113,11 +114,11 @@ $(document).ready(function(){
                     return '<span class="badge ' + statusClass + '">' + statusText + '</span>';
                 }
             },
-            // {
-            //     data: "catatan",
-            //     orderable: true,
-            //     searchable: true
-            // },
+             {
+                 data: "draft",
+                 orderable: true,
+                 searchable: true
+             },
             {
                 data: "aksi",
                 className: "text-center",
