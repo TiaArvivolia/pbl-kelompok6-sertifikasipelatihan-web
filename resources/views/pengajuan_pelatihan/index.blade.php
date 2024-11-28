@@ -13,6 +13,7 @@
             </button>
         </div>
     </div>
+    
 
     <div class="card-body">
         @if (session('success'))
@@ -22,7 +23,7 @@
             <div class="alert alert-danger">{{ session('error') }}</div>
         @endif
         <div class="table-responsive">
-            <table class="table table-bordered table-sm table-striped table-hover" id="table-pengajuan-pelatihan">
+            <table class="table table-bordered table-sm table-striped table-hover" id="table-pengajuan-pelatihan" style="width: 100%;">
                 <thead>
                     <tr>
                         <th>No</th>
@@ -37,6 +38,7 @@
                 <tbody></tbody>
             </table>
         </div>
+        
     </div>
 </div>
 

@@ -22,7 +22,7 @@
             <div class="alert alert-danger">{{ session('error') }}</div>
         @endif
 
-        <table class="table table-bordered table-sm table-striped table-hover" id="table-admin">
+        <table class="table table-bordered table-sm table-striped table-hover" id="table-admin"style="width: 100%;">
             <thead>
                 <tr>
                     <th>No</th>
