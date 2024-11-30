@@ -79,4 +79,5 @@ class WelcomeController extends Controller
                 'totalCertificationsAllPeriods' => $totalCertificationsAllPeriods,
             ]);
     }
+    
 }
