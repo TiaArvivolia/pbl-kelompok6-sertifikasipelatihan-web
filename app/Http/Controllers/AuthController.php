@@ -65,7 +65,6 @@ class AuthController extends Controller
         return view('auth.register', ['roles' => $roles]);
     }
     
-    
     public function postRegister(Request $request)
     {
         // Validasi input
@@ -87,7 +86,7 @@ class AuthController extends Controller
             'username' => $request->username,
             'nama_lengkap' => $request->nama_lengkap,
             'password' => Hash::make($request->password),
-            'jenis_pengguna_id' => $request->jenis_pengguna, // Tambahkan nilai jenis pengguna
+            'id_jenis_pengguna' => $request->jenis_pengguna, // Pastikan kolom ini ada
             'created_at' => now(),
             'updated_at' => now(),
         ]);

@@ -172,6 +172,8 @@
                         </select>
                         <small id="error-jenis_pengguna" class="error-text text-danger"></small>
                     </div>
+                    
+                    
                     <div class="row">
                         <div class="col-12">
                             <button type="submit" class="btn btn-primary btn-block">Register</button>
