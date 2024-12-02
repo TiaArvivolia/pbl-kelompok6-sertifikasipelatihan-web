@@ -6,6 +6,7 @@ use App\Models\BidangMinatModel;
 use App\Models\MataKuliahModel;
 use App\Models\Pengguna;
 use App\Models\DaftarPelatihanModel;
+use App\Models\PeriodeModel;
 use App\Models\RiwayatPelatihanModel;
 use App\Models\VendorPelatihanModel;
 use App\Models\VendorSertifikasiModel;
@@ -34,9 +35,17 @@ class RiwayatPelatihanController extends Controller
 
     public function list(Request $request)
     {
+        // Get the logged-in user
+        $user = auth()->user();
+
         // Create the base query for RiwayatPelatihan with relationships
         $query = RiwayatPelatihanModel::with(['pengguna.dosen', 'pengguna.tendik', 'pengguna.jenisPengguna', 'mataKuliah', 'bidangMinat', 'daftarPelatihan'])
             ->select('id_riwayat', 'id_pengguna', 'nama_pelatihan', 'level_pelatihan', 'lokasi', 'penyelenggara', 'tanggal_mulai', 'tanggal_selesai');
+
+        // If the user is a lecturer (dosen), filter the records by their ID
+        if ($user->id_jenis_pengguna === 2 || $user->id_jenis_pengguna === 3) {
+            $query->where('id_pengguna', $user->id_pengguna); // Assuming the logged-in user's ID is stored in 'id' and associated with 'id_pengguna'
+        }
 
         // Apply filter if level_pelatihan is provided in the request
         if ($request->filter_level_pelatihan) {
@@ -50,34 +59,66 @@ class RiwayatPelatihanController extends Controller
                 return $pelatihan->pengguna->dosen ? $pelatihan->pengguna->dosen->nama_lengkap : ($pelatihan->pengguna->tendik ? $pelatihan->pengguna->tendik->nama_lengkap : 'Tidak Tersedia');
             })
             ->addColumn('nama_jenis_pengguna', function ($riwayat) {
-                // Menampilkan nama jenis pengguna
                 return $riwayat->pengguna && $riwayat->pengguna->jenisPengguna ? $riwayat->pengguna->jenisPengguna->nama_jenis_pengguna : '-';
             })
+
             ->addColumn('aksi', function ($pelatihan) {
+                // Dapatkan pengguna yang sedang login
+                $user = auth()->user();
+                // Cek apakah pengguna adalah pimpinan (role 4)
+                if ($user->id_jenis_pengguna === 4) {
+                    // Hanya tampilkan tombol "Detail" untuk pimpinan
+                    $btn = '<button onclick="modalAction(\'' . url('/riwayat_pelatihan/' . $pelatihan->id_riwayat . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
+                    return $btn;
+                }
+
+                // Jika bukan pimpinan, tampilkan tombol "Detail", "Edit", dan "Hapus"
                 $btn = '<button onclick="modalAction(\'' . url('/riwayat_pelatihan/' . $pelatihan->id_riwayat . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/riwayat_pelatihan/' . $pelatihan->id_riwayat . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/riwayat_pelatihan/' . $pelatihan->id_riwayat . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Hapus</button> ';
 
                 return $btn;
             })
+
             ->rawColumns(['aksi'])
             ->make(true);
     }
 
-
     public function create_ajax()
     {
-        // Mengambil data pengguna yang memiliki relasi dengan dosen atau tendik
-        $pengguna = Pengguna::with(['dosen', 'tendik'])
-            ->whereHas('dosen')
-            ->orWhereHas('tendik')
-            ->get();
-        $mataKuliah = MataKuliahModel::all();
-        $bidangMinat = BidangMinatModel::all();
-        $daftarPelatihan = DaftarPelatihanModel::all();
-        $penyelenggara = VendorPelatihanModel::all();
+        // Mengambil data pengguna yang sedang login
+        $user = auth()->user();
 
-        return view('riwayat_pelatihan.create_ajax', compact('pengguna', 'mataKuliah', 'bidangMinat', 'daftarPelatihan', 'penyelenggara'));
+        // Inisialisasi query untuk mengambil data 'pengguna'
+        $penggunaQuery = Pengguna::with(['dosen', 'tendik']) // Mengambil relasi dosen dan tendik
+            ->where(function ($query) use ($user) {
+                // Jika pengguna adalah admin (diasumsikan 'id_jenis_pengguna' untuk admin adalah 1)
+                if ($user->id_jenis_pengguna === 1) {
+                    // Admin hanya bisa melihat dosen dan tendik
+                    $query->whereHas('dosen') // Memastikan relasi dengan dosen ada
+                        ->orWhereHas('tendik'); // Atau relasi dengan tendik ada
+                } else {
+                    // Jika pengguna bukan admin (misalnya dosen atau tendik), hanya dapat melihat riwayat mereka sendiri
+                    $query->where('id_pengguna', $user->id_pengguna) // Filter berdasarkan id_pengguna pengguna yang sedang login
+                        ->where(function ($subQuery) {
+                            // Memastikan bahwa pengguna memiliki relasi dengan dosen atau tendik
+                            $subQuery->whereHas('dosen')->orWhereHas('tendik');
+                        });
+                }
+            });
+
+        // Mendapatkan data pengguna yang telah difilter
+        $pengguna = $penggunaQuery->get();
+
+        // Mengambil data lainnya yang dibutuhkan untuk tampilan
+        $mataKuliah = MataKuliahModel::all(); // Mengambil semua mata kuliah
+        $bidangMinat = BidangMinatModel::all(); // Mengambil semua bidang minat
+        $daftarPelatihan = DaftarPelatihanModel::all(); // Mengambil semua daftar pelatihan
+        $penyelenggara = VendorPelatihanModel::all(); // Mengambil semua penyelenggara pelatihan
+        $periode = PeriodeModel::all(); // Mengambil semua periode pelatihan
+
+        // Mengembalikan tampilan dengan data yang diperlukan
+        return view('riwayat_pelatihan.create_ajax', compact('pengguna', 'mataKuliah', 'bidangMinat', 'daftarPelatihan', 'penyelenggara', 'periode'));
     }
 
     public function store_ajax(Request $request)
@@ -96,6 +137,7 @@ class RiwayatPelatihanController extends Controller
             'mk_list.*' => 'exists:mata_kuliah,id_mata_kuliah', // Each mata kuliah in mk_list must exist
             'bidang_minat_list' => 'nullable|array', // Ensure bidang_minat_list is an array if provided
             'bidang_minat_list.*' => 'exists:bidang_minat,id_bidang_minat', // Each bidang minat in bidang_minat_list must exist
+            'id_periode' => 'required|exists:periode,id_periode',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -130,6 +172,7 @@ class RiwayatPelatihanController extends Controller
             'dokumen_pelatihan' => $dokumenPath, // Menyimpan path dokumen pelatihan di database
             'mk_list' => $request->has('mk_list') ? json_encode($request->input('mk_list')) : null, // Store mk_list as JSON
             'bidang_minat_list' => $request->has('bidang_minat_list') ? json_encode($request->input('bidang_minat_list')) : null, // Store bidang_minat_list as JSON
+            'id_periode' => $request->id_periode,
         ]);
 
         return response()->json([
@@ -150,7 +193,8 @@ class RiwayatPelatihanController extends Controller
             'pengguna.dosen',
             'pengguna.tendik',
             'pengguna.jenisPengguna',
-            'penyelenggara'
+            'penyelenggara',
+            'periode'
         ])->find($id);
 
         if (!$pelatihan) {
@@ -188,27 +232,49 @@ class RiwayatPelatihanController extends Controller
     {
         // Filter 'pengguna' dengan relasi 'dosen' dan 'tendik', lalu memuat relasi terkait
         $pelatihan = RiwayatPelatihanModel::with([
-            'pengguna.dosen',      // Relasi pengguna -> dosen
-            'pengguna.tendik',     // Relasi pengguna -> tendik
-            'mataKuliah',          // Relasi mata kuliah
-            'bidangMinat',         // Relasi bidang minat
-            'daftarPelatihan',     // Relasi daftar pelatihan
-            'penyelenggara'        // Relasi penyelenggara
+            'pengguna',
+            'pengguna',
+            'mataKuliah',
+            'bidangMinat',
+            'daftarPelatihan',
+            'penyelenggara',
+            'periode'
         ])->find($id);
 
         if (!$pelatihan) {
             return response()->json(['error' => 'Data yang anda cari tidak ditemukan'], 404);
         }
+        // Mengambil data pengguna yang sedang login
+        $user = auth()->user();
 
-        // Retrieve the list of pengguna (user), mataKuliah, bidangMinat, and daftarPelatihan
-        $pengguna = Pengguna::all();
+        // Inisialisasi query untuk mengambil data 'pengguna'
+        $penggunaQuery = Pengguna::with(['dosen', 'tendik']) // Mengambil relasi dosen dan tendik
+            ->where(function ($query) use ($user) {
+                // Jika pengguna adalah admin (diasumsikan 'id_jenis_pengguna' untuk admin adalah 1)
+                if ($user->id_jenis_pengguna === 1) {
+                    // Admin hanya bisa melihat dosen dan tendik
+                    $query->whereHas('dosen') // Memastikan relasi dengan dosen ada
+                        ->orWhereHas('tendik'); // Atau relasi dengan tendik ada
+                } else {
+                    // Jika pengguna bukan admin (misalnya dosen atau tendik), hanya dapat melihat riwayat mereka sendiri
+                    $query->where('id_pengguna', $user->id_pengguna) // Filter berdasarkan id_pengguna pengguna yang sedang login
+                        ->where(function ($subQuery) {
+                            // Memastikan bahwa pengguna memiliki relasi dengan dosen atau tendik
+                            $subQuery->whereHas('dosen')->orWhereHas('tendik');
+                        });
+                }
+            });
+
+        // Mendapatkan data pengguna yang telah difilter
+        $pengguna = $penggunaQuery->get();
         $mataKuliah = MataKuliahModel::all();
         $bidangMinat = BidangMinatModel::all();
         $daftarPelatihan = DaftarPelatihanModel::all();
         $penyelenggara = VendorPelatihanModel::all();
+        $periode = PeriodeModel::all();
 
         // Pass all the variables to the view
-        return view('riwayat_pelatihan.edit_ajax', compact('pelatihan', 'pengguna', 'mataKuliah', 'bidangMinat', 'daftarPelatihan', 'penyelenggara'));
+        return view('riwayat_pelatihan.edit_ajax', compact('pelatihan', 'pengguna', 'mataKuliah', 'bidangMinat', 'daftarPelatihan', 'penyelenggara', 'periode'));
     }
 
 
@@ -229,6 +295,7 @@ class RiwayatPelatihanController extends Controller
             'mk_list.*' => 'exists:mata_kuliah,id_mata_kuliah',
             'bidang_minat_list' => 'nullable|array',
             'bidang_minat_list.*' => 'exists:bidang_minat,id_bidang_minat',
+            'id_periode' => 'nullable|string|max:100',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -272,6 +339,7 @@ class RiwayatPelatihanController extends Controller
             'lokasi' => $request->lokasi,
             'penyelenggara' => $request->penyelenggara,
             'dokumen_pelatihan' => $dokumenPath,
+            'id_periode' => $request->id_periode,
         ];
 
         // Update mk_list jika ada
