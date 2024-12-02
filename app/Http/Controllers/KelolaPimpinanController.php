@@ -1,3 +1,4 @@
+
 <?php
 
 namespace App\Http\Controllers;
@@ -5,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Models\KelolaPimpinanModel;
 use App\Models\Pengguna;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -16,7 +18,7 @@ class KelolaPimpinanController extends Controller
     public function index()
     {
         $breadcrumb = (object) [
-            'title' => 'Daftar Pimpinan',
+            'title' => 'Pimpinan',
             'list' => ['Home', 'Pimpinan']
         ];
 
@@ -32,15 +34,21 @@ class KelolaPimpinanController extends Controller
     // Retrieve Pimpinan data in JSON for DataTables
     public function list(Request $request)
     {
+        $user = auth()->user(); // Get the authenticated user
         $pimpinan = KelolaPimpinanModel::select('id_pimpinan', 'id_pengguna', 'nama_lengkap', 'nip', 'nidn', 'no_telepon', 'email', 'gambar_profil')
             ->with('pengguna');
 
+        // Filter by logged-in user's pimpinan data
+        if ($user->id_jenis_pengguna == 4) { // If the user is a pimpinan
+            $pimpinan->where('id_pengguna', $user->id_pengguna);
+        }
+        
         return DataTables::of($pimpinan)
             ->addIndexColumn()
             ->addColumn('gambar_profil', function ($pimpinan) {
                 // Cek apakah ada gambar_profil
                 if ($pimpinan->gambar_profil) {
-                    $url = asset('storage/' . $pimpinan->gambar_profil); // Pastikan folder `storage` bisa diakses
+                    $url = asset('storage/' . $pimpinan->gambar_profil); // Pastikan folder storage bisa diakses
                     return '<img src="' . $url . '"  width="150" height="150" class="img-thumbnail">';
                 }
                 return '<span class="text-muted">Tidak ada gambar</span>'; // Placeholder jika gambar kosong
@@ -48,8 +56,9 @@ class KelolaPimpinanController extends Controller
             ->addColumn('aksi', function ($pimpinan) {
                 $btn = '<button onclick="modalAction(\'' . url('/pimpinan/' . $pimpinan->id_pimpinan . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/pimpinan/' . $pimpinan->id_pimpinan . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/pimpinan/' . $pimpinan->id_pimpinan . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Hapus</button>';
-
+                if (Auth::user()->role == 'ADM') {
+                    $btn .= '<button onclick="modalAction(\'' . url('/pimpinan/' . $pimpinan->id_pimpinan . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Hapus</button>';
+                }
                 return $btn;
             })
             ->rawColumns(['gambar_profil', 'aksi']) // Pastikan kolom 'gambar_profil' mendukung HTML
