@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class KelolaTendikController extends Controller
@@ -19,7 +20,7 @@ class KelolaTendikController extends Controller
     public function index()
     {
         $breadcrumb = (object) [
-            'title' => 'Daftar Tendik',
+            'title' => 'Tendik',
             'list' => ['Home', 'Tendik']
         ];
 
@@ -35,15 +36,21 @@ class KelolaTendikController extends Controller
     // Ambil data tendik dalam bentuk JSON untuk DataTables
     public function list(Request $request)
     {
+        $user = auth()->user(); // Get the authenticated user
         $tendik = KelolaTendikModel::select('id_tendik', 'id_pengguna', 'nama_lengkap', 'nip', 'no_telepon', 'email', 'gambar_profil', 'tag_bidang_minat')
             ->with('pengguna', 'bidangMinat');
+
+        // Filter by logged-in user's tendik data
+        if ($user->id_jenis_pengguna == 3) { // If the user is a tendik
+            $tendik->where('id_pengguna', $user->id_pengguna);
+        }
 
         return DataTables::of($tendik)
             ->addIndexColumn()
             ->addColumn('gambar_profil', function ($tendik) {
                 // Cek apakah ada gambar_profil
                 if ($tendik->gambar_profil) {
-                    $url = asset('storage/' . $tendik->gambar_profil); // Pastikan folder `storage` bisa diakses
+                    $url = asset('storage/' . $tendik->gambar_profil); // Pastikan folder storage bisa diakses
                     return '<img src="' . $url . '"  width="150" height="150" class="img-thumbnail">';
                 }
                 return '<span class="text-muted">Tidak ada gambar</span>'; // Placeholder jika gambar kosong
@@ -51,8 +58,9 @@ class KelolaTendikController extends Controller
             ->addColumn('aksi', function ($tendik) {
                 $btn = '<button onclick="modalAction(\'' . url('/tendik/' . $tendik->id_tendik . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/tendik/' . $tendik->id_tendik . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/tendik/' . $tendik->id_tendik . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Hapus</button>';
-
+                if (Auth::user()->role == 'ADM') {
+                    $btn .= '<button onclick="modalAction(\'' . url('/tendik/' . $tendik->id_tendik . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Hapus</button>';
+                }
                 return $btn;
             })
             ->rawColumns(['gambar_profil', 'aksi']) // Pastikan kolom 'gambar_profil' mendukung HTML
@@ -285,7 +293,7 @@ class KelolaTendikController extends Controller
             $sheet->setCellValue('E' . $row, $data->nip);
             $sheet->setCellValue('F' . $row, $data->no_telepon);
             $sheet->setCellValue('G' . $row, $data->email);
-            $sheet->setCellValue('H' . $row, optional($data->bidangMinat)->nama_bidang_minat); // Assuming you have a `nama_bidang_minat` field in `BidangMinatModel`
+            $sheet->setCellValue('H' . $row, optional($data->bidangMinat)->nama_bidang_minat); // Assuming you have a nama_bidang_minat field in BidangMinatModel
             $row++;
         }
 
