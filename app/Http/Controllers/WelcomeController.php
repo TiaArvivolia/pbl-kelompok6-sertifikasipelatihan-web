@@ -55,14 +55,14 @@ class WelcomeController extends Controller
             ->get();
 
         // In the Controller method
-        $certificationsPerPeriod = DB::table('riwayat_sertifikasi')
-            ->select('tahun_periode', DB::raw('COUNT(*) as count'))
-            ->groupBy('tahun_periode')
-            ->orderBy('tahun_periode', 'asc')
-            ->get();
+        // $certificationsPerPeriod = DB::table('riwayat_sertifikasi')
+        //     ->select('tahun_periode', DB::raw('COUNT(*) as count'))
+        //     ->groupBy('tahun_periode')
+        //     ->orderBy('tahun_periode', 'asc')
+        //     ->get();
 
         // Total certifications across all periods
-        $totalCertificationsAllPeriods = $certificationsPerPeriod->sum('count');
+        // $totalCertificationsAllPeriods = $certificationsPerPeriod->sum('count');
 
 
 
@@ -75,8 +75,8 @@ class WelcomeController extends Controller
                 'certificationsByType' => $certificationsByType,
                 'certificationsBySubject' => $certificationsBySubject,
                 'certificationsByField' => $certificationsByField,
-                'certificationsPerPeriod' => $certificationsPerPeriod,
-                'totalCertificationsAllPeriods' => $totalCertificationsAllPeriods,
+                // 'certificationsPerPeriod' => $certificationsPerPeriod,
+                // 'totalCertificationsAllPeriods' => $totalCertificationsAllPeriods,
             ]);
     }
     

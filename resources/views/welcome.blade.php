@@ -58,7 +58,7 @@
         </div>
       </div>
 
-      <div class="col-md-6 mb-3">
+      {{-- <div class="col-md-6 mb-3">
         <!-- Kotak 4 -->
         <div class="small-box bg-danger">
           <div class="inner">
@@ -72,12 +72,12 @@
             More info <i class="fas fa-arrow-circle-right"></i>
           </a>
         </div>
-      </div>
+      </div> --}}
     </div>
   </div>
 
   <!-- Kolom Kanan: Chart -->
-  <div class="col-lg-4">
+  {{-- <div class="col-lg-4">
     <div class="card">
       <div class="card-header bg-danger text-white">
         <h5 class="text-center">📊 Jumlah Sertifikasi per Periode</h5>
@@ -88,31 +88,31 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> --}}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
+{{-- <script>
 document.addEventListener('DOMContentLoaded', function () {
     var certificationsPerPeriodCtx = document.getElementById('certificationsPerPeriodChart').getContext('2d');
     var certificationsPerPeriodChart = new Chart(certificationsPerPeriodCtx, {
         type: 'line',
-        data: {
-            labels: @json($certificationsPerPeriod->pluck('tahun_periode')),
-            datasets: [{
-                label: 'Jumlah Sertifikasi',
-                data: @json($certificationsPerPeriod->pluck('count')),
-                borderColor: '#FF5733',
-                backgroundColor: 'rgba(255, 87, 51, 0.2)',
-                pointBackgroundColor: '#C70039',
-                pointBorderColor: '#900C3F',
-                borderWidth: 3,
-                tension: 0.3,
-                pointRadius: 4,
-                pointHoverRadius: 6,
-                fill: true
-            }]
-        },
+        // data: {
+        //     // labels: @json($certificationsPerPeriod->pluck('tahun_periode')),
+        //     datasets: [{
+        //         label: 'Jumlah Sertifikasi',
+        //         data: @json($certificationsPerPeriod->pluck('count')),
+        //         borderColor: '#FF5733',
+        //         backgroundColor: 'rgba(255, 87, 51, 0.2)',
+        //         pointBackgroundColor: '#C70039',
+        //         pointBorderColor: '#900C3F',
+        //         borderWidth: 3,
+        //         tension: 0.3,
+        //         pointRadius: 4,
+        //         pointHoverRadius: 6,
+        //         fill: true
+        //     }]
+        // },
         options: {
             responsive: true,
             maintainAspectRatio: false,
@@ -168,6 +168,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
-</script>
+</script> --}}
 
 @endsection
