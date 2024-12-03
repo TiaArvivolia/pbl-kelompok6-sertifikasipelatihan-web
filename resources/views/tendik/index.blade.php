@@ -3,14 +3,16 @@
 @section('content')
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">Daftar Tendik</h3>
+        <h3 class="card-title">Tendik</h3>
         <div class="card-tools">
-            <!-- Add Data Button with Icon -->
-            <a href="{{url('/tendik/export_excel')}}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export (Excel)</a>
-            <a href="{{url('/tendik/export_pdf')}}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export (PDF)</a>
-            <button onclick="modalAction('{{ url('/tendik/create_ajax') }}')" class="btn btn-success btn-sm mt-1">
-                <i class="fas fa-plus"></i> Tambah Tendik
-            </button>
+            @if(Auth::user()->role == 'ADM')
+                <!-- Add Data Button with Icon -->
+                <a href="{{url('/tendik/export_excel')}}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export (Excel)</a>
+                <a href="{{url('/tendik/export_pdf')}}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export (PDF)</a>
+                <button onclick="modalAction('{{ url('/tendik/create_ajax') }}')" class="btn btn-success btn-sm mt-1">
+                    <i class="fas fa-plus"></i> Tambah Tendik
+                </button>
+            @endif
         </div>
     </div>
 

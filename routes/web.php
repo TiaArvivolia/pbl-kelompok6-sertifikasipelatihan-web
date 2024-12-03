@@ -25,6 +25,8 @@ use App\Http\Controllers\KelolaTendikController;
 use App\Http\Controllers\PengajuanPelatihanController;
 use App\Http\Controllers\RiwayatPelatihanController;
 use App\Http\Controllers\RiwayatSertifikasiController;
+use App\Http\Middleware\AuthorizeUser;
+use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,6 +38,11 @@ use App\Http\Controllers\RiwayatSertifikasiController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+Route::get('/storage-link', function() {
+    Artisan::call('storage:link');
+    return 'Storage linked successfully.';
+});
 
 Route::pattern('id', '[0-9]+');
 // Tugas Register
@@ -62,6 +69,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/', [WelcomeController::class, 'index']);
 
+    // Middleware menggunakan ID role (misalnya 1 untuk Administrator)
+    // Route::middleware(['authorize:ADM'])->group(function () {
     // Kelola Jenis Pengguna
     Route::prefix('jenis_pengguna')->group(function () {
         Route::get('/', [KelolaJenisPenggunaController::class, 'index']);
@@ -75,6 +84,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/{id}/delete_ajax', [KelolaJenisPenggunaController::class, 'delete_ajax']);
         Route::get('/export_pdf', [KelolaJenisPenggunaController::class, 'export_pdf']);
         Route::get('/export_excel', [KelolaJenisPenggunaController::class, 'export_excel']);
+        // });
     });
 
     // Kelola Pengguna
@@ -288,9 +298,14 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/export_pdf', [RiwayatSertifikasiController::class, 'export_pdf']);
         Route::get('/export_excel', [RiwayatSertifikasiController::class, 'export_excel']);
     });
-    
+
     // Statistik sertifikasi
     Route::get('statistik_sertifikasi', [StatistikSertifikasiController::class, 'index']);
+
+    // Statistik sertifikasi
+    // Route::get('kelola_periode', [KelolaPeriodeController::class, 'index']);
+
+    Route::get('/kelola_periode', [KelolaPeriodeController::class, 'index'])->name('kelola_periode.index');
 });
 
 

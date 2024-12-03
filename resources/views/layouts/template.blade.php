@@ -65,7 +65,19 @@
     </a>
   
     <!-- Sidebar -->
-    @include('layouts.sidebar')
+    {{-- @include('layouts.sidebar') --}}
+
+  <!-- Sidebar -->
+  @if(Auth::user()->jenisPengguna->nama_jenis_pengguna === 'Administrator')
+    @include('layouts.sidebars.sidebar_adm')
+  @elseif(Auth::user()->jenisPengguna->nama_jenis_pengguna === 'Dosen')
+    @include('layouts.sidebars.sidebar_dosen')
+  @elseif(Auth::user()->jenisPengguna->nama_jenis_pengguna === 'Tendik')
+    @include('layouts.sidebars.sidebar_tendik')
+  @elseif(Auth::user()->jenisPengguna->nama_jenis_pengguna === 'Pimpinan')
+    @include('layouts.sidebars.sidebar_pimpinan')
+  @endif
+
 </aside>
 
   

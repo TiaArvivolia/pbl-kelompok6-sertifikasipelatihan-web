@@ -8,6 +8,7 @@ use App\Models\MataKuliahModel;
 use App\Models\Pengguna;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -15,11 +16,10 @@ use Yajra\DataTables\Facades\DataTables;
 
 class KelolaDosenController extends Controller
 {
-    // Menampilkan halaman utama Kelola Dosen
     public function index()
     {
         $breadcrumb = (object) [
-            'title' => 'Daftar Dosen',
+            'title' => 'Dosen',
             'list' => ['Home', 'Dosen']
         ];
 
@@ -29,32 +29,47 @@ class KelolaDosenController extends Controller
 
         $activeMenu = 'dosen'; // Set active menu
 
+        // If user is logged in, fetch the dosen data
+        $user = auth()->user(); // Get the authenticated user
+
+        if ($user->id_jenis_pengguna == 2) { // Check if the user is a dosen
+            $dosen = KelolaDosenModel::where('id_pengguna', $user->id_pengguna)->first();
+            return view('dosen.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'activeMenu' => $activeMenu, 'dosen' => $dosen]);
+        }
+
         return view('dosen.index', ['breadcrumb' => $breadcrumb, 'page' => $page, 'activeMenu' => $activeMenu]);
     }
 
-    // Ambil data dosen dalam bentuk JSON untuk DataTables
     public function list(Request $request)
     {
+        $user = auth()->user(); // Get the authenticated user
         $dosen = KelolaDosenModel::select('id_dosen', 'id_pengguna', 'nama_lengkap', 'nip', 'nidn', 'tempat_lahir', 'tanggal_lahir', 'no_telepon', 'email', 'gambar_profil')
             ->with('pengguna');
+
+        // Filter by logged-in user's dosen data
+        if ($user->id_jenis_pengguna == 2) { // If the user is a dosen
+            $dosen->where('id_pengguna', $user->id_pengguna);
+        }
 
         return DataTables::of($dosen)
             ->addIndexColumn()
             ->addColumn('gambar_profil', function ($dosen) {
-                // Cek apakah ada gambar_profil
+                // Check if the profile image exists
                 if ($dosen->gambar_profil) {
-                    $url = asset('storage/' . $dosen->gambar_profil); // Pastikan folder `storage` bisa diakses
-                    return '<img src="' . $url . '"  width="150" height="150" class="img-thumbnail">';
+                    $url = asset('storage/' . $dosen->gambar_profil);
+                    return '<img src="' . $url . '" width="150" height="150" class="img-thumbnail">';
                 }
-                return '<span class="text-muted">Tidak ada gambar</span>'; // Placeholder jika gambar kosong
+                return '<span class="text-muted">Tidak ada gambar</span>';
             })
             ->addColumn('aksi', function ($dosen) {
                 $btn = '<button onclick="modalAction(\'' . url('/dosen/' . $dosen->id_dosen . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/dosen/' . $dosen->id_dosen . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/dosen/' . $dosen->id_dosen . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Hapus</button>';
+                if (Auth::user()->role == 'ADM') {
+                    $btn .= '<button onclick="modalAction(\'' . url('/dosen/' . $dosen->id_dosen . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Hapus</button>';
+                }
                 return $btn;
             })
-            ->rawColumns(['gambar_profil', 'aksi']) // Pastikan kolom 'gambar_profil' mendukung HTML
+            ->rawColumns(['gambar_profil', 'aksi']) // Ensure 'gambar_profil' column supports HTML
             ->make(true);
     }
 

@@ -45,10 +45,6 @@
                         <th class="text-right col-3">Nama Pelatihan :</th>
                         <td class="col-9">{{ $pelatihan->nama_pelatihan }}</td>
                     </tr>
-                    {{-- <tr>
-                        <th class="text-right col-3">Penyelenggara :</th>
-                        <td class="col-9">{{ $pelatihan->penyelenggara }}</td>
-                    </tr> --}}
                     <tr>
                         <th class="text-right col-3">Penyelenggara :</th>
                         <td class="col-9">
@@ -71,6 +67,16 @@
                         <th class="text-right col-3">Tanggal Selesai :</th>
                         <td class="col-9">{{ $pelatihan->tanggal_selesai ? \Carbon\Carbon::parse($pelatihan->tanggal_selesai)->format('d-m-Y') : '-' }}</td>
                     </tr>
+                    <tr>
+                        <th class="text-right col-3">Periode :</th>
+                        <td class="col-9">
+                            @if($pelatihan->periode && is_object($pelatihan->periode))  <!-- Mengakses relasi periode -->
+                                {{ $pelatihan->periode->tahun_periode }}  <!-- Menampilkan tahun_periode dari relasi periode -->
+                            @else
+                                Data periode tidak ditemukan
+                            @endif
+                        </td>
+                    </tr>                    
                     <tr>
                         <th class="text-right col-3">Lokasi :</th>
                         <td class="col-9">{{ $pelatihan->lokasi ?? '-' }}</td>

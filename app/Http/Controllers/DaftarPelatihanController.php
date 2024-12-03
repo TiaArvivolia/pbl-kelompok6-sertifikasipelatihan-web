@@ -49,6 +49,15 @@ class DaftarPelatihanController extends Controller
         return DataTables::of($pelatihan)
             ->addIndexColumn()
             ->addColumn('aksi', function ($pelatihan) {
+                $user = auth()->user();
+
+                // Check if the user is a lecturer or staff
+                if ($user->id_jenis_pengguna == 2 || $user->id_jenis_pengguna == 3) {
+                    // For lecturers and staff, only show the "Detail" button for Pelatihan
+                    return '<button onclick="modalAction(\'' . url('/daftar_pelatihan/' . $pelatihan->id_pelatihan . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button>';
+                }
+
+                // For admins, show all CRUD buttons for Pelatihan
                 $btn = '<button onclick="modalAction(\'' . url('/daftar_pelatihan/' . $pelatihan->id_pelatihan . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/daftar_pelatihan/' . $pelatihan->id_pelatihan . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/daftar_pelatihan/' . $pelatihan->id_pelatihan . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Hapus</button>';
@@ -58,12 +67,17 @@ class DaftarPelatihanController extends Controller
                 if (isset($pelatihan->pengajuan)) {
                     $pengajuan = $pelatihan->pengajuan;
                     $btn = '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/' . $pengajuan->id_pengajuan . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
-                    $btn .= '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/' . $pengajuan->id_pengajuan . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
-                    $btn .= '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/' . $pengajuan->id_pengajuan . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Hapus</button>';
+
+                    // Admins can perform CRUD operations on Pengajuan
+                    if (auth()->user()->id_jenis_pengguna == 1) {
+                        $btn .= '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/' . $pengajuan->id_pengajuan . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
+                        $btn .= '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/' . $pengajuan->id_pengajuan . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Hapus</button>';
+                    }
+
                     return $btn;
                 }
 
-                // Jika tidak ada pengajuan, tambahkan tombol untuk membuat pengajuan baru
+                // If there's no Pengajuan, show the button to add a new Pengajuan
                 return '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/create_ajax') . '\')" class="btn btn-success btn-sm">
                             <i class="fas fa-plus"></i> Tambah Pengajuan Pelatihan
                         </button>';
@@ -71,6 +85,7 @@ class DaftarPelatihanController extends Controller
             ->rawColumns(['aksi', 'pengajuan'])
             ->make(true);
     }
+
 
     public function create_ajax()
     {

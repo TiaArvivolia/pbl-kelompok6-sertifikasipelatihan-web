@@ -108,87 +108,24 @@
       </li>
 
       <!-- Kategori Kelola Pengguna -->
-      <li class="nav-header">Kategori Kelola Pengguna</li>
+      <li class="nav-header">Kelola profil</li>
       <li class="nav-item has-treeview">
         <a href="#" class="nav-link">
           <i class="nav-icon fas fa-users"></i>
           <p>
-            Kelola Pengguna
+            Kelola Profil
             <i class="right fas fa-angle-left"></i>
           </p>
         </a>
         <ul class="nav nav-treeview">
           <li class="nav-item">
-            <a href="{{ url('/jenis_pengguna') }}" class="nav-link {{ $activeMenu == 'jenis_pengguna' ? 'active' : '' }}">
-              <p>Kelola Jenis Pengguna</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ url('/pengguna') }}" class="nav-link {{ $activeMenu == 'pengguna' ? 'active' : '' }}">
-              <p>Kelola Pengguna</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ url('/admin') }}" class="nav-link {{ $activeMenu == 'admin' ? 'active' : '' }}">
-              <p>Kelola Admin</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ url('/dosen') }}" class="nav-link {{ $activeMenu == 'dosen' ? 'active' : '' }}">
-              <p>Kelola Dosen</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ url('/tendik') }}" class="nav-link {{ $activeMenu == 'tendik' ? 'active' : '' }}">
-              <p>Kelola Tendik</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ url('/pimpinan') }}" class="nav-link {{ $activeMenu == 'pimpinan' ? 'active' : '' }}">
-              <p>Kelola Pimpinan</p>
+            <a href="{{ url('/pimpinan') }}" class="nav-link {{ $activeMenu == 'dosen' ? 'active' : '' }}">
+              <p>Profil</p>
             </a>
           </li>
         </ul>
       </li>
 
-      <!-- Kategori Umum -->
-      <li class="nav-header">Kategori Umum</li>
-      <li class="nav-item has-treeview">
-        <a href="#" class="nav-link">
-          <i class="nav-icon fas fa-th"></i>
-          <p>
-            Kelola Umum
-            <i class="right fas fa-angle-left"></i>
-          </p>
-        </a>
-        <ul class="nav nav-treeview">
-          <li class="nav-item">
-            <a href="{{ url('/jenis_pelatihan') }}" class="nav-link {{ $activeMenu == 'jenisPelatihan' ? 'active' : '' }}">
-              <p>Jenis Pelatihan</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ url('/vendor_pelatihan') }}" class="nav-link {{ $activeMenu == 'vendor_pelatihan' ? 'active' : '' }}">
-              <p>Vendor Pelatihan</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ url('/vendor_sertifikasi') }}" class="nav-link {{ $activeMenu == 'vendor_sertifikasi' ? 'active' : '' }}">
-              <p>Vendor Sertifikasi</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ url('/mata_kuliah') }}" class="nav-link  {{ $activeMenu == 'mata_kuliah' ? 'active' : '' }}">
-              <p>Kelola Mata Kuliah</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ url('/bidang_minat') }}" class="nav-link {{ $activeMenu == 'bidang_minat' ? 'active' : '' }}">
-              <p>Kelola Bidang Minat</p>
-            </a>
-          </li>
-        </ul>
-      </li>
 
       <!-- Kategori Kegiatan -->
       <li class="nav-header">Kategori Kegiatan</li>
@@ -202,6 +139,11 @@
         </a>
         <ul class="nav nav-treeview">
           <li class="nav-item">
+            <a href="{{ url('/pengajuan_pelatihan') }}" class="nav-link {{ $activeMenu == 'pengajuan_pelatihan' ? 'active' : '' }}">
+              <p>Pengajuan Pelatihan</p>
+            </a>
+          </li>
+          <li class="nav-item">
             <a href="{{ url('/riwayat_pelatihan') }}" class="nav-link {{ $activeMenu == 'riwayat_pelatihan' ? 'active' : '' }}">
               <p>Riwayat Pelatihan</p>
             </a>
@@ -211,29 +153,27 @@
               <p>Riwayat Sertfikasi</p>
             </a>
           </li>
-          <li class="nav-item">
-            <a href="{{ url('/daftar_pelatihan') }}" class="nav-link {{ $activeMenu == 'daftar_pelatihan' ? 'active' : '' }}">
-              <p>Daftar Pelatihan</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ url('/pengajuan_pelatihan') }}" class="nav-link {{ $activeMenu == 'pengajuan_pelatihan' ? 'active' : '' }}">
-              <p>Pengajuan Pelatihan</p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ url('/statistik_sertifikasi') }}" class="nav-link {{ $activeMenu == 'statistik' ? 'active' : '' }}">
-              <p>Statistik Sertifikasi</p>
-            </a>
-          </li>
           {{-- <li class="nav-item">
             <a href="{{ url('/draft-surat-tugas') }}" class="nav-link {{ $activeMenu == 'draftSuratTugas' ? 'active' : '' }}">
               <p>Draft Surat Tugas</p>
             </a>
           </li> --}}
+        </ul>
+      </li>
+
+      <li class="nav-header">Statistik Sertifikasi</li>
+      <li class="nav-item has-treeview">
+        <a href="#" class="nav-link">
+          <i class="nav-icon fas fa-calendar"></i>
+          <p>
+            Statistik Sertifikasi
+            <i class="right fas fa-angle-left"></i>
+          </p>
+        </a>
+        <ul class="nav nav-treeview">
           <li class="nav-item">
-            <a href="{{ url('/kelola-periode') }}" class="nav-link {{ $activeMenu == 'periode' ? 'active' : '' }}">
-              <p>Kelola Periode</p>
+            <a href="{{ url('/statistik_sertifikasi') }}" class="nav-link {{ $activeMenu == 'statistik' ? 'active' : '' }}">
+              <p>Statistik Sertifikasi</p>
             </a>
           </li>
         </ul>

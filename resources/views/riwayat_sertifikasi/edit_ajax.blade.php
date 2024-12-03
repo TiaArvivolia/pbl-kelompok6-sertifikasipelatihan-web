@@ -28,6 +28,23 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
+            {{-- <div class="form-group">
+                <label>Pengguna</label>
+                <select name="id_pengguna" id="id_pengguna" class="form-control" required>
+                    <option value="">Pilih Pengguna</option>
+                    @foreach($pengguna as $p)
+                        <option value="{{ $p->id_pengguna }}" 
+                            {{ $sertifikasi->id_pengguna == $p->id_pengguna ? 'selected' : '' }}>
+                            @if($p->dosen)
+                                {{ $p->dosen->nama_lengkap }}
+                            @elseif($p->tendik)
+                                {{ $p->tendik->nama_lengkap }}
+                            @endif
+                        </option>
+                    @endforeach
+                </select>                                                  
+                <small id="error-id_pengguna" class="error-text form-text text-danger"></small>
+            </div> --}}
             <div class="modal-body">
                 <div class="form-group">
                     <label>Nama Sertifikasi</label>
@@ -54,9 +71,17 @@
                     <small id="error-masa_berlaku" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
-                    <label>Tahun Periode</label>
-                    <input value="{{ $sertifikasi->tahun_periode }}" type="number" name="tahun_periode" id="tahun_periode" class="form-control">
-                    <small id="error-tahun_periode" class="error-text form-text text-danger"></small>
+                    <label>Periode</label>
+                    <select name="id_periode" id="id_periode" class="form-control">
+                        <option value="">Pilih Periode</option>
+                        @foreach($periode as $pr)
+                            <option value="{{ $pr->id_periode }}" 
+                                {{ $sertifikasi->id_periode == $pr->id_periode ? 'selected' : '' }}>
+                                {{ $pr->tahun_periode }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <small id="error-penyelenggara" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
                     <label>No Sertifikat</label>
@@ -71,12 +96,7 @@
                         <option value="Profesi" {{ $sertifikasi->jenis_sertifikasi == 'Profesi' ? 'selected' : '' }}>Profesi</option>
                     </select>
                     <small id="error-jenis_sertifikasi" class="error-text form-text text-danger"></small>
-                </div>                
-                {{-- <div class="form-group">
-                    <label>Penyelenggara</label>
-                    <input value="{{ $sertifikasi->penyelenggara }}" type="text" name="penyelenggara" id="penyelenggara" class="form-control" required>
-                    <small id="error-penyelenggara" class="error-text form-text text-danger"></small>
-                </div> --}}
+                </div>       
                 <div class="form-group">
                     <label>Penyelenggara</label>
                     <select name="penyelenggara" id="penyelenggara" class="form-control">
@@ -94,23 +114,6 @@
                     <label>Dokumen Sertifikat</label>
                     <input type="file" name="dokumen_sertifikat" id="dokumen_sertifikat" class="form-control">
                     <small id="error-dokumen_sertifikat" class="error-text form-text text-danger"></small>
-                </div>
-                <div class="form-group">
-                    <label>Pengguna</label>
-                    <select name="id_pengguna" id="id_pengguna" class="form-control" required>
-                        <option value="">Pilih Pengguna</option>
-                        @foreach($pengguna as $p)
-                            <option value="{{ $p->id_pengguna }}" 
-                                {{ $sertifikasi->id_pengguna == $p->id_pengguna ? 'selected' : '' }}>
-                                @if($p->dosen)
-                                    {{ $p->dosen->nama_lengkap }}
-                                @elseif($p->tendik)
-                                    {{ $p->tendik->nama_lengkap }}
-                                @endif
-                            </option>
-                        @endforeach
-                    </select>                                                  
-                    <small id="error-id_pengguna" class="error-text form-text text-danger"></small>
                 </div>
                 <!-- Input untuk Mata Kuliah -->
                 <div class="form-group">
@@ -170,7 +173,7 @@ $(document).ready(function() {
             // diselenggarakan_oleh: { required: true },
             penyelenggara: { maxlength: 100 },
             dokumen_sertifikat: { extension: "pdf|doc|docx|jpg|jpeg|png" },
-            id_pengguna: { required: true },
+            // id_pengguna: { required: true },
             tag_mk: { required: true },
             tag_bidang_minat: { required: true }
         },

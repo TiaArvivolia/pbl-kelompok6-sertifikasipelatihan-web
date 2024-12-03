@@ -5,9 +5,11 @@
     <div class="card-header">
         <h3 class="card-title">Riwayat Sertifikasi</h3>
         <div class="card-tools">
+            @if(Auth::user()->role == 'ADM')
             <!-- Add Data Button with Icon -->
             <a href="{{url('/riwayat_sertifikasi/export_excel')}}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export (Excel)</a>
             <a href="{{url('/riwayat_sertifikasi/export_pdf')}}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export (PDF)</a>
+            @endif
             <button onclick="modalAction('{{ url('/riwayat_sertifikasi/create_ajax') }}')" class="btn btn-success btn-sm mt-1">
                 <i class="fas fa-plus"></i> Tambah Riwayat Sertifikasi
             </button>

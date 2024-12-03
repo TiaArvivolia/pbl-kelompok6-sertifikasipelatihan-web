@@ -3,14 +3,16 @@
 @section('content')
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">Daftar Dosen</h3>
+        <h3 class="card-title">Dosen</h3>
         <div class="card-tools">
-            <a href="{{url('/dosen/export_excel')}}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export (Excel)</a>
-            <a href="{{url('/dosen/export_pdf')}}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export (PDF)</a>
-            <!-- Add Data Button with Icon -->
-            <button onclick="modalAction('{{ url('/dosen/create_ajax') }}')" class="btn btn-success btn-sm mt-1">
-                <i class="fas fa-plus"></i> Tambah Dosen
-            </button>
+            @if(Auth::user()->role == 'ADM')
+                <a href="{{url('/dosen/export_excel')}}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export (Excel)</a>
+                <a href="{{url('/dosen/export_pdf')}}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export (PDF)</a>
+                <!-- Add Data Button with Icon -->
+                <button onclick="modalAction('{{ url('/dosen/create_ajax') }}')" class="btn btn-success btn-sm mt-1">
+                    <i class="fas fa-plus"></i> Tambah Dosen
+                </button>
+            @endif
         </div>
     </div>
 

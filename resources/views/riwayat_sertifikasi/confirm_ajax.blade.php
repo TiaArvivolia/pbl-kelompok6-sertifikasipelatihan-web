@@ -59,10 +59,6 @@
                             <th class="text-right col-3">Masa Berlaku :</th>
                             <td class="col-9">{{ $sertifikasi->masa_berlaku }}</td>
                         </tr>
-                        <tr>
-                            <th class="text-right col-3">Penyelenggara :</th>
-                            <td class="col-9">{{ $sertifikasi->penyelenggara }}</td>
-                        </tr>
                     </table>
                 </div>
             </div>

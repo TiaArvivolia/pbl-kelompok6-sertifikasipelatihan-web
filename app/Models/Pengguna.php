@@ -41,13 +41,13 @@ class Pengguna extends Authenticatable
     // Relasi dengan dosen
     public function dosen()
     {
-        return $this->hasOne(KelolaDosenModel::class, 'id_pengguna');
+        return $this->hasOne(KelolaDosenModel::class, 'id_pengguna', 'id_pengguna');
     }
 
     // Relasi dengan tendik (jika ada)
     public function tendik()
     {
-        return $this->hasOne(KelolaTendikModel::class, 'id_pengguna');
+        return $this->hasOne(KelolaTendikModel::class, 'id_pengguna', 'id_pengguna');
     }
 
     // Relasi dengan admin
@@ -60,5 +60,17 @@ class Pengguna extends Authenticatable
     public function pimpinan()
     {
         return $this->hasOne(KelolaPimpinanModel::class, 'id_pengguna');
+    }
+
+    // Define the relationship with RiwayatPelatihan
+    public function riwayatPelatihan()
+    {
+        return $this->hasMany(RiwayatPelatihanModel::class, 'id_pengguna', 'id_pengguna');
+    }
+
+    // Define the relationship with RiwayatSertifikasi
+    public function riwayatSertifikasi()
+    {
+        return $this->hasMany(RiwayatSertifikasiModel::class, 'id_pengguna', 'id_pengguna');
     }
 }

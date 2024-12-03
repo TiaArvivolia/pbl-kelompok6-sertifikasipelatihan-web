@@ -5,12 +5,14 @@
     <div class="card-header">
         <h3 class="card-title">Pengajuan Pelatihan</h3>
         <div class="card-tools">
+            {{-- @if(Auth::user()->role == 'ADM') --}}
             <a href="{{url('/pengajuan_pelatihan/export_excel')}}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export (Excel)</a>
             <a href="{{url('/pengajuan_pelatihan/export_pdf')}}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export (PDF)</a>
             <!-- Add Data Button with Icon -->
             <button onclick="modalAction('{{ url('/pengajuan_pelatihan/create_ajax') }}')" class="btn btn-success btn-sm mt-1">
                 <i class="fas fa-plus"></i> Tambah Pengajuan Pelatihan
             </button>
+            {{-- @endif --}}
         </div>
     </div>
     
@@ -29,11 +31,12 @@
                         <th>No</th>
                         <th>Tanggal Pengajuan</th>
                         <th>Nama Pelatihan</th>
-                        <th>Peserta Pelatihan</th> <!-- Kolom Nama Pengguna -->
+                        {{-- <th>Peserta Pelatihan</th> <!-- Kolom Nama Pengguna --> --}}
+                        <th>Jumlah Peserta Pelatihan</th>
                         <th>Status</th>
+                        <th>Aksi</th>
                         <th>Draft Surat Tugas</th>
                         {{-- <th>Catatan</th> --}}
-                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -86,11 +89,17 @@ $(document).ready(function(){
                 orderable: true,
                 searchable: true
             },
+            // {
+            //     data: 'nama_lengkap',  // Nama lengkap peserta yang ditampilkan
+            //     name: 'nama_lengkap',
+            //     orderable: false,  // Tidak bisa diurutkan
+            //     searchable: true,  // Bisa dicari
+            // },
             {
-            data: 'nama_lengkap',  // Nama lengkap peserta yang ditampilkan
-            name: 'nama_lengkap',
-            orderable: false,  // Tidak bisa diurutkan
-            searchable: true,  // Bisa dicari
+                data: 'jumlah_peserta',  // Nama lengkap peserta yang ditampilkan
+                name: 'jumlah_peserta',
+                orderable: false,  // Tidak bisa diurutkan
+                searchable: true,  // Bisa dicari
             },
             {
                 data: "status",
@@ -116,17 +125,18 @@ $(document).ready(function(){
                     return '<span class="badge ' + statusClass + '">' + statusText + '</span>';
                 }
             },
-             {
-                 data: "draft",
-                 orderable: true,
-                 searchable: true
-             },
             {
                 data: "aksi",
                 className: "text-center",
                 orderable: false,
                 searchable: false
-            }
+            },
+            {
+                 data: "draft",
+                 orderable: true,
+                 searchable: true
+            },
+        
         ]
     });
 

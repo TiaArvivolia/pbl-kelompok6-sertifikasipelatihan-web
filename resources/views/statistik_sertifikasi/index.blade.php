@@ -34,7 +34,7 @@
       <div class="card-body bg-info text-white">
           <div class="d-flex align-items-center">
               <i class="fas fa-calendar fa-2x mr-3"></i>
-              <div>
+              {{-- <div>
                   <h4 class="card-title mb-0">Periode Sertifikasi</h4>
                   @foreach($certificationsPerPeriod as $tahun_periode)
                   <!-- Check if tahun_periode has a value and display it properly -->
@@ -44,7 +44,7 @@
                   @endif
               @endforeach
                          
-              </div>
+              </div> --}}
           </div>
       </div>
   </div>

@@ -8,6 +8,7 @@ use App\Models\RiwayatSertifikasiModel;
 use App\Models\VendorSertifikasiModel;
 use App\Models\MataKuliahModel;
 use App\Models\BidangMinatModel;
+use App\Models\PeriodeModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -33,9 +34,17 @@ class RiwayatSertifikasiController extends Controller
 
     public function list(Request $request)
     {
+        // Get the logged-in user
+        $user = auth()->user();
+
         // Create the base query for RiwayatSertifikasi with relationships
         $query = RiwayatSertifikasiModel::with(['pengguna', 'mataKuliah', 'bidangMinat', 'daftarPelatihan'])
             ->select('id_riwayat', 'id_pengguna', 'level_sertifikasi', 'jenis_sertifikasi', 'nama_sertifikasi', 'no_sertifikat', 'tanggal_terbit', 'masa_berlaku');
+
+        // If the user is a lecturer (dosen), filter the records by their ID
+        if ($user->id_jenis_pengguna === 2 || $user->id_jenis_pengguna === 3) {
+            $query->where('id_pengguna', $user->id_pengguna); // Assuming the logged-in user's ID is stored in 'id' and associated with 'id_pengguna'
+        }
 
         // Apply filter if level_sertifikasi is provided in the request
         if ($request->filter_level_sertifikasi) {
@@ -53,6 +62,15 @@ class RiwayatSertifikasiController extends Controller
             //     return $sertifikasi->penyelenggara ? $sertifikasi->penyelenggara->nama : 'Tidak Tersedia';
             // })
             ->addColumn('aksi', function ($sertifikasi) {
+                // Dapatkan pengguna yang sedang login
+                $user = auth()->user();
+                // Cek apakah pengguna adalah pimpinan (role 4)
+                if ($user->id_jenis_pengguna === 4) {
+                    $btn = '<button onclick="modalAction(\'' . url('/riwayat_sertifikasi/' . $sertifikasi->id_riwayat . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
+                    return $btn;
+                }
+
+                // Jika bukan pimpinan, tampilkan tombol "Detail", "Edit", dan "Hapus"
                 $btn = '<button onclick="modalAction(\'' . url('/riwayat_sertifikasi/' . $sertifikasi->id_riwayat . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/riwayat_sertifikasi/' . $sertifikasi->id_riwayat . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/riwayat_sertifikasi/' . $sertifikasi->id_riwayat . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Hapus</button> ';
@@ -65,18 +83,37 @@ class RiwayatSertifikasiController extends Controller
 
     public function create_ajax()
     {
-        // Mengambil data pengguna yang memiliki relasi dengan dosen atau tendik
-        $pengguna = Pengguna::with(['dosen', 'tendik'])
-            ->whereHas('dosen')
-            ->orWhereHas('tendik')
-            ->get();
+        // Mengambil data pengguna yang sedang login
+        $user = auth()->user();
+
+        // Inisialisasi query untuk mengambil data 'pengguna'
+        $penggunaQuery = Pengguna::with(['dosen', 'tendik']) // Mengambil relasi dosen dan tendik
+            ->where(function ($query) use ($user) {
+                // Jika pengguna adalah admin (diasumsikan 'id_jenis_pengguna' untuk admin adalah 1)
+                if ($user->id_jenis_pengguna === 1) {
+                    // Admin hanya bisa melihat dosen dan tendik
+                    $query->whereHas('dosen') // Memastikan relasi dengan dosen ada
+                        ->orWhereHas('tendik'); // Atau relasi dengan tendik ada
+                } else {
+                    // Jika pengguna bukan admin (misalnya dosen atau tendik), hanya dapat melihat riwayat mereka sendiri
+                    $query->where('id_pengguna', $user->id_pengguna) // Filter berdasarkan id_pengguna pengguna yang sedang login
+                        ->where(function ($subQuery) {
+                            // Memastikan bahwa pengguna memiliki relasi dengan dosen atau tendik
+                            $subQuery->whereHas('dosen')->orWhereHas('tendik');
+                        });
+                }
+            });
+
+        // Mendapatkan data pengguna yang telah difilter
+        $pengguna = $penggunaQuery->get();
 
         $mataKuliah = MataKuliahModel::all();
         $bidangMinat = BidangMinatModel::all();
         $daftarPelatihan = DaftarPelatihanModel::all();
         $penyelenggara = VendorSertifikasiModel::all();
+        $periode = PeriodeModel::all(); // Mengambil semua periode pelatihan
 
-        return view('riwayat_sertifikasi.create_ajax', compact('pengguna', 'mataKuliah', 'bidangMinat', 'daftarPelatihan', 'penyelenggara'));
+        return view('riwayat_sertifikasi.create_ajax', compact('pengguna', 'mataKuliah', 'bidangMinat', 'daftarPelatihan', 'penyelenggara', 'periode'));
     }
 
 
@@ -95,7 +132,7 @@ class RiwayatSertifikasiController extends Controller
             'mk_list.*' => 'exists:mata_kuliah,id_mata_kuliah', // Each mata kuliah in mk_list must exist
             'bidang_minat_list' => 'nullable|array', // Ensure bidang_minat_list is an array if provided
             'bidang_minat_list.*' => 'exists:bidang_minat,id_bidang_minat', // Each bidang minat in bidang_minat_list must exist
-            
+            'id_periode' => 'required|exists:periode,id_periode',
         ];
 
 
@@ -131,7 +168,7 @@ class RiwayatSertifikasiController extends Controller
             'dokumen_sertifikat' => $dokumenPath, // Menyimpan path dokumen di database
             'mk_list' => $request->has('mk_list') ? json_encode($request->input('mk_list')) : null, // Store mk_list as JSON
             'bidang_minat_list' => $request->has('bidang_minat_list') ? json_encode($request->input('bidang_minat_list')) : null, // Store bidang_minat_list as JSON
-            'tahun_periode' => $request->tahun_periode,
+            'id_periode' => $request->id_periode,
         ]);
         return response()->json([
             'status' => true,
@@ -148,6 +185,7 @@ class RiwayatSertifikasiController extends Controller
             'bidangMinat',
             'daftarPelatihan',
             'penyelenggara',
+            'periode'
         ])->find($id);
 
         if (!$sertifikasi) {
@@ -183,36 +221,61 @@ class RiwayatSertifikasiController extends Controller
 
     public function edit_ajax(string $id)
     {
+        // Mengambil data sertifikasi yang akan diedit berdasarkan ID
         $sertifikasi = RiwayatSertifikasiModel::with([
             'pengguna',
             'mataKuliah',
             'bidangMinat',
             'daftarPelatihan',
-            'penyelenggara'
+            'penyelenggara',
+            'periode'
         ])->find($id);
 
         if (!$sertifikasi) {
             return response()->json(['error' => 'Data yang anda cari tidak ditemukan'], 404);
         }
 
-        // Retrieve the list of pengguna, mataKuliah, bidangMinat, and penyelenggara
-        $pengguna = Pengguna::with(['dosen', 'tendik'])
-            ->whereHas('dosen')
-            ->orWhereHas('tendik')
-            ->get();
-        $mataKuliah = MataKuliahModel::all();
-        $bidangMinat = BidangMinatModel::all();
-        $daftarPelatihan = DaftarPelatihanModel::all();
-        $penyelenggara = VendorSertifikasiModel::all();
+        // Mengambil data pengguna yang sedang login
+        $user = auth()->user();
 
-        return view('riwayat_sertifikasi.edit_ajax', compact('sertifikasi', 'pengguna', 'mataKuliah', 'bidangMinat', 'daftarPelatihan', 'penyelenggara'));
+        // Inisialisasi query untuk mengambil data 'pengguna'
+        $penggunaQuery = Pengguna::with(['dosen', 'tendik']) // Mengambil relasi dosen dan tendik
+            ->where(function ($query) use ($user) {
+                // Jika pengguna adalah admin (diasumsikan 'id_jenis_pengguna' untuk admin adalah 1)
+                if ($user->id_jenis_pengguna === 1) {
+                    // Admin hanya bisa melihat dosen dan tendik
+                    $query->whereHas('dosen') // Memastikan relasi dengan dosen ada
+                        ->orWhereHas('tendik'); // Atau relasi dengan tendik ada
+                } else {
+                    // Jika pengguna bukan admin (misalnya dosen atau tendik), hanya dapat melihat riwayat mereka sendiri
+                    $query->where('id_pengguna', $user->id_pengguna) // Filter berdasarkan id_pengguna pengguna yang sedang login
+                        ->where(function ($subQuery) {
+                            // Memastikan bahwa pengguna memiliki relasi dengan dosen atau tendik
+                            $subQuery->whereHas('dosen')->orWhereHas('tendik');
+                        });
+                }
+            });
+
+        // Mendapatkan data pengguna yang telah difilter
+        $pengguna = $penggunaQuery->get();
+
+        // Mengambil data lainnya yang dibutuhkan untuk tampilan
+        $mataKuliah = MataKuliahModel::all(); // Mengambil semua mata kuliah
+        $bidangMinat = BidangMinatModel::all(); // Mengambil semua bidang minat
+        $daftarPelatihan = DaftarPelatihanModel::all(); // Mengambil semua daftar pelatihan
+        $penyelenggara = VendorSertifikasiModel::all(); // Mengambil semua penyelenggara sertifikasi
+        $periode = PeriodeModel::all();
+
+        // Mengembalikan tampilan untuk mengedit dengan data yang diperlukan
+        return view('riwayat_sertifikasi.edit_ajax', compact('sertifikasi', 'pengguna', 'mataKuliah', 'bidangMinat', 'daftarPelatihan', 'penyelenggara', 'periode'));
     }
+
 
     public function update_ajax(Request $request, $id)
     {
         // Validasi input
         $rules = [
-            'id_pengguna' => 'exists:pengguna,id_pengguna',
+            // 'id_pengguna' => 'exists:pengguna,id_pengguna',
             'id_pelatihan' => 'nullable|exists:daftar_pelatihan,id_pelatihan',
             'level_sertifikasi' => 'required|in:Nasional,Internasional',
             'jenis_sertifikasi' => 'required|in:Profesi,Keahlian',
@@ -225,6 +288,7 @@ class RiwayatSertifikasiController extends Controller
             'mk_list.*' => 'exists:mata_kuliah,id_mata_kuliah',
             'bidang_minat_list' => 'nullable|array',
             'bidang_minat_list.*' => 'exists:bidang_minat,id_bidang_minat',
+            'id_periode' => 'nullable|string|max:100',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -258,7 +322,7 @@ class RiwayatSertifikasiController extends Controller
 
             // Perbarui riwayat sertifikasi dengan data baru
             $updateData = [
-                'id_pengguna' => $request->id_pengguna,
+                // 'id_pengguna' => $request->id_pengguna,
                 'id_pelatihan' => $request->id_pelatihan,
                 'level_sertifikasi' => $request->level_sertifikasi,
                 'jenis_sertifikasi' => $request->jenis_sertifikasi,
@@ -268,7 +332,7 @@ class RiwayatSertifikasiController extends Controller
                 'masa_berlaku' => $request->masa_berlaku,
                 'penyelenggara' => $request->penyelenggara,
                 'dokumen_sertifikat' => $dokumenPath, // Menyimpan path dokumen yang baru
-                'tahun_periode' => $request->tahun_periode,
+                'id_periode' => $request->id_periode,
             ];
 
             // Update mk_list jika ada

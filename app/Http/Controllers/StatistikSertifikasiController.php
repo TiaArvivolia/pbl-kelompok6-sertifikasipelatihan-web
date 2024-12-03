@@ -57,12 +57,12 @@ class StatistikSertifikasiController extends Controller
             ->groupBy('bidang_minat.nama_bidang_minat')
             ->get();
 
-        // In the Controller method
-        $certificationsPerPeriod = DB::table('riwayat_sertifikasi')
-            ->select('tahun_periode', DB::raw('COUNT(*) as count'))
-            ->groupBy('tahun_periode')
-            ->orderBy('tahun_periode', 'asc')
-            ->get();
+        //    // In the Controller method
+        //     $certificationsPerPeriod = DB::table('riwayat_sertifikasi')
+        //         ->select('tahun_periode', DB::raw('COUNT(*) as count'))
+        //         ->groupBy('tahun_periode')
+        //         ->orderBy('tahun_periode', 'asc')
+        //         ->get(); 
 
 
 
@@ -76,7 +76,7 @@ class StatistikSertifikasiController extends Controller
             'certificationsByType',
             'certificationsBySubject',
             'certificationsByField',
-            'certificationsPerPeriod'
+            // 'certificationsPerPeriod'
         ));
     }
 }

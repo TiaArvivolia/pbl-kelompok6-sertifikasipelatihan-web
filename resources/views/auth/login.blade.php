@@ -154,7 +154,7 @@
     <div class="login-box">
         <div class="card card-outline card-primary">
             <div class="card-header">
-                <a href="{{ url('/') }}" class="h1"><b>Login</b></a>
+                <a href="{{ url('/') }}" class="h1"><b>SkillHub TI</b></a>
             </div>
             <div class="card-body">
                 <p class="login-box-msg">Sign in to start your session</p>

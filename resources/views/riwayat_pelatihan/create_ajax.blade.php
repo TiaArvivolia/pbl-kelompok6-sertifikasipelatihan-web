@@ -53,6 +53,17 @@
                 </div>
 
                 <div class="form-group">
+                    <label>Periode</label>
+                    <select name="id_periode" id="id_periode" class="form-control">
+                        <option value="">- Pilih Periode -</option>
+                        @foreach($periode as $pr)
+                            <option value="{{ $pr->id_periode }}">{{ $pr->tahun_periode }}</option>
+                        @endforeach
+                    </select>
+                    <small id="error-periode" class="error-text form-text text-danger"></small>
+                </div>
+
+                <div class="form-group">
                     <label>Lokasi</label>
                     <input type="text" name="lokasi" id="lokasi" class="form-control">
                     <small id="error-lokasi" class="error-text form-text text-danger"></small>
@@ -122,6 +133,7 @@
     $("#form-tambah-riwayat-pelatihan").validate({
         rules: {
             id_pengguna: { required: true },
+            id_periode: { required: true },
             nama_pelatihan: { required: true, minlength: 3, maxlength: 100 },
             level_pelatihan: { required: true },
             tanggal_mulai: { required: true },

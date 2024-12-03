@@ -48,6 +48,19 @@
                     <small id="error-tanggal_pengajuan" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
+                    <label>Periode</label>
+                    <select name="id_periode" id="id_periode" class="form-control">
+                        <option value="">Pilih Periode</option>
+                        @foreach($periode as $pr)
+                            <option value="{{ $pr->id_periode }}" 
+                                {{ $pengajuan->id_periode == $pr->id_periode ? 'selected' : '' }}>
+                                {{ $pr->tahun_periode }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <small id="error-penyelenggara" class="error-text form-text text-danger"></small>
+                </div>
+                <div class="form-group">
                     <label>Peserta</label>
                     <select name="id_peserta[]" id="id_peserta" class="form-control" multiple required>
                         @foreach($pengguna as $p)
@@ -101,7 +114,8 @@ $(document).ready(function() {
             id_pelatihan: { required: true },
             tanggal_pengajuan: { required: true },
             status: { required: true },
-            id_peserta: { required: true }
+            id_peserta: { required: true },
+            id_periode: { required: true },
         },
         submitHandler: function(form) {
             $.ajax({

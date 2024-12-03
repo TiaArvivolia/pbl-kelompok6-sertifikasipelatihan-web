@@ -44,6 +44,16 @@
                         <td class="col-9">{{ \Carbon\Carbon::parse($pengajuan->tanggal_pengajuan)->format('d-m-Y') }}</td>
                     </tr>
                     <tr>
+                        <th class="text-right col-3">Periode :</th>
+                        <td class="col-9">
+                            @if($pengajuan->periode && is_object($pengajuan->periode))  <!-- Mengakses relasi periode -->
+                                {{ $pengajuan->periode->tahun_periode }}  <!-- Menampilkan tahun_periode dari relasi periode -->
+                            @else
+                                Data periode tidak ditemukan
+                            @endif
+                        </td>
+                    </tr> 
+                    <tr>
                         <th class="text-right col-3">Status :</th>
                         <td class="col-9">
                             @php
@@ -76,15 +86,16 @@
                     <tr>
                         <th class="text-right col-3"> Peserta :</th>
                         <td class="col-9">
-                            @if($pengajuan->id_peserta && count($participantNames) > 0)
-                                {{ implode(', ', $participantNames) }}
+                            @if(!empty($participantNames))
+                                {{-- Use implode to join names with <br> for line breaks --}}
+                                {!! implode('<br>', $participantNames) !!}
                             @else
                                 <span>-</span>
                             @endif
                         </td>
                     </tr>
                     
-                    
+                                        
                 </table>
             </div>
             <div class="modal-footer">

@@ -29,6 +29,17 @@
                 </div>
 
                 <div class="form-group">
+                    <label>Periode</label>
+                    <select name="id_periode" id="id_periode" class="form-control">
+                        <option value="">- Pilih Periode -</option>
+                        @foreach($periode as $pr)
+                            <option value="{{ $pr->id_periode }}">{{ $pr->tahun_periode }}</option>
+                        @endforeach
+                    </select>
+                    <small id="error-periode" class="error-text form-text text-danger"></small>
+                </div>
+
+                <div class="form-group">
                     <label>Status Pengajuan</label>
                     <select name="status" id="status" class="form-control" required>
                         <option value="">Pilih Status</option>

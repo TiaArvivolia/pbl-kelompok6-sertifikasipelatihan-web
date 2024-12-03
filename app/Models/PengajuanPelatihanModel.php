@@ -22,7 +22,8 @@ class PengajuanPelatihanModel extends Model
         'tanggal_pengajuan',
         'status',
         'catatan',
-        'id_peserta'
+        'id_peserta',
+        'id_periode'
     ];
 
     // Specify the date format if needed
@@ -40,5 +41,10 @@ class PengajuanPelatihanModel extends Model
     public function daftarPelatihan()
     {
         return $this->belongsTo(DaftarPelatihanModel::class, 'id_pelatihan', 'id_pelatihan');
+    }
+    
+    public function periode()
+    {
+        return $this->belongsTo(PeriodeModel::class, 'id_periode', 'id_periode');
     }
 }

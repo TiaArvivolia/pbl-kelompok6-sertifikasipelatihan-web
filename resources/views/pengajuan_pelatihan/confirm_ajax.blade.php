@@ -71,11 +71,7 @@
                             @endphp
                             <span class="badge {{ $statusClass }}">{{ $statusText }}</span>
                         </td>
-                    </tr>                    
-                    <tr>
-                        <th class="text-right col-3">Catatan :</th>
-                        <td class="col-9">{{ $pengajuan->catatan }}</td>
-                    </tr>
+                    </tr>  
                     {{-- <tr>
                         <th class="text-right col-3">Peserta :</th>
                         <td class="col-9">{{ $pengajuan->id_peserta }}</td>

@@ -30,7 +30,7 @@ class RiwayatSertifikasiModel extends Model
         'dokumen_sertifikat',
         'mk_list',
         'bidang_minat_list',
-        'tahun_periode'
+        'id_periode'
     ];
 
     // Define the relationship to the Pengguna model
@@ -61,5 +61,10 @@ class RiwayatSertifikasiModel extends Model
     public function bidangMinat()
     {
         return $this->belongsTo(BidangMinatModel::class, 'tag_bidang_minat', 'id_bidang_minat');
+    }
+    
+    public function periode()
+    {
+        return $this->belongsTo(PeriodeModel::class, 'id_periode', 'id_periode');
     }
 }

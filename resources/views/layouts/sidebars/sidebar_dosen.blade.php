@@ -119,8 +119,8 @@
         </a>
         <ul class="nav nav-treeview">
           <li class="nav-item">
-            <a href="{{ route('profile') }}" class="nav-link {{ $activeMenu == 'dosen' ? 'active' : '' }}">
-              <p>Kelola Pimpinan</p>
+            <a href="{{ url('/dosen') }}" class="nav-link {{ $activeMenu == 'dosen' ? 'active' : '' }}">
+              <p>Profil</p>
             </a>
           </li>
         </ul>
@@ -139,10 +139,30 @@
         </a>
         <ul class="nav nav-treeview">
           <li class="nav-item">
+            <a href="{{ url('/riwayat_pelatihan') }}" class="nav-link {{ $activeMenu == 'riwayat_pelatihan' ? 'active' : '' }}">
+              <p>Riwayat Pelatihan</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ url('/riwayat_sertifikasi') }}" class="nav-link {{ $activeMenu == 'riwayat_sertifikasi' ? 'active' : '' }}">
+              <p>Riwayat Sertfikasi</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ url('/daftar_pelatihan') }}" class="nav-link {{ $activeMenu == 'daftar_pelatihan' ? 'active' : '' }}">
+              <p>Daftar Pelatihan</p>
+            </a>
+          </li>
+          <li class="nav-item">
             <a href="{{ url('/pengajuan_pelatihan') }}" class="nav-link {{ $activeMenu == 'pengajuan_pelatihan' ? 'active' : '' }}">
               <p>Pengajuan Pelatihan</p>
             </a>
           </li>
+          {{-- <li class="nav-item">
+            <a href="{{ url('/statistik_sertifikasi') }}" class="nav-link {{ $activeMenu == 'statistik' ? 'active' : '' }}">
+              <p>Statistik Sertifikasi</p>
+            </a>
+          </li> --}}
           {{-- <li class="nav-item">
             <a href="{{ url('/draft-surat-tugas') }}" class="nav-link {{ $activeMenu == 'draftSuratTugas' ? 'active' : '' }}">
               <p>Draft Surat Tugas</p>

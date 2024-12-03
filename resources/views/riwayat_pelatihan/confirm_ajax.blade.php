@@ -60,14 +60,6 @@
                             <th class="text-right col-3">Lokasi :</th>
                             <td class="col-9">{{ $pelatihan->lokasi }}</td>
                         </tr>
-                        <tr>
-                            <th class="text-right col-3">Penyelenggara :</th>
-                            <td class="col-9">{{ $pelatihan->penyelenggara }}</td>
-                        </tr>
-                        <tr>
-                            <th class="text-right col-3">Dokumen Pelatihan :</th>
-                            <td class="col-9">{{ $pelatihan->dokumen_pelatihan }}</td>
-                        </tr>
                     </table>
                 </div>
             </div>

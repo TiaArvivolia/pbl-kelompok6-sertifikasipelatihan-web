@@ -28,6 +28,7 @@ class RiwayatPelatihanModel extends Model
         'dokumen_pelatihan',
         'mk_list',
         'bidang_minat_list',
+        'id_periode'
     ];
 
     // Define relationships
@@ -55,5 +56,10 @@ class RiwayatPelatihanModel extends Model
     public function penyelenggara()
     {
         return $this->belongsTo(VendorPelatihanModel::class, 'penyelenggara', 'id_vendor_pelatihan');
+    }
+    
+    public function periode()
+    {
+        return $this->belongsTo(PeriodeModel::class, 'id_periode', 'id_periode');
     }
 }
