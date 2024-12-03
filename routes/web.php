@@ -39,7 +39,7 @@ use Illuminate\Support\Facades\Artisan;
 |
 */
 
-Route::get('/storage-link', function() {
+Route::get('/storage-link', function () {
     Artisan::call('storage:link');
     return 'Storage linked successfully.';
 });
@@ -306,6 +306,8 @@ Route::middleware(['auth'])->group(function () {
     // Route::get('kelola_periode', [KelolaPeriodeController::class, 'index']);
 
     Route::get('/kelola_periode', [KelolaPeriodeController::class, 'index'])->name('kelola_periode.index');
+    Route::post('/kelola_periode/list', [KelolaPeriodeController::class, 'list']);       
+
 });
 
 
