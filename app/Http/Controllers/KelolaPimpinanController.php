@@ -47,7 +47,7 @@ class KelolaPimpinanController extends Controller
             ->addColumn('gambar_profil', function ($pimpinan) {
                 // Cek apakah ada gambar_profil
                 if ($pimpinan->gambar_profil) {
-                    $url = asset('storage/' . $pimpinan->gambar_profil); // Pastikan folder `storage` bisa diakses
+                    $url = asset('storage/' . $pimpinan->gambar_profil); // Pastikan folder storage bisa diakses
                     return '<img src="' . $url . '"  width="150" height="150" class="img-thumbnail">';
                 }
                 return '<span class="text-muted">Tidak ada gambar</span>'; // Placeholder jika gambar kosong

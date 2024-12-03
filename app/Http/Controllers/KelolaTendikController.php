@@ -50,7 +50,7 @@ class KelolaTendikController extends Controller
             ->addColumn('gambar_profil', function ($tendik) {
                 // Cek apakah ada gambar_profil
                 if ($tendik->gambar_profil) {
-                    $url = asset('storage/' . $tendik->gambar_profil); // Pastikan folder `storage` bisa diakses
+                    $url = asset('storage/' . $tendik->gambar_profil); // Pastikan folder storage bisa diakses
                     return '<img src="' . $url . '"  width="150" height="150" class="img-thumbnail">';
                 }
                 return '<span class="text-muted">Tidak ada gambar</span>'; // Placeholder jika gambar kosong
@@ -293,7 +293,7 @@ class KelolaTendikController extends Controller
             $sheet->setCellValue('E' . $row, $data->nip);
             $sheet->setCellValue('F' . $row, $data->no_telepon);
             $sheet->setCellValue('G' . $row, $data->email);
-            $sheet->setCellValue('H' . $row, optional($data->bidangMinat)->nama_bidang_minat); // Assuming you have a `nama_bidang_minat` field in `BidangMinatModel`
+            $sheet->setCellValue('H' . $row, optional($data->bidangMinat)->nama_bidang_minat); // Assuming you have a nama_bidang_minat field in BidangMinatModel
             $row++;
         }
 

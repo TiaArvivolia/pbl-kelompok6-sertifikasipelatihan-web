@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>@yield('title', 'SkillHub TI | Sistem Pendataan Sertifikasi dan Pelatihan')</title>
+  <link rel="icon" href="{{ asset('storage/photos/jti/png') }}" type="image/x-icon">
+  
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{ config('app.name', 'PWL_POS')}}</title>
@@ -50,6 +55,7 @@
 
   @stack('css')
 </head>
+
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
   @include('layouts.header')
@@ -202,5 +208,6 @@
   });
 </script>
 @stack('js')
+
 </body>
 </html>
