@@ -37,54 +37,8 @@
         </div>
       </div>
       <div class="col-md-3 mb-3">
-        <!-- Kotak 3 -->
-        <div class="small-box bg-warning">
-          <div class="inner">
-            <h2 class="fw-bold mb-0">{{ $totalCertifiedParticipants['dosen'] }}</h2>
-            <p>Total Sertifikasi Dosen</p>
-          </div>
-          <div class="icon">
-            <i class="fas fa-chalkboard-teacher"></i>
-          </div>
-          <a href="#" class="small-box-footer">
-            More info <i class="fas fa-arrow-circle-right"></i>
-          </a>
-        </div>
-      </div>
-      <div class="col-md-3 mb-3">
-        <!-- Kotak 4 -->
-        <div class="small-box bg-danger">
-          <div class="inner">
-            <h2 class="fw-bold mb-0">{{ $totalCertifiedParticipants['tendik'] }}</h2>
-            <p>Total Sertifikasi Tendik</p>
-          </div>
-          <div class="icon">
-            <i class="fas fa-users"></i>
-          </div>
-          <a href="#" class="small-box-footer">
-            More info <i class="fas fa-arrow-circle-right"></i>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <!-- Second Row: Two Charts -->
-      <div class="col-md-6 mb-3">
-        <div class="card">
-          <div class="card-header bg-info text-white">
-            <h5>📅 Periode Sertifikasi</h5>
-          </div>
-          <div class="card-body">
-            <canvas id="certificationsPerPeriodChart" width="300" height="300" style="max-width: 100%;"></canvas>
-          </div>
-        </div>
-      </div>
-<<<<<<< HEAD
-    </div>
-    <div class="col-md-3 mb-3">
-      <!-- Kotak 3 -->
-      <div class="small-box bg-warning">
+       <!-- Kotak 3 -->
+       <div class="small-box bg-warning">
         <div class="inner">
           <h2 class="fw-bold mb-0">{{ $totalPengajuanPelatihan }}</h2>
           <p>Total Pengajuan</p>
@@ -112,7 +66,22 @@
         <a href="#" class="small-box-footer">
           More info <i class="fas fa-arrow-circle-right"></i>
         </a>
-=======
+      </div>
+    </div>
+  </div>
+
+    <div class="row">
+      <!-- Second Row: Two Charts -->
+      <div class="col-md-6 mb-3">
+        <div class="card">
+          <div class="card-header bg-info text-white">
+            <h5>📅 Periode Sertifikasi</h5>
+          </div>
+          <div class="card-body">
+            <canvas id="certificationsPerPeriodChart" width="300" height="300" style="max-width: 100%;"></canvas>
+          </div>
+        </div>
+      </div>
       <div class="col-md-6 mb-3">
         <div class="card">
           <div class="card-header bg-info text-white">
@@ -122,7 +91,6 @@
             <canvas id="pelatihanPerPeriodChart" width="300" height="300" style="max-width: 100%;"></canvas>
           </div>
         </div>
->>>>>>> 1a2341e8c9d11be1f8b77e67357c4e3caf7470a9
       </div>
     </div>
   </div>
