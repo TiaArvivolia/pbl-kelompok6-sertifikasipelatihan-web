@@ -81,6 +81,7 @@ class RiwayatSertifikasiController extends Controller
             ->make(true);
     }
 
+    
     public function create_ajax()
     {
         // Mengambil data pengguna yang sedang login
