@@ -41,7 +41,7 @@ class KelolaPimpinanController extends Controller
         if ($user->id_jenis_pengguna == 4) { // If the user is a pimpinan
             $pimpinan->where('id_pengguna', $user->id_pengguna);
         }
-        
+
         return DataTables::of($pimpinan)
             ->addIndexColumn()
             ->addColumn('gambar_profil', function ($pimpinan) {
@@ -53,9 +53,10 @@ class KelolaPimpinanController extends Controller
                 return '<span class="text-muted">Tidak ada gambar</span>'; // Placeholder jika gambar kosong
             })
             ->addColumn('aksi', function ($pimpinan) {
+                $user = auth()->user();
                 $btn = '<button onclick="modalAction(\'' . url('/pimpinan/' . $pimpinan->id_pimpinan . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/pimpinan/' . $pimpinan->id_pimpinan . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
-                if (Auth::user()->role == 'ADM') {
+                if ($user->id_jenis_pengguna == 1) {
                     $btn .= '<button onclick="modalAction(\'' . url('/pimpinan/' . $pimpinan->id_pimpinan . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Hapus</button>';
                 }
                 return $btn;
