@@ -9,6 +9,7 @@ use App\Models\BidangMinatModel;
 use App\Models\RiwayatPelatihanModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\PengajuanPelatihanModel;
 
 class WelcomeController extends Controller
 {
@@ -57,6 +58,10 @@ class WelcomeController extends Controller
             ->groupBy('bidang_minat.nama_bidang_minat')
             ->get();
 
+        $totalPengajuanPelatihan = PengajuanPelatihanModel::count();
+
+        $pengajuanPelatihanMenunggu = PengajuanPelatihanModel::where('status', 'menunggu')->count();
+
         // In the Controller method
         // $certificationsPerPeriod = DB::table('riwayat_sertifikasi')
         //     ->select('tahun_periode', DB::raw('COUNT(*) as count'))
@@ -78,7 +83,9 @@ class WelcomeController extends Controller
                 'certificationsByType' => $certificationsByType,
                 'certificationsBySubject' => $certificationsBySubject,
                 'certificationsByField' => $certificationsByField,
-                'totalPelatihanTerdata' => $totalPelatihanTerdata
+                'totalPelatihanTerdata' => $totalPelatihanTerdata,
+                'totalPengajuanPelatihan' => $totalPengajuanPelatihan,
+                'pengajuanPelatihanMenunggu' => $pengajuanPelatihanMenunggu
                 // 'certificationsPerPeriod' => $certificationsPerPeriod,
                 // 'totalCertificationsAllPeriods' => $totalCertificationsAllPeriods,
             ]);

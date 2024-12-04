@@ -41,13 +41,14 @@
       <!-- Kotak 3 -->
       <div class="small-box bg-warning">
         <div class="inner">
-          <h2 class="fw-bold mb-0">{{ $totalCertifiedParticipants['dosen'] }}</h2>
-          <p>Total Sertifikasi Dosen</p>
+          <h2 class="fw-bold mb-0">{{ $totalPengajuanPelatihan }}</h2>
+          <p>Total Pengajuan</p>
         </div>
         <div class="icon">
           <i class="fas fa-chalkboard-teacher"></i>
         </div>
         <a href="#" class="small-box-footer">
+          <a href="{{ url('/pengajuan_pelatihan') }}" class="small-box-footer">
           More info <i class="fas fa-arrow-circle-right"></i>
         </a>
       </div>
@@ -56,12 +57,13 @@
       <!-- Kotak 4 -->
       <div class="small-box bg-danger">
         <div class="inner">
-          <h2 class="fw-bold mb-0">{{ $totalCertifiedParticipants['tendik'] }}</h2>
-          <p>Total Sertifikasi Tendik</p>
+          <h2 class="fw-bold mb-0">{{ $pengajuanPelatihanMenunggu }}</h2>
+          <p>Total Menunggu Persetujuan</p>
         </div>
         <div class="icon">
           <i class="fas fa-users"></i>
         </div>
+        <a href="{{ url('/pengajuan_pelatihan') }}" class="small-box-footer">
         <a href="#" class="small-box-footer">
           More info <i class="fas fa-arrow-circle-right"></i>
         </a>
