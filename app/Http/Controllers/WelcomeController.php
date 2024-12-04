@@ -57,31 +57,33 @@ class WelcomeController extends Controller
             ->groupBy('bidang_minat.nama_bidang_minat')
             ->get();
 
-        // In the Controller method
-        // $certificationsPerPeriod = DB::table('riwayat_sertifikasi')
-        //     ->select('tahun_periode', DB::raw('COUNT(*) as count'))
-        //     ->groupBy('tahun_periode')
-        //     ->orderBy('tahun_periode', 'asc')
-        //     ->get();
+        $certificationsPerPeriod = DB::table('riwayat_sertifikasi')
+            ->join('periode', 'riwayat_sertifikasi.id_periode', '=', 'periode.id_periode') // Join with the periode table
+            ->select('periode.tahun_periode', DB::raw('COUNT(*) as count')) // Select the tahun_periode and count of records
+            ->groupBy('periode.tahun_periode') // Group by tahun_periode
+            ->orderBy('periode.tahun_periode', 'asc') // Order by tahun_periode
+            ->get();
 
-        // Total certifications across all periods
-        // $totalCertificationsAllPeriods = $certificationsPerPeriod->sum('count');
+        $pelatihanPerPeriod = DB::table('riwayat_pelatihan')
+            ->join('periode', 'riwayat_pelatihan.id_periode', '=', 'periode.id_periode') // Join with the periode table
+            ->select('periode.tahun_periode', DB::raw('COUNT(*) as count')) // Select the tahun_periode and count of records
+            ->groupBy('periode.tahun_periode') // Group by tahun_periode
+            ->orderBy('periode.tahun_periode', 'asc') // Order by tahun_periode
+            ->get();
 
-
-
-            return view('welcome', [
-                'breadcrumb' => $breadcrumb,
-                'activeMenu' => $activeMenu,
-                'totalCertificates' => $totalCertificates,
-                'totalCertifiedParticipants' => $totalCertifiedParticipants,
-                'certificationsByLevel' => $certificationsByLevel,
-                'certificationsByType' => $certificationsByType,
-                'certificationsBySubject' => $certificationsBySubject,
-                'certificationsByField' => $certificationsByField,
-                'totalPelatihanTerdata' => $totalPelatihanTerdata
-                // 'certificationsPerPeriod' => $certificationsPerPeriod,
-                // 'totalCertificationsAllPeriods' => $totalCertificationsAllPeriods,
-            ]);
+        return view('welcome', [
+            'breadcrumb' => $breadcrumb,
+            'activeMenu' => $activeMenu,
+            'totalCertificates' => $totalCertificates,
+            'totalCertifiedParticipants' => $totalCertifiedParticipants,
+            'certificationsByLevel' => $certificationsByLevel,
+            'certificationsByType' => $certificationsByType,
+            'certificationsBySubject' => $certificationsBySubject,
+            'certificationsByField' => $certificationsByField,
+            'totalPelatihanTerdata' => $totalPelatihanTerdata,
+            'certificationsPerPeriod' => $certificationsPerPeriod,
+            'pelatihanPerPeriod' => $pelatihanPerPeriod,
+            // 'totalCertificationsAllPeriods' => $totalCertificationsAllPeriods,
+        ]);
     }
-    
 }
