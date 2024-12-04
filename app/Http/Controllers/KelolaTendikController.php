@@ -56,9 +56,10 @@ class KelolaTendikController extends Controller
                 return '<span class="text-muted">Tidak ada gambar</span>'; // Placeholder jika gambar kosong
             })
             ->addColumn('aksi', function ($tendik) {
+                $user = auth()->user();
                 $btn = '<button onclick="modalAction(\'' . url('/tendik/' . $tendik->id_tendik . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/tendik/' . $tendik->id_tendik . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
-                if (Auth::user()->role == 'ADM') {
+                if ($user->id_jenis_pengguna == 1) {
                     $btn .= '<button onclick="modalAction(\'' . url('/tendik/' . $tendik->id_tendik . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Hapus</button>';
                 }
                 return $btn;
