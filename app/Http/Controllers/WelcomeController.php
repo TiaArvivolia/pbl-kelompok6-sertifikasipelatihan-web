@@ -6,6 +6,7 @@ use App\Models\RiwayatSertifikasiModel;
 use App\Models\SertifikasiModel;
 use App\Models\MataKuliahModel;
 use App\Models\BidangMinatModel;
+use App\Models\RiwayatPelatihanModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -33,6 +34,8 @@ class WelcomeController extends Controller
                 $query->where('id_jenis_pengguna', 3);
             })->count()
         ];
+
+        $totalPelatihanTerdata = RiwayatPelatihanModel::count();
 
         $certificationsByLevel = SertifikasiModel::select('level_sertifikasi', DB::raw('count(*) as count'))
             ->groupBy('level_sertifikasi')
@@ -75,6 +78,7 @@ class WelcomeController extends Controller
                 'certificationsByType' => $certificationsByType,
                 'certificationsBySubject' => $certificationsBySubject,
                 'certificationsByField' => $certificationsByField,
+                'totalPelatihanTerdata' => $totalPelatihanTerdata
                 // 'certificationsPerPeriod' => $certificationsPerPeriod,
                 // 'totalCertificationsAllPeriods' => $totalCertificationsAllPeriods,
             ]);
