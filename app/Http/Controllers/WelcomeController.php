@@ -9,6 +9,7 @@ use App\Models\BidangMinatModel;
 use App\Models\RiwayatPelatihanModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\PengajuanPelatihanModel;
 
 class WelcomeController extends Controller
 {
@@ -71,6 +72,13 @@ class WelcomeController extends Controller
             ->orderBy('periode.tahun_periode', 'asc') // Order by tahun_periode
             ->get();
 
+            
+     // Hitung jumlah pengajuan pelatihan
+     $totalPengajuanPelatihan = PengajuanPelatihanModel::count();
+
+     // Hitung jumlah pengajuan pelatihan dengan status "menunggu"
+     $pengajuanPelatihanMenunggu = PengajuanPelatihanModel::where('status', 'menunggu')->count();
+
         return view('welcome', [
             'breadcrumb' => $breadcrumb,
             'activeMenu' => $activeMenu,
@@ -84,6 +92,8 @@ class WelcomeController extends Controller
             'certificationsPerPeriod' => $certificationsPerPeriod,
             'pelatihanPerPeriod' => $pelatihanPerPeriod,
             // 'totalCertificationsAllPeriods' => $totalCertificationsAllPeriods,
+            'totalPengajuanPelatihan' => $totalPengajuanPelatihan,
+            'pengajuanPelatihanMenunggu' => $pengajuanPelatihanMenunggu
         ]);
     }
 }
