@@ -4,18 +4,12 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class Pengguna extends Authenticatable
+class Pengguna extends Authenticatable implements JWTSubject
 {
     protected $table = 'pengguna';
     protected $primaryKey = 'id_pengguna';
-
-    protected $guarded = [
-        'web' => [
-            'driver' => 'session',
-            'provider' => 'pengguna',
-        ],
-    ];
 
     // Define only the columns that are present in the migration
     protected $fillable = [
@@ -23,6 +17,17 @@ class Pengguna extends Authenticatable
         'password',
         'id_jenis_pengguna',
     ];
+    
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
+
 
     protected $hidden = [
         'password'
