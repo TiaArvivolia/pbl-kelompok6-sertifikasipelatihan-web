@@ -6,6 +6,7 @@ use App\Models\Pengguna;
 use App\Models\DaftarPelatihanModel;
 use App\Models\PengajuanPelatihanModel;
 use App\Models\PeriodeModel;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
@@ -246,7 +247,11 @@ class PengajuanPelatihanController extends Controller
 
     public function export_word($id)
     {
-        $pengajuan = PengajuanPelatihanModel::with(['pengguna', 'daftarPelatihan'])->find($id);
+        $pengajuan = PengajuanPelatihanModel::with(['pengguna', 'daftarPelatihan', 'daftarPelatihan.vendorPelatihan'])->find($id);
+
+        // Format the start and end dates in "d F Y" format (day month year)
+        $startDate = Carbon::parse($pengajuan->daftarPelatihan->tanggal_mulai)->locale('id')->translatedFormat('d F Y');
+        $endDate = Carbon::parse($pengajuan->daftarPelatihan->tanggal_selesai)->locale('id')->translatedFormat('d F Y');
 
         if (!$pengajuan) {
             return response()->json(['error' => 'Data pengajuan tidak ditemukan'], 404);
@@ -259,33 +264,46 @@ class PengajuanPelatihanController extends Controller
         // Tambahkan section ke dokumen
         $section = $phpWord->addSection();
 
-        // Header
+        // Header Section
         $headerTable = $section->addTable([
             'alignment' => \PhpOffice\PhpWord\SimpleType\JcTable::CENTER,
             'cellMarginTop' => 0,
             'cellMarginBottom' => 0,
         ]);
+
+        // Add Row for Header
         $headerTable->addRow();
 
-        // Logo (align to left)
-        $logoCell = $headerTable->addCell(1000, ['valign' => 'center', 'marginTop' => 0, 'marginBottom' => 0]);
+        // Logo Cell (Align Left)
+        $logoCell = $headerTable->addCell(2000, [
+            'valign' => 'center',
+            'marginTop' => 0,
+            'marginBottom' => 0,
+            'align' => 'left' // Make sure the cell content is aligned left
+        ]);
+
         $logoCell->addImage(
-            asset('logo-poltek.png'),
+            asset('polinema-bw.png'),
             [
-                // 'width' => 80,   // Optional: Set width if needed
-                // 'height' => 80,  // Optional: Set height if needed
-                'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::LEFT
+                'width' => 80,  // Set width if needed
+                'height' => 80, // Set height if needed
+                'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::LEFT // Image alignment left
             ]
         );
 
-
-        // Text Header
-        $headerCell = $headerTable->addCell(6400, ['valign' => 'center', 'marginTop' => 0, 'marginBottom' => 0]);
+        // Text Header Cell
+        $headerCell = $headerTable->addCell(8000, [
+            'valign' => 'center',
+            'marginTop' => 0,
+            'marginBottom' => 0
+        ]);
         $textRun = $headerCell->addTextRun([
             'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER,
             'spaceAfter' => 0,
             'spaceBefore' => 0
         ]);
+
+        // Add Text to Header
         $textRun->addText("KEMENTERIAN PENDIDIKAN DAN KEBUDAYAAN", ['size' => 12.5]);
         $textRun->addTextBreak();
         $textRun->addText("POLITEKNIK NEGERI MALANG", ['size' => 14, 'bold' => true]);
@@ -298,46 +316,157 @@ class PengajuanPelatihanController extends Controller
         $textRun->addTextBreak();
         $textRun->addText("Laman://www.polinema.ac.id Email:cs@polinema.ac.id", ['size' => 11]);
 
-        // Garis Bawah (Opsional)
-        $lineStyle = ['weight' => 3, 'width' => 450, 'height' => 0, 'color' => '#000'];
+        // $section->addText('', [], ['spaceAfter' => 5]); // Menambahkan spasi sangat kecil sebelum garis
+
+        // Add Bottom Line
+        $lineStyle = [
+            'weight' => 2,
+            'width' => 440,
+            'height' => 0,
+            'color' => '#000'
+        ];
         $section->addLine($lineStyle);
 
+        // $section->addTextBreak();
 
-        // Garis Hitam Tebal di Bawah Header
-        // $lineStyle = [
-        //     'weight' => 4, // Ketebalan garis
-        //     'width' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(15), // Lebar garis (15 cm)
-        //     'height' => 0,
-        //     'color' => '000000',
-        //     'align' => 'center',
-        // ];
-        // $section->addLine($lineStyle);
+        // Tambahkan tabel dengan dua kolom
+        $table = $section->addTable();
 
-        // // Tambahkan Spasi Setelah Garis
-        $section->addTextBreak();
+        // Baris pertama tabel
+        $table->addRow();
 
+        // Kolom pertama (No)
+        $table->addCell(7500)->addText("No\t:   /PL2.TI/KP/20  ", ['size' => 12]);
 
+        // Mendapatkan tanggal sekarang dan mengubah formatnya dengan nama bulan dalam bahasa Indonesia
+        $formattedDate = Carbon::now()->locale('id')->translatedFormat('d F Y');
 
-        // Informasi Surat
-        $section->addText("Nomor   : 92/PL2.TI/KP/2024", ['size' => 12]);
-        $section->addText("Malang, " . now()->format('d F Y'), ['size' => 12]);
-        $section->addText("Lampiran: -", ['size' => 12]);
-        $section->addText("Perihal : Data Pengajuan Pelatihan", ['size' => 12]);
-        $section->addTextBreak(2);
+        // Kolom kedua (Tanggal) dengan pengaturan alignment ke kanan dan ukuran yang cukup besar untuk memastikan posisi paling kanan
+        $table->addCell(2500, ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::RIGHT])
+            ->addText($formattedDate, ['size' => 12]);
+
+        // Membuat Perihal dan teksnya dalam satu baris
+        $textRun = $section->addTextRun();
+        $textRun->addText("Perihal\t: ", ['size' => 12]);
+        $textRun->addText("Permohonan Pembuatan Surat Tugas", ['size' => 12, 'bold' => true]);
+
+        $section->addTextBreak(1);
 
         // Penerima Surat
-        $section->addText("Kepada\nYth. Ketua Jurusan Teknologi Informasi\nPoliteknik Negeri Malang", ['size' => 12]);
-        $section->addText("Dengan Hormat,", ['size' => 12]);
+        $section->addText("Yth.\t Pembantu Direktur I", ['size' => 12]);
+        $section->addText("\t Politeknik Negeri Malang", ['size' => 12]);
+        $section->addText("\t di Tempat", ['size' => 12]);
         $section->addTextBreak();
 
+
         // Isi Surat
-        $section->addText(
-            "Sehubungan dengan pelaksanaan kegiatan pengajuan pelatihan oleh " .
-                $pengajuan->pengguna->nama_lengkap .
-                " dengan rincian sebagai berikut:",
+        // Menambahkan teks dengan alignment rata kiri-kanan
+        $textRun = $section->addTextRun(['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::BOTH]);
+        // Add the formatted text to the document
+        $textRun->addText(
+            "\t Sehubungan dengan pelaksanaan kegiatan pelatihan " .
+                $pengajuan->daftarPelatihan->nama_pelatihan .
+                " yang diselenggarakan oleh " . $pengajuan->daftarPelatihan->vendorPelatihan->nama . " pada tanggal " .
+                $startDate . " hingga " . $endDate . " di " .
+                $pengajuan->daftarPelatihan->lokasi . ". Dengan ini kami mohon dapat diterbitkan surat tugas kepada dosen di bawah ini untuk melaksanakan kegiatan yang dimaksud. Adapun nama-nama dosen dan atau tendik tersebut terlampir.",
             ['size' => 12]
         );
+
         $section->addTextBreak();
+        $section->addText("Atas kerjasama dan perhatiannya, kami ucapkan terima kasih.", ['size' => 12]);
+        $section->addTextBreak(3);
+
+        // Add signature table with two cells
+        $signatureTable = $section->addTable();
+        $signatureTable->addRow();
+
+        // First cell (empty or you can add something here)
+        $signatureTable->addCell(5000, ['border' => 0]);
+
+        // Second cell (for the signature)
+        $signatureCell = $signatureTable->addCell(5000, ['border' => 0]);
+
+        // Add "Ketua Jurusan" text with left alignment
+        $signatureCell->addText("Ketua Jurusan,", null, ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::LEFT]);
+
+        // Add line breaks for spacing
+        $signatureCell->addTextBreak(3);
+
+        // Add the name with bold styling and left alignment
+        $signatureCell->addText("Dr. Eng. Rosa Andrie Asmara, ST, MT", ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::LEFT]);
+
+        // Add NIP with left alignment
+        $signatureCell->addText("NIP. 198010102005011001", null, ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::LEFT]);
+
+        // Add Page Break
+        $section->addPageBreak();
+
+        // Header Section
+        $headerTable = $section->addTable([
+            'alignment' => \PhpOffice\PhpWord\SimpleType\JcTable::CENTER,
+            'cellMarginTop' => 0,
+            'cellMarginBottom' => 0,
+        ]);
+
+        // Add Row for Header
+        $headerTable->addRow();
+
+        // Logo Cell (Align Left)
+        $logoCell = $headerTable->addCell(2000, [
+            'valign' => 'center',
+            'marginTop' => 0,
+            'marginBottom' => 0,
+            'align' => 'left' // Make sure the cell content is aligned left
+        ]);
+
+        $logoCell->addImage(
+            asset('polinema-bw.png'),
+            [
+                'width' => 80,  // Set width if needed
+                'height' => 80, // Set height if needed
+                'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::LEFT // Image alignment left
+            ]
+        );
+
+        // Text Header Cell
+        $headerCell = $headerTable->addCell(8000, [
+            'valign' => 'center',
+            'marginTop' => 0,
+            'marginBottom' => 0
+        ]);
+        $textRun = $headerCell->addTextRun([
+            'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER,
+            'spaceAfter' => 0,
+            'spaceBefore' => 0
+        ]);
+
+        // Add Text to Header
+        $textRun->addText("KEMENTERIAN PENDIDIKAN DAN KEBUDAYAAN", ['size' => 12.5]);
+        $textRun->addTextBreak();
+        $textRun->addText("POLITEKNIK NEGERI MALANG", ['size' => 14, 'bold' => true]);
+        $textRun->addTextBreak();
+        $textRun->addText("JURUSAN TEKNOLOGI INFORMASI", ['size' => 14, 'bold' => true]);
+        $textRun->addTextBreak();
+        $textRun->addText("Jl. Soekarno-Hatta No.9 Malang 65141", ['size' => 11]);
+        $textRun->addTextBreak();
+        $textRun->addText("Telp (0341) 404424 – 404425 Fax (0341) 404420", ['size' => 11]);
+        $textRun->addTextBreak();
+        $textRun->addText("Laman://www.polinema.ac.id Email:cs@polinema.ac.id", ['size' => 11]);
+
+        // $section->addText('', [], ['spaceAfter' => 5]); // Menambahkan spasi sangat kecil sebelum garis
+
+        // Add Bottom Line
+        $lineStyle = [
+            'weight' => 2,
+            'width' => 440,
+            'height' => 0,
+            'color' => '#000'
+        ];
+        $section->addLine($lineStyle);
+
+        $section->addText("DAFTAR PESERTA", ['size' => 12], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
+        $section->addText("Kegiatan Pelatihan " . $pengajuan->daftarPelatihan->nama_pelatihan, ['size' => 12], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
+        $section->addText($startDate . ' sampai ' . $endDate, ['size' => 12], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
 
         // Tabel Data
         $tableStyle = ['borderSize' => 6, 'borderColor' => '000000', 'alignment' => 'center'];
@@ -346,133 +475,56 @@ class PengajuanPelatihanController extends Controller
         // Header Tabel
         $table->addRow();
         $table->addCell(500, ['bgColor' => 'cccccc'])->addText('No', ['bold' => true], ['alignment' => 'center']);
-        $table->addCell(3000, ['bgColor' => 'cccccc'])->addText('Nama Pelatihan', ['bold' => true], ['alignment' => 'center']);
-        $table->addCell(2000, ['bgColor' => 'cccccc'])->addText('Tanggal Pengajuan', ['bold' => true], ['alignment' => 'center']);
+        $table->addCell(3000, ['bgColor' => 'cccccc'])->addText('Nama', ['bold' => true], ['alignment' => 'center']);
+        $table->addCell(2000, ['bgColor' => 'cccccc'])->addText('NIP', ['bold' => true], ['alignment' => 'center']);
         $table->addCell(2000, ['bgColor' => 'cccccc'])->addText('Status', ['bold' => true], ['alignment' => 'center']);
 
         // Isi Tabel
-        $table->addRow();
-        $table->addCell(500)->addText(1, [], ['alignment' => 'center']);
-        $table->addCell(3000)->addText($pengajuan->daftarPelatihan->nama_pelatihan ?? '-', ['size' => 12]);
-        $table->addCell(2000)->addText($pengajuan->tanggal_pengajuan ?? '-', ['size' => 12]);
-        $table->addCell(2000)->addText($pengajuan->status ?? '-', ['size' => 12]);
+        $pesertaIds = json_decode($pengajuan->id_peserta);
+        $daftarPeserta = [];
+        $nipPeserta = [];
+        $jenisPeserta = []; // Array untuk menyimpan jenis peserta
+        if (!empty($pesertaIds)) {
+            foreach ($pesertaIds as $index => $id) {
+                $peserta = Pengguna::find($id);
+                $nama = $peserta->dosen->nama_lengkap ?? $peserta->tendik->nama_lengkap ?? 'Tidak Dikenal';
 
-        $section->addTextBreak();
+                // Get NIP based on whether the participant is 'dosen' or 'tendik'
+                $nip = $peserta->dosen->nip ?? $peserta->tendik->nip ?? '-';
+                $nipPeserta[] = $nip; // Store the NIP for later use
 
-        // Penutup Surat
-        $section->addText("Demikian surat ini dibuat. Atas perhatian dan kerja sama Anda, kami sampaikan terima kasih.", ['size' => 12]);
-        $section->addTextBreak(3);
+                // Determine participant type (Dosen/Tendik)
+                $jenisPeserta[] = $peserta->dosen ? 'Dosen' : ($peserta->tendik ? 'Tendik' : 'Tidak Dikenal');
 
-        $section->addText("Ketua Jurusan,", ['size' => 12]);
-        $section->addTextBreak(3);
+                // Add the participant name without numbering
+                $daftarPeserta[] = $nama;
+            }
+        }
 
-        $section->addText("Dr. Eng. Rosa Andrie Asmara, ST, MT", ['size' => 12]);
-        $section->addText("NIP. 198010102005011001", ['size' => 12]);
+        // Add the rows with the participant's name, NIP, and type
+        foreach ($pesertaIds as $index => $id) {
+            $table->addRow();
+
+            // Add No (Index)
+            $table->addCell(1000)->addText($index + 1, [], ['alignment' => 'center']);
+
+            // Add Daftar Peserta (name)
+            $cellPeserta = $table->addCell(4000);
+            $cellPeserta->addText("  " . $daftarPeserta[$index], ['size' => 10]);
+
+            // Add NIP (from $nipPeserta array)
+            $table->addCell(3000)->addText("  " . $nipPeserta[$index], ['size' => 10]);
+
+            // Add Status (from $jenisPeserta array)
+            $table->addCell(1500)->addText("  " . $jenisPeserta[$index], ['size' => 10]);
+        }
 
         // Simpan Dokumen
-        $fileName = 'Surat_Pengajuan_Pelatihan_' . now()->format('Ymd_His') . '.docx';
+        $fileName = 'Draft_Surat_Tugas_' . $pengajuan->id_pengajuan . "_" . now()->format('Ymd') . '.docx';
         $tempFile = storage_path('app/public/' . $fileName);
         $writer = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
         $writer->save($tempFile);
 
         return response()->download($tempFile)->deleteFileAfterSend(true);
     }
-
-
-
-    // public function exportWord($id)
-    // {
-    //     $kegiatan = KegiatanModel::find($id);
-    //     $anggota = AnggotaModel::where('id_kegiatan', $id)->with('user', 'jabatan')->get();
-
-    //     $phpWord = new \PhpOffice\PhpWord\PhpWord();
-    //     $phpWord->setDefaultFontName('Times New Roman');
-    //     $phpWord->setDefaultFontSize(12);
-
-    //     $section = $phpWord->addSection();
-
-    //     // Add header information (Kementerian Pendidikan header)
-    //     $headerTable = $section->addTable();
-    //     $headerTable->addRow();
-    //     $headerTable->addCell(1500)->addImage(asset('polinema.png'), ['width' => 60, 'height' => 60, 'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
-    //     $headerCell = $headerTable->addCell(8500);
-
-    //     $textRun = $headerCell->addTextRun(['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
-    //     $textRun->addText("KEMENTERIAN PENDIDIKAN, KEBUDAYAAN, RISET, DAN TEKNOLOGI", ['size' => 11]);
-    //     $textRun->addTextBreak();
-    //     $textRun->addText("POLITEKNIK NEGERI MALANG", ['bold' => true, 'size' => 13]);
-    //     $textRun->addTextBreak();
-    //     $textRun->addText("JL, Soekarno-Hatta No.9 Malang 65141", ['size' => 10]);
-    //     $textRun->addTextBreak();
-    //     $textRun->addText("Telepon (0341) 404424 Pes. 101-105 0341-404420, Fax. (0341) 404420", ['size' => 10]);
-    //     $textRun->addTextBreak();
-    //     $textRun->addText("https://www.polinema.ac.id", ['size' => 10]);
-
-    //     // Add a line break
-    //     $section->addTextBreak(0);
-
-    //     // Add a horizontal line
-    //     $lineStyle = ['weight' => 1, 'width' => 500, 'height' => 0, 'color' => '000000'];
-    //     $section->addLine($lineStyle);
-
-    //     // Add a line break
-    //     $section->addTextBreak(0);
-
-    //     // Add title and document number
-    //     $titleRun = $section->addTextRun(['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER]);
-    //     $titleRun->addText("SURAT TUGAS", ['bold' => true, 'size' => 14]);
-    //     $titleRun->addTextBreak();
-    //     $titleRun->addText("Nomor : 31464/PL2.1/KP/2024");
-    //     $section->addTextBreak();
-
-    //     // Introduction text
-    //     $section->addText("Wakil Direktur I memberikan tugas kepada :", ['size' => 12]);
-    //     $section->addTextBreak();
-
-    //     // Add table for members (Anggota)
-    //     $table = $section->addTable(['width' => 100 * 50]);
-    //     $table = $section->addTable(['borderSize' => 6, 'borderColor' => '000000', 'width' => 100 * 50]);
-    //     $table->addRow();
-    //     $table->addCell(1000)->addText("NO", ['bold' => true]);
-    //     $table->addCell(4000)->addText("NAMA", ['bold' => true]);
-    //     $table->addCell(4000)->addText("NIP", ['bold' => true]);
-    //     $table->addCell(4000)->addText("JABATAN", ['bold' => true]);
-
-    //     // Populate table with anggota data
-    //     $no = 1;
-    //     foreach ($anggota as $member) {
-    //         $table = $section->addTable(['borderSize' => 6, 'borderColor' => '000000', 'width' => 100 * 50]);
-    //         $table->addRow();
-    //         $table->addCell(1000)->addText($no);
-    //         $table->addCell(4000)->addText($member->user->nama);
-    //         $table->addCell(4000)->addText($member->user->NIP);
-    //         $table->addCell(4000)->addText($member->jabatan->jabatan_nama);
-    //         $no++;
-    //     }
-
-    //     // Add kegiatan details in a paragraph
-    //     $section->addTextBreak();
-    //     $section->addText("Untuk menjadi narasumber kegiatan " . $kegiatan->nama_kegiatan . " yang diselenggarakan oleh " . $kegiatan->deskripsi_kegiatan . " pada tanggal " . date('d F Y', strtotime($kegiatan->tanggal_acara)) . " bertempat di " . $kegiatan->tempat_kegiatan . ".", ['size' => 12]);
-
-    //     $section->addText("Selesai melaksanakan tugas harap melaporkan hasilnya kepada Wakil Direktur I.", ['size' => 12]);
-    //     $section->addText("Demikian untuk dilaksanakan sebaik-baiknya.", ['size' => 12]);
-    //     $section->addTextBreak();
-
-    //     // Add signature
-    //     $signatureTable = $section->addTable();
-    //     $signatureTable->addRow();
-    //     $signatureCell = $signatureTable->addCell(10000, ['border' => 0]);
-    //     $signatureCell->addText("28 Oktober 2024", null, ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::RIGHT]);
-    //     $signatureCell->addText("Direktur,", null, ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::RIGHT]);
-    //     $signatureCell->addTextBreak(3);
-    //     $signatureCell->addText("Dr. Kurnia Ekasari, SE., M.M., Ak.", ['bold' => true], ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::RIGHT]);
-    //     $signatureCell->addText("NIP. 196602141990032002", null, ['alignment' => \PhpOffice\PhpWord\SimpleType\Jc::RIGHT]);
-
-    //     // Save the document
-    //     $fileName = 'Surat_Tugas_' . $kegiatan->nama_kegiatan . '.docx';
-    //     $filePath = storage_path('app/public/' . $fileName);
-    //     $phpWord->save($filePath, 'Word2007');
-
-    //     return response()->download($filePath)->deleteFileAfterSend(true);
-    // }
 }
