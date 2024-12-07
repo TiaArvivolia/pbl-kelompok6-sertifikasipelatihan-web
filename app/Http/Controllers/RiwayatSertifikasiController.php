@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class RiwayatSertifikasiController extends Controller
 {
@@ -386,4 +387,78 @@ class RiwayatSertifikasiController extends Controller
             ]);
         }
     }
+    public function export_pdf()
+    {
+        $riwayat_sertifikasi = RiwayatSertifikasiModel::with(['pengguna', 'daftarPelatihan', 'penyelenggara', 'periode'])
+            ->select('id_riwayat', 'id_pengguna', 'level_sertifikasi', 'nama_sertifikasi', 'tanggal_terbit', 'masa_berlaku','penyelenggara', 'dokumen_sertifikat', 'id_periode')
+            ->orderBy('tanggal_terbit', 'asc')
+            ->get();
+    
+        // Check if data is available
+        if ($riwayat_sertifikasi->isEmpty()) {
+            return response()->json(['error' => 'No data available for export'], 404);
+        }
+    
+        $pdf = Pdf::loadView('riwayat_sertifikasi.export_pdf', compact('riwayat_sertifikasi'));
+        $pdf->setPaper('a4', 'portrait');
+    
+        return $pdf->stream('Data_riwayat_sertifikasi_' . date('Y-m-d_H-i-s') . '.pdf');
+    }
+    
+    public function export_excel()
+    {
+        $riwayat_sertifikasi = RiwayatSertifikasiModel::with(['pengguna', 'daftarPelatihan', 'penyelenggara', 'periode'])
+            ->select('id_riwayat', 'id_pengguna', 'level_sertifikasi', 'nama_sertifikasi', 'tanggal_terbit', 'masa_berlaku', 'penyelenggara', 'dokumen_sertifikat', 'id_periode')
+            ->orderBy('tanggal_terbit', 'asc')
+            ->get();
+    
+        // Check if data is available
+        if ($riwayat_sertifikasi->isEmpty()) {
+            return response()->json(['error' => 'No data available for export'], 404);
+        }
+    
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+    
+        // Header columns
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'Level Sertifikasi');
+        $sheet->setCellValue('C1', 'Nama Sertifikasi');
+        $sheet->setCellValue('D1', 'Tanggal Terbit');
+        $sheet->setCellValue('E1', 'Masa Berlaku');
+        $sheet->setCellValue('F1', 'Penyelenggara');
+        $sheet->setCellValue('G1', 'Dokumen');
+        $sheet->setCellValue('H1', 'ID Periode');
+        $sheet->getStyle('A1:H1')->getFont()->setBold(true);
+    
+        // Fill data
+        $row = 2;
+        foreach ($riwayat_sertifikasi as $index => $data) {
+            $sheet->setCellValue('A' . $row, $index + 1);
+            $sheet->setCellValue('B' . $row, $data->level_sertifikasi);
+            $sheet->setCellValue('C' . $row, $data->nama_sertifikasi);
+            $sheet->setCellValue('D' . $row, $data->tanggal_terbit);
+            $sheet->setCellValue('E' . $row, $data->masa_berlaku);
+            $sheet->setCellValue('F' . $row, $data->penyelenggara);
+            $sheet->setCellValue('G' . $row, $data->dokumen_sertifikat);
+            $sheet->setCellValue('H' . $row, $data->id_periode);
+            $row++;
+        }
+
+    // Auto size columns
+    foreach (range('A', 'H') as $columnID) {
+        $sheet->getColumnDimension($columnID)->setAutoSize(true);
+    }
+
+    // Save Excel file
+    $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+    $filename = 'Data_Riwayat_Sertifikasi_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Cache-Control: max-age=0');
+
+    $writer->save('php://output');
+    exit;
+}
 }
