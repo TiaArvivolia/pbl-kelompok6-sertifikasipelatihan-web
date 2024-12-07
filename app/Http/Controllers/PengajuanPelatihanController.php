@@ -72,11 +72,11 @@ class PengajuanPelatihanController extends Controller
                 if ($pengajuan->status === 'Disetujui') {
                     $url = url('/pengajuan_pelatihan/' . $pengajuan->id_pengajuan . '/export_word');
                     $btn = '<button onclick="window.location.href=\'' . $url . '\'" class="btn btn-primary btn-sm">
-                                <i class="fa fa-download"></i> Detail
+                                <i class="fa fa-download"></i> Download
                             </button>';
                 } else {
                     $btn = '<button class="btn btn-secondary btn-sm" disabled>
-                                <i class="fa fa-download"></i> Detail
+                                <i class="fa fa-download"></i> Download
                             </button>';
                 }
                 return $btn;
