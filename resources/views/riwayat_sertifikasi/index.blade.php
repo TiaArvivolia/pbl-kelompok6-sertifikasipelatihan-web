@@ -10,9 +10,14 @@
             <a href="{{url('/riwayat_sertifikasi/export_excel')}}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export (Excel)</a>
             <a href="{{url('/riwayat_sertifikasi/export_pdf')}}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export (PDF)</a>
             @endif
+            @php
+                $user = auth()->user(); // Get the authenticated user
+            @endphp
+            @if ($user->id_jenis_pengguna == 1 || $user->id_jenis_pengguna == 2 || $user->id_jenis_pengguna == 3) <!-- Check if the user is a admin -->
             <button onclick="modalAction('{{ url('/riwayat_sertifikasi/create_ajax') }}')" class="btn btn-success btn-sm mt-1">
                 <i class="fas fa-plus"></i> Tambah Riwayat Sertifikasi
             </button>
+            @endif
         </div>
     </div>
 

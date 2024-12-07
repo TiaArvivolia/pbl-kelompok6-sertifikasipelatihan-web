@@ -66,12 +66,19 @@ class PengajuanPelatihanController extends Controller
                 return $pengajuan->daftarPelatihan ? $pengajuan->daftarPelatihan->nama_pelatihan : '-';
             })
             ->addColumn('draft', function ($pengajuan) {
-                $url = url('/pengajuan_pelatihan/' . $pengajuan->id_pengajuan . '/export_word');
-                $btn = '<button onclick="window.location.href=\'' . $url . '\'" class="btn btn-primary btn-sm">
-                            <i class="fa fa-download"></i> Detail
-                        </button>';
+                if ($pengajuan->status === 'Disetujui') {
+                    $url = url('/pengajuan_pelatihan/' . $pengajuan->id_pengajuan . '/export_word');
+                    $btn = '<button onclick="window.location.href=\'' . $url . '\'" class="btn btn-primary btn-sm">
+                                <i class="fa fa-download"></i> Detail
+                            </button>';
+                } else {
+                    $btn = '<button class="btn btn-secondary btn-sm" disabled>
+                                <i class="fa fa-download"></i> Detail
+                            </button>';
+                }
                 return $btn;
             })
+
             ->addColumn('aksi', function ($pengajuan) {
                 $btn = '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/' . $pengajuan->id_pengajuan . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
                 // Admin/pimpinan  dapat melakukan operasi CRUD pada Pengajuan

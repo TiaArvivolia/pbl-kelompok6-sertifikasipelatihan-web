@@ -78,9 +78,16 @@ class DaftarPelatihanController extends Controller
                 }
 
                 // If there's no Pengajuan, show the button to add a new Pengajuan
-                return '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/create_ajax') . '\')" class="btn btn-success btn-sm">
-                            <i class="fas fa-plus"></i> Tambah Pengajuan Pelatihan
-                        </button>';
+                if (auth()->user()->id_jenis_pengguna == 1) {
+                    return '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/create_ajax') . '\')" class="btn btn-success btn-sm">
+                                <i class="fas fa-plus"></i> Tambah Pengajuan Pelatihan
+                            </button>';
+                } else {
+                    // Jika bukan, berikan informasi bahwa pengajuan belum ada
+                    return '<div class="alert alert-success alert-sm p-1 m-1" style="font-size: 0.9rem; font-weight: 500;">
+                                        <i class="fas fa-info-circle"></i> Belum ada pengajuan.
+                                    </div>';
+                }
             })
             ->rawColumns(['aksi', 'pengajuan'])
             ->make(true);
