@@ -17,7 +17,7 @@ class Pengguna extends Authenticatable implements JWTSubject
         'password',
         'id_jenis_pengguna',
     ];
-    
+
     public function getJWTIdentifier()
     {
         return $this->getKey();

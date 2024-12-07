@@ -9,13 +9,13 @@ use App\Models\BidangMinatModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class StatistikSertifikasiController extends Controller
+class DiagramStatistikSertifikasiController extends Controller
 {
     public function index()
     {
         // Breadcrumb and page title
         $breadcrumb = (object) [
-            'title' => 'Statistik Sertifikasi',
+            'title' => 'Diagram Statistik Sertifikasi',
             'list' => ['Home', 'Sertifikasi']
         ];
 
@@ -23,7 +23,7 @@ class StatistikSertifikasiController extends Controller
             'title' => 'Daftar Statistik Sertifikasi'
         ];
 
-        $activeMenu = 'statistik_sertifikasi';
+        $activeMenu = 'diagram_statistik_sertifikasi';
 
         // Query for data
         $totalCertificates = RiwayatSertifikasiModel::count();
@@ -66,7 +66,7 @@ class StatistikSertifikasiController extends Controller
             ->get();
 
 
-        return view('statistik_sertifikasi.index', compact(
+        return view('diagram_statistik_sertifikasi.index', compact(
             'breadcrumb',
             'page',
             'activeMenu',

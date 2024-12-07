@@ -11,6 +11,7 @@ use App\Http\Controllers\KelolaMataKuliahController;
 use App\Http\Controllers\KelolaBidangMinatController;
 use App\Http\Controllers\DaftarSertifikasiController;
 use App\Http\Controllers\DaftarPelatihanController;
+use App\Http\Controllers\DiagramStatistikSertifikasiController;
 use App\Http\Controllers\DraftSuratTugasController;
 use App\Http\Controllers\StatistikSertifikasiController;
 use App\Http\Controllers\PelatihanSertifikasiController;
@@ -301,13 +302,14 @@ Route::middleware(['auth'])->group(function () {
 
     // Statistik sertifikasi
     Route::get('statistik_sertifikasi', [StatistikSertifikasiController::class, 'index']);
+    Route::post('statistik_sertifikasi/list', [StatistikSertifikasiController::class, 'list']);
 
-    // Statistik sertifikasi
-    // Route::get('kelola_periode', [KelolaPeriodeController::class, 'index']);
+    // Diagram Statistik sertifikasi
+    Route::get('diagram_statistik_sertifikasi', [DiagramStatistikSertifikasiController::class, 'index']);
+
 
     Route::get('/kelola_periode', [KelolaPeriodeController::class, 'index'])->name('kelola_periode.index');
-    Route::post('/kelola_periode/list', [KelolaPeriodeController::class, 'list']);       
-
+    Route::post('/kelola_periode/list', [KelolaPeriodeController::class, 'list']);
 });
 
 

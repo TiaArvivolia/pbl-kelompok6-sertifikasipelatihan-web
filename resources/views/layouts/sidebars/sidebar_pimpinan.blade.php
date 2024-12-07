@@ -176,6 +176,11 @@
               <p>Statistik Sertifikasi</p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="{{ url('/diagram_statistik_sertifikasi') }}" class="nav-link {{ $activeMenu == 'diagram_statistik' ? 'active' : '' }}">
+              <p>Diagram Statistik Sertifikasi</p>
+            </a>
+          </li>
         </ul>
       </li>
 

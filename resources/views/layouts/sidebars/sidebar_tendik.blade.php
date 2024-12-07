@@ -158,44 +158,9 @@
               <p>Pengajuan Pelatihan</p>
             </a>
           </li>
-          {{-- <li class="nav-item">
-            <a href="{{ url('/statistik_sertifikasi') }}" class="nav-link {{ $activeMenu == 'statistik' ? 'active' : '' }}">
-              <p>Statistik Sertifikasi</p>
-            </a>
-          </li> --}}
-          {{-- <li class="nav-item">
-            <a href="{{ url('/draft-surat-tugas') }}" class="nav-link {{ $activeMenu == 'draftSuratTugas' ? 'active' : '' }}">
-              <p>Draft Surat Tugas</p>
-            </a>
-          </li> --}}
         </ul>
       </li>
 
-      <li class="nav-header">Statistik Sertifikasi</li>
-      <li class="nav-item has-treeview">
-        <a href="#" class="nav-link">
-          <i class="nav-icon fas fa-calendar"></i>
-          <p>
-            Statistik Sertifikasi
-            <i class="right fas fa-angle-left"></i>
-          </p>
-        </a>
-        <ul class="nav nav-treeview">
-          <li class="nav-item">
-            <a href="{{ url('/statistik_sertifikasi') }}" class="nav-link {{ $activeMenu == 'statistik' ? 'active' : '' }}">
-              <p>Statistik Sertifikasi</p>
-            </a>
-          </li>
-        </ul>
-      </li>
-
-      <!-- Button Logout -->
-      {{-- <li class="nav-item">
-          <a href="#" class="nav-link" onclick="logout()">
-              <i class="nav-icon fas fa-sign-out-alt"></i>
-              <p>Logout</p>
-          </a>
-      </li> --}}
     </ul>
   </nav>
 </div>
