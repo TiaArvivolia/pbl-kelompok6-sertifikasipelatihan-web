@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
-
+use Barryvdh\DomPDF\Facade\Pdf;
 class RiwayatPelatihanController extends Controller
 {
     public function index()
@@ -384,4 +384,71 @@ class RiwayatPelatihanController extends Controller
             ]);
         }
     }
+
+    public function export_pdf()
+    {
+        $riwayat_pelatihan = RiwayatPelatihanModel::with(['pengguna', 'daftarPelatihan', 'penyelenggara', 'periode'])
+            ->select('id_riwayat', 'id_pengguna', 'id_pelatihan', 'level_pelatihan', 'nama_pelatihan', 'tanggal_mulai', 'tanggal_selesai', 'lokasi', 'penyelenggara', 'dokumen_pelatihan', 'id_periode')
+            ->orderBy('tanggal_mulai', 'asc') // Change to a valid column
+            ->get();
+    
+        $pdf = Pdf::loadView('riwayat_pelatihan.export_pdf', compact('riwayat_pelatihan'));
+        $pdf->setPaper('a4', 'portrait'); // Set paper size and orientation
+    
+        return $pdf->stream('Data_riwayat_pelatihan_' . date('Y-m-d_H-i-s') . '.pdf');
+    }
+    
+    public function export_excel()
+{
+    $riwayat_pelatihan = RiwayatPelatihanModel::with(['pengguna', 'daftarPelatihan', 'penyelenggara', 'periode'])
+        ->select('id_riwayat', 'id_pengguna', 'id_pelatihan', 'level_pelatihan', 'nama_pelatihan', 'tanggal_mulai', 'tanggal_selesai', 'lokasi', 'penyelenggara', 'dokumen_pelatihan', 'id_periode')
+        ->orderBy('tanggal_mulai', 'asc') // Change to a valid column
+        ->get();
+
+    $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+
+    // Header columns
+    $sheet->setCellValue('A1', 'No');
+    $sheet->setCellValue('B1', 'Level Pelatihan');
+    $sheet->setCellValue('C1', 'Nama Pelatihan');
+    $sheet->setCellValue('D1', 'Tanggal Mulai');
+    $sheet->setCellValue('E1', 'Tanggal Selesai');
+    $sheet->setCellValue('F1', 'Lokasi');
+    $sheet->setCellValue('G1', 'Penyelenggara');
+    $sheet->setCellValue('H1', 'Dokumen');
+    $sheet->setCellValue('I1', 'ID Periode');
+    $sheet->getStyle('A1:I1')->getFont()->setBold(true);
+
+    // Fill data
+    $row = 2;
+    foreach ($riwayat_pelatihan as $index => $data) {
+        $sheet->setCellValue('A' . $row, $index + 1);
+        $sheet->setCellValue('B' . $row, $data->level_pelatihan);
+        $sheet->setCellValue('C' . $row, $data->nama_pelatihan);
+        $sheet->setCellValue('D' . $row, $data->tanggal_mulai);
+        $sheet->setCellValue('E' . $row, $data->tanggal_selesai);
+        $sheet->setCellValue('F' . $row, $data->lokasi);
+        $sheet->setCellValue('G' . $row, $data->penyelenggara);
+        $sheet->setCellValue('H' . $row, $data->dokumen_pelatihan);
+        $sheet->setCellValue('I' . $row, $data->id_periode);
+        $row++;
+    }
+
+    // Auto size columns
+        foreach (range('A', 'I') as $columnID) {
+        $sheet->getColumnDimension($columnID)->setAutoSize(true);
+    }
+
+    // Save Excel file
+    $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+    $filename = 'Data_Riwayat_Pelatihan_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Cache-Control: max-age=0');
+
+    $writer->save('php://output');
+    exit;
+}
 }

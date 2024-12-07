@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\IOFactory;
+use Barryvdh\DomPDF\Facade\Pdf; // Import PDF facade
+use PhpOffice\PhpSpreadsheet\Spreadsheet; // Import Spreadsheet class
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx; // Import Xlsx writer class
 
 class PengajuanPelatihanController extends Controller
 {
@@ -534,4 +537,69 @@ class PengajuanPelatihanController extends Controller
 
         return response()->download($tempFile)->deleteFileAfterSend(true);
     }
+    public function export_pdf()
+    {
+        $pengajuan_pelatihan = PengajuanPelatihanModel::with(['pengguna', 'daftarPelatihan'])
+            ->select('id_pengajuan', 'id_pengguna', 'id_pelatihan', 'tanggal_pengajuan', 'status', 'catatan', 'id_peserta')
+            ->orderBy('tanggal_pengajuan', 'asc')
+            ->get();
+    
+        $pdf = Pdf::loadView('pengajuan_pelatihan.export_pdf', compact('pengajuan_pelatihan'));
+        $pdf->setPaper('a4', 'portrait');
+    
+        return $pdf->stream('Data_pengajuan_pelatihan_' . date('Y-m-d_H-i-s') . '.pdf');
+    }
+
+    public function export_excel()
+{
+    // Fetch the data from the correct model
+    $pengajuan_pelatihan = PengajuanPelatihanModel::with(['pengguna', 'daftarPelatihan'])
+        ->select('id_pengajuan', 'id_pengguna', 'id_pelatihan', 'tanggal_pengajuan', 'status', 'catatan', 'id_peserta')
+        ->orderBy('tanggal_pengajuan', 'asc') // Change to a valid column
+        ->get();
+
+    // Create a new Spreadsheet object
+    $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+
+    // Header columns
+    $sheet->setCellValue('A1', 'No');
+    $sheet->setCellValue('B1', 'ID Pelatihan');
+    $sheet->setCellValue('C1', 'Tanggal Pengajuan');
+    $sheet->setCellValue('D1', 'Status');
+    $sheet->setCellValue('E1', 'Catatan');
+    $sheet->setCellValue('F1', 'ID Peserta');
+    $sheet->setCellValue('G1', 'Nama Pelatihan');
+    $sheet->getStyle('A1:G1')->getFont()->setBold(true);
+
+    // Fill data
+    $row = 2;
+    foreach ($pengajuan_pelatihan as $index => $data) {
+        $sheet->setCellValue('A' . $row, $index + 1);
+        $sheet->setCellValue('B' . $row, $data->id_pelatihan);
+        $sheet->setCellValue('C' . $row, $data->tanggal_pengajuan);
+        $sheet->setCellValue('D' . $row, $data->status);
+        $sheet->setCellValue('E' . $row, $data->catatan);
+        $sheet->setCellValue('F' . $row, $data->id_peserta);
+        $sheet->setCellValue('G' . $row, $data->daftarPelatihan->nama_pelatihan ?? ''); // Assuming you want the name of the training
+        $row++;
+    }
+
+    // Auto size columns
+    foreach (range('A', 'G') as $columnID) {
+        $sheet->getColumnDimension($columnID)->setAutoSize(true);
+    }
+
+    // Save Excel file
+    $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+    $filename = 'Data_Pengajuan_Pelatihan_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('Cache-Control: max-age=0');
+
+    $writer->save('php://output');
+    exit;
+}
+    
 }
