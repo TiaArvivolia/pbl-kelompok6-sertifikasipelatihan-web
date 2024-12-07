@@ -46,7 +46,6 @@
                 <th>Tanggal Selesai</th>
                 <th>Lokasi</th>
                 <th>Penyelenggara</th>
-                <th>Dokumen</th>
                 <th>ID Periode</th>
             </tr>
         </thead>
@@ -61,7 +60,6 @@
                     <td>{{ $data->tanggal_selesai }}</td>
                     <td>{{ $data->lokasi }}</td>
                     <td>{{ $data->penyelenggara }}</td>
-                    <td>{{ $data->dokumen_pelatihan }}</td>
                     <td>{{ $data->id_periode }}</td>
                 </tr>
             @endforeach
