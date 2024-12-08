@@ -17,101 +17,90 @@ class WelcomeController extends Controller
     {
         // Breadcrumb and page title
         $breadcrumb = (object) [
-            'title' => 'Selamat Datang',
+            'title' => 'Selamat Datang!',
             'list' => ['Home', 'Welcome']
         ];
 
         $activeMenu = 'dashboard';
 
-        // Ambil ID pengguna yang sedang login
-        $user = auth()->user();  // Mendapatkan pengguna yang sedang login
-        $userId = (string) auth()->user()->id_pengguna; // Ubah menjadi string
-        $userType = $user->id_jenis_pengguna;  // ID jenis pengguna
+        // Get logged-in user
+        $user = auth()->user();
+        $userId = (string) $user->id_pengguna; // Convert to string
+        $userType = $user->id_jenis_pengguna;  // User type
 
-        // Jika pengguna adalah dosen (id_jenis_pengguna 2) atau tendik/admin (id_jenis_pengguna 3)
+        // Initialize variables
+        $pengajuanDisetujui = collect();
+
+        // Query for pengajuan pelatihan if user is a lecturer (id_jenis_pengguna 2) or staff (id_jenis_pengguna 3)
         if (in_array($userType, [2, 3])) {
-            // Ambil pengajuan pelatihan yang disetujui dan filter berdasarkan ID peserta
+            // Filter pengajuan pelatihan based on user id (id_peserta)
             $pengajuanDisetujui = PengajuanPelatihanModel::where('status', 'Disetujui')
                 ->whereRaw("JSON_CONTAINS(id_peserta, ?)", [json_encode([$userId])])
-                // Bergabung dengan tabel daftar_pelatihan untuk memeriksa tanggal selesai
                 ->join('daftar_pelatihan', 'daftar_pelatihan.id_pelatihan', '=', 'pengajuan_pelatihan.id_pelatihan')
-                // Memfilter pelatihan yang belum melebihi tanggal selesai
                 ->whereDate('daftar_pelatihan.tanggal_selesai', '>=', now())
                 ->get();
-        } else {
-            $pengajuanDisetujui = collect();  // Tidak menampilkan notifikasi untuk selain dosen dan tendik
         }
 
-        // Query for data
-        $totalCertificates = RiwayatSertifikasiModel::count();
-
-        $totalCertifiedParticipants = [
-            'dosen' => RiwayatSertifikasiModel::whereHas('pengguna', function ($query) {
-                $query->where('id_jenis_pengguna', 2);
-            })->count(),
-            'tendik' => RiwayatSertifikasiModel::whereHas('pengguna', function ($query) {
-                $query->where('id_jenis_pengguna', 3);
-            })->count()
-        ];
-
-        $totalPelatihanTerdata = RiwayatPelatihanModel::count();
-
-        $certificationsByLevel = SertifikasiModel::select('level_sertifikasi', DB::raw('count(*) as count'))
-            ->groupBy('level_sertifikasi')
-            ->get();
-
-        $certificationsByType = SertifikasiModel::select('jenis_sertifikasi', DB::raw('count(*) as count'))
-            ->groupBy('jenis_sertifikasi')
-            ->get();
-
-        $certificationsBySubject = DB::table('riwayat_sertifikasi')
-            ->join('mata_kuliah', DB::raw("JSON_CONTAINS(riwayat_sertifikasi.mk_list, JSON_QUOTE(CAST(mata_kuliah.id_mata_kuliah AS CHAR)))"), '=', DB::raw('true'))
-            ->select('mata_kuliah.nama_mk', DB::raw('COUNT(*) as count'))
-            ->groupBy('mata_kuliah.nama_mk')
-            ->get();
-
-        $certificationsByField = DB::table('riwayat_sertifikasi')
-            ->join('bidang_minat', DB::raw("JSON_CONTAINS(riwayat_sertifikasi.bidang_minat_list, JSON_QUOTE(CAST(bidang_minat.id_bidang_minat AS CHAR)))"), '=', DB::raw('true'))
-            ->select('bidang_minat.nama_bidang_minat', DB::raw('COUNT(*) as count'))
-            ->groupBy('bidang_minat.nama_bidang_minat')
-            ->get();
+        // Query for data based on user
+        $totalCertificates = RiwayatSertifikasiModel::where('id_pengguna', $userId)->count();
+        $totalPelatihanTerdata = RiwayatPelatihanModel::where('id_pengguna', $userId)->count();
 
         $certificationsPerPeriod = DB::table('riwayat_sertifikasi')
-            ->join('periode', 'riwayat_sertifikasi.id_periode', '=', 'periode.id_periode') // Join with the periode table
-            ->select('periode.tahun_periode', DB::raw('COUNT(*) as count')) // Select the tahun_periode and count of records
-            ->groupBy('periode.tahun_periode') // Group by tahun_periode
-            ->orderBy('periode.tahun_periode', 'asc') // Order by tahun_periode
+            ->join('periode', 'riwayat_sertifikasi.id_periode', '=', 'periode.id_periode')
+            ->select('periode.tahun_periode', DB::raw('COUNT(*) as count'))
+            ->where('riwayat_sertifikasi.id_pengguna', $userId)
+            ->groupBy('periode.tahun_periode')
+            ->orderBy('periode.tahun_periode', 'asc')
             ->get();
 
         $pelatihanPerPeriod = DB::table('riwayat_pelatihan')
-            ->join('periode', 'riwayat_pelatihan.id_periode', '=', 'periode.id_periode') // Join with the periode table
-            ->select('periode.tahun_periode', DB::raw('COUNT(*) as count')) // Select the tahun_periode and count of records
-            ->groupBy('periode.tahun_periode') // Group by tahun_periode
-            ->orderBy('periode.tahun_periode', 'asc') // Order by tahun_periode
+            ->join('periode', 'riwayat_pelatihan.id_periode', '=', 'periode.id_periode')
+            ->select('periode.tahun_periode', DB::raw('COUNT(*) as count'))
+            ->where('riwayat_pelatihan.id_pengguna', $userId)
+            ->groupBy('periode.tahun_periode')
+            ->orderBy('periode.tahun_periode', 'asc')
             ->get();
 
+        // For admin (id_jenis_pengguna 1) and leadership (id_jenis_pengguna 4), show all data
+        if (in_array($userType, [1, 4])) {
+            // Admin and leadership can view all data
+            $totalCertificates = RiwayatSertifikasiModel::count();
+            $totalPelatihanTerdata = RiwayatPelatihanModel::count();
+            $certificationsPerPeriod = DB::table('riwayat_sertifikasi')
+                ->join('periode', 'riwayat_sertifikasi.id_periode', '=', 'periode.id_periode')
+                ->select('periode.tahun_periode', DB::raw('COUNT(*) as count'))
+                ->groupBy('periode.tahun_periode')
+                ->orderBy('periode.tahun_periode', 'asc')
+                ->get();
 
-        // Hitung jumlah pengajuan pelatihan
-        $totalPengajuanPelatihan = PengajuanPelatihanModel::count();
+            $pelatihanPerPeriod = DB::table('riwayat_pelatihan')
+                ->join('periode', 'riwayat_pelatihan.id_periode', '=', 'periode.id_periode')
+                ->select('periode.tahun_periode', DB::raw('COUNT(*) as count'))
+                ->groupBy('periode.tahun_periode')
+                ->orderBy('periode.tahun_periode', 'asc')
+                ->get();
 
-        // Hitung jumlah pengajuan pelatihan dengan status "menunggu"
-        $pengajuanPelatihanMenunggu = PengajuanPelatihanModel::where('status', 'menunggu')->count();
+            // Admin and leadership can see all pengajuan pelatihan data
+            $totalPengajuanPelatihan = PengajuanPelatihanModel::count();
+            $pengajuanPelatihanMenunggu = PengajuanPelatihanModel::where('status', 'menunggu')->count();
+        } else {
+            // For lecturer and staff, filter based on their own submissions
+            $totalPengajuanPelatihan = PengajuanPelatihanModel::whereRaw("JSON_CONTAINS(id_peserta, ?)", [json_encode([$userId])])->count();
+            $pengajuanPelatihanMenunggu = PengajuanPelatihanModel::where('status', 'menunggu')
+                ->whereRaw("JSON_CONTAINS(id_peserta, ?)", [json_encode([$userId])])
+                ->count();
+        }
 
+        // Return the view with data
         return view('welcome', [
             'breadcrumb' => $breadcrumb,
             'activeMenu' => $activeMenu,
             'totalCertificates' => $totalCertificates,
-            'totalCertifiedParticipants' => $totalCertifiedParticipants,
-            'certificationsByLevel' => $certificationsByLevel,
-            'certificationsByType' => $certificationsByType,
-            'certificationsBySubject' => $certificationsBySubject,
-            'certificationsByField' => $certificationsByField,
             'totalPelatihanTerdata' => $totalPelatihanTerdata,
             'certificationsPerPeriod' => $certificationsPerPeriod,
             'pelatihanPerPeriod' => $pelatihanPerPeriod,
-            // 'totalCertificationsAllPeriods' => $totalCertificationsAllPeriods,
-            'totalPengajuanPelatihan' => $totalPengajuanPelatihan,
-            'pengajuanPelatihanMenunggu' => $pengajuanPelatihanMenunggu,
+            'totalPengajuanPelatihan' => $totalPengajuanPelatihan ?? 0,
+            'pengajuanPelatihanMenunggu' => $pengajuanPelatihanMenunggu ?? 0,
             'pengajuanDisetujui' => $pengajuanDisetujui
         ]);
     }
