@@ -301,7 +301,10 @@ public function export_pdf()
         ->select('id_pelatihan', 'nama_pelatihan', 'level_pelatihan', 'tanggal_mulai', 'tanggal_selesai', 'kuota', 'lokasi', 'biaya', 'jml_jam')
         ->get();
 
-    $pdf = Pdf::loadView('daftar_pelatihan.export_pdf', compact('pelatihan'));
+    // Load the view with landscape orientation
+    $pdf = Pdf::loadView('daftar_pelatihan.export_pdf', compact('pelatihan'))
+        ->setPaper('a4', 'landscape'); // Set paper size and orientation
+
     return $pdf->stream('Daftar_Pelatihan_' . date('Y-m-d_H-i-s') . '.pdf');
 }
 

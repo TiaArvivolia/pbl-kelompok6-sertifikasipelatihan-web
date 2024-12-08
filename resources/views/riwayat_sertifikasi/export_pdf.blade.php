@@ -46,7 +46,6 @@
                 <th>Tanggal Terbit</th>
                 <th>Masa Berlaku</th>
                 <th>Penyelenggara</th>
-                <th>Dokumen Sertifikat</th>
             </tr>
         </thead>
         <tbody>
@@ -59,7 +58,6 @@
                     <td>{{ \Carbon\Carbon::parse($sertifikasi->tanggal_terbit)->format('d-m-Y') }}</td>
                     <td>{{ \Carbon\Carbon::parse($sertifikasi->masa_berlaku)->format('d-m-Y') }}</td>
                     <td>{{ $sertifikasi->penyelenggara }}</td>
-                    <td>{{ $sertifikasi->dokumen_sertifikat ? Storage::url($sertifikasi->dokumen_sertifikat) : 'Tidak Tersedia' }}</td>
                 </tr>
             @endforeach
         </tbody>

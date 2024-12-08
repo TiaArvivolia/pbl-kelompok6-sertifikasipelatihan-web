@@ -400,7 +400,7 @@ class RiwayatSertifikasiController extends Controller
         }
     
         $pdf = Pdf::loadView('riwayat_sertifikasi.export_pdf', compact('riwayat_sertifikasi'));
-        $pdf->setPaper('a4', 'portrait');
+        $pdf  ->setPaper('a4', 'landscape'); // Set paper size and orientation
     
         return $pdf->stream('Data_riwayat_sertifikasi_' . date('Y-m-d_H-i-s') . '.pdf');
     }

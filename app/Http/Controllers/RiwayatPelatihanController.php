@@ -393,7 +393,7 @@ class RiwayatPelatihanController extends Controller
             ->get();
     
         $pdf = Pdf::loadView('riwayat_pelatihan.export_pdf', compact('riwayat_pelatihan'));
-        $pdf->setPaper('a4', 'portrait'); // Set paper size and orientation
+        $pdf  ->setPaper('a4', 'landscape'); // Set paper size and orientation
     
         return $pdf->stream('Data_riwayat_pelatihan_' . date('Y-m-d_H-i-s') . '.pdf');
     }
