@@ -1,9 +1,41 @@
 @extends('layouts.template')
 
 @section('content')
-<h5 class="mb-2 mt-4">Dashboard</h5>
+{{-- <h5 class="mb-2 mt-4">Dashboard</h5> --}}
 <div class="row">
   <!-- Kolom Kiri: Box dan Chart -->
+      <!-- Notifikasi Pengajuan Pelatihan Disetujui -->
+      <div class="col-lg-12">
+        @if($pengajuanDisetujui->isNotEmpty())
+        <div class="col-md-12">
+<!-- Alert Notification -->
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+  <i class="fas fa-info fa-2x"></i>  &nbsp;
+  <strong>Pengajuan Pelatihan Anda Telah Disetujui!</strong>
+  <ul class="mt-3">
+    @foreach($pengajuanDisetujui as $pengajuan)
+      <li>
+        Pelatihan:
+        <b>{{ $pengajuan->daftarPelatihan->nama_pelatihan }}</b> 
+        telah disetujui untuk Anda.
+      </li>
+      <li>
+        Periksa untuk mengunduh <strong> <em>Draft Surat Tugas</em>:</strong>
+        <a href="{{ url('/pengajuan_pelatihan') }}" target="_blank" class="btn btn-link" style="color: #2C6B3F;">
+          <i class="fas fa-arrow-circle-right"></i> Klik di sini untuk detailnya
+        </a>              
+      </li>
+    @endforeach
+  </ul>
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+        </div>
+      @endif
+      <!-- /.card -->
+
   <div class="col-lg-12">
     <div class="row">
       <div class="col-md-3 mb-3">
@@ -46,8 +78,7 @@
         <div class="icon">
           <i class="fas fa-chalkboard-teacher"></i>
         </div>
-        <a href="#" class="small-box-footer">
-          <a href="{{ url('/pengajuan_pelatihan') }}" class="small-box-footer">
+        <a href="{{ url('/pengajuan_pelatihan') }}" class="small-box-footer">
           More info <i class="fas fa-arrow-circle-right"></i>
         </a>
       </div>
@@ -62,38 +93,39 @@
         <div class="icon">
           <i class="fas fa-users"></i>
         </div>
-        <a href="#" class="small-box-footer">
-          <a href="{{ url('/pengajuan_pelatihan') }}" class="small-box-footer">
+        <a href="{{ url('/pengajuan_pelatihan') }}" class="small-box-footer">
           More info <i class="fas fa-arrow-circle-right"></i>
         </a>
       </div>
     </div>
+
+
   </div>
 
-    <div class="row">
-      <!-- Second Row: Two Charts -->
-      <div class="col-md-6 mb-3">
-        <div class="card">
-          <div class="card-header bg-info text-white">
-            <h5>📅 Periode Sertifikasi</h5>
-          </div>
-          <div class="card-body">
-            <canvas id="certificationsPerPeriodChart" width="300" height="300" style="max-width: 100%;"></canvas>
-          </div>
+  <div class="row">
+    <!-- Second Row: Two Charts -->
+    <div class="col-md-6 mb-3">
+      <div class="card">
+        <div class="card-header bg-info text-white">
+          <h5>📅 Periode Sertifikasi</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="certificationsPerPeriodChart" width="300" height="300" style="max-width: 100%;"></canvas>
         </div>
       </div>
-      <div class="col-md-6 mb-3">
-        <div class="card">
-          <div class="card-header bg-info text-white">
-            <h5>📅 Periode Pelatihan</h5>
-          </div>
-          <div class="card-body">
-            <canvas id="pelatihanPerPeriodChart" width="300" height="300" style="max-width: 100%;"></canvas>
-          </div>
+    </div>
+    <div class="col-md-6 mb-3">
+      <div class="card">
+        <div class="card-header bg-info text-white">
+          <h5>📅 Periode Pelatihan</h5>
+        </div>
+        <div class="card-body">
+          <canvas id="pelatihanPerPeriodChart" width="300" height="300" style="max-width: 100%;"></canvas>
         </div>
       </div>
     </div>
   </div>
+</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

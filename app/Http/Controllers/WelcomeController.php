@@ -21,8 +21,26 @@ class WelcomeController extends Controller
             'list' => ['Home', 'Welcome']
         ];
 
-
         $activeMenu = 'dashboard';
+
+        // Ambil ID pengguna yang sedang login
+        $user = auth()->user();  // Mendapatkan pengguna yang sedang login
+        $userId = (string) auth()->user()->id_pengguna; // Ubah menjadi string
+        $userType = $user->id_jenis_pengguna;  // ID jenis pengguna
+
+        // Jika pengguna adalah dosen (id_jenis_pengguna 2) atau tendik/admin (id_jenis_pengguna 3)
+        if (in_array($userType, [2, 3])) {
+            // Ambil pengajuan pelatihan yang disetujui dan filter berdasarkan ID peserta
+            $pengajuanDisetujui = PengajuanPelatihanModel::where('status', 'Disetujui')
+                ->whereRaw("JSON_CONTAINS(id_peserta, ?)", [json_encode([$userId])])
+                // Bergabung dengan tabel daftar_pelatihan untuk memeriksa tanggal selesai
+                ->join('daftar_pelatihan', 'daftar_pelatihan.id_pelatihan', '=', 'pengajuan_pelatihan.id_pelatihan')
+                // Memfilter pelatihan yang belum melebihi tanggal selesai
+                ->whereDate('daftar_pelatihan.tanggal_selesai', '>=', now())
+                ->get();
+        } else {
+            $pengajuanDisetujui = collect();  // Tidak menampilkan notifikasi untuk selain dosen dan tendik
+        }
 
         // Query for data
         $totalCertificates = RiwayatSertifikasiModel::count();
@@ -72,12 +90,12 @@ class WelcomeController extends Controller
             ->orderBy('periode.tahun_periode', 'asc') // Order by tahun_periode
             ->get();
 
-            
-     // Hitung jumlah pengajuan pelatihan
-     $totalPengajuanPelatihan = PengajuanPelatihanModel::count();
 
-     // Hitung jumlah pengajuan pelatihan dengan status "menunggu"
-     $pengajuanPelatihanMenunggu = PengajuanPelatihanModel::where('status', 'menunggu')->count();
+        // Hitung jumlah pengajuan pelatihan
+        $totalPengajuanPelatihan = PengajuanPelatihanModel::count();
+
+        // Hitung jumlah pengajuan pelatihan dengan status "menunggu"
+        $pengajuanPelatihanMenunggu = PengajuanPelatihanModel::where('status', 'menunggu')->count();
 
         return view('welcome', [
             'breadcrumb' => $breadcrumb,
@@ -93,7 +111,8 @@ class WelcomeController extends Controller
             'pelatihanPerPeriod' => $pelatihanPerPeriod,
             // 'totalCertificationsAllPeriods' => $totalCertificationsAllPeriods,
             'totalPengajuanPelatihan' => $totalPengajuanPelatihan,
-            'pengajuanPelatihanMenunggu' => $pengajuanPelatihanMenunggu
+            'pengajuanPelatihanMenunggu' => $pengajuanPelatihanMenunggu,
+            'pengajuanDisetujui' => $pengajuanDisetujui
         ]);
     }
 }
