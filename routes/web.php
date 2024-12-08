@@ -28,6 +28,7 @@ use App\Http\Controllers\RiwayatPelatihanController;
 use App\Http\Controllers\RiwayatSertifikasiController;
 use App\Http\Middleware\AuthorizeUser;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,6 +40,21 @@ use Illuminate\Support\Facades\Artisan;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+// Menampilkan landing page sebelum login
+Route::get('/', function () {
+    if (Auth::check()) {
+        return redirect('/home'); // Arahkan ke halaman hom jika sudah login
+    } else{
+        return view('landing_page'); // Tampilkan halaman landing page jika belum login
+    }
+});
+
+// Rute untuk halaman landing_page yang terpisah
+Route::get('/landing_page', function () {
+    return view('landing_page'); // Halaman landing_page
+});
+
 
 Route::get('/storage-link', function () {
     Artisan::call('storage:link');
@@ -55,6 +71,8 @@ Route::get('login', [AuthController::class, 'login'])->name('login');
 Route::post('login', [AuthController::class, 'postlogin']);
 Route::get('logout', [AuthController::class, 'logout'])->middleware('auth');
 
+
+
 Route::middleware(['auth'])->group(function () {
     // Route untuk menampilkan profil
     Route::get('/profile', [KelolaPenggunaController::class, 'showProfile'])->name('profile');
@@ -68,7 +86,7 @@ Route::middleware(['auth'])->group(function () {
     // Route untuk mengubah password
     Route::post('/profile/change-password', [KelolaPenggunaController::class, 'changePassword'])->name('profile.changePassword');
 
-    Route::get('/', [WelcomeController::class, 'index']);
+    Route::get('/home', [WelcomeController::class, 'index']);
 
     // Middleware menggunakan ID role (misalnya 1 untuk Administrator)
     // Route::middleware(['authorize:ADM'])->group(function () {
