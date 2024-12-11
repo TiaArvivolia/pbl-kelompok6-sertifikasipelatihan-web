@@ -9,6 +9,7 @@
                 $user = auth()->user(); // Get the authenticated user
             @endphp
             @if ($user->id_jenis_pengguna == 1) <!-- Check if the user is a admin -->
+            <button onclick="modalAction('{{ url('/dosen/import') }}')" class="btn btn-sm btn-info mt-1">Import</button>
                 <a href="{{ url('/dosen/export_excel') }}" class="btn btn-sm btn-primary mt-1">
                     <i class="fa fa-file-excel"></i> Export (Excel)
                 </a>
