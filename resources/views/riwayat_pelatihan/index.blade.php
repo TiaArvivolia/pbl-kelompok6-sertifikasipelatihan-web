@@ -5,10 +5,10 @@
     <div class="card-header">
         <h3 class="card-title">Riwayat Pelatihan</h3>
         <div class="card-tools">
-            <a href="{{url('/riwayat_pelatihan/export_excel')}}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export (Excel)</a>
-                <a href="{{url('/riwayat_pelatihan/export_pdf')}}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export (PDF)</a>
-            
-            @if(Auth::user()->role == 'ADM')
+            @php
+                $user = auth()->user(); // Get the authenticated user
+            @endphp
+            @if($user->id_jenis_pengguna == 1)
                 <a href="{{url('/riwayat_pelatihan/export_excel')}}" class="btn btn-sm btn-primary mt-1"><i class="fa fa-file-excel"></i> Export (Excel)</a>
                 <a href="{{url('/riwayat_pelatihan/export_pdf')}}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export (PDF)</a>
             @endif
