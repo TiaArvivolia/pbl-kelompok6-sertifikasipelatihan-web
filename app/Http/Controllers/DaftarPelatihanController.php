@@ -55,7 +55,7 @@ class DaftarPelatihanController extends Controller
                 $user = auth()->user();
 
                 // Check if the user is a lecturer or staff
-                if ($user->id_jenis_pengguna == 2 || $user->id_jenis_pengguna == 3) {
+                if ($user->id_jenis_pengguna == 2 || $user->id_jenis_pengguna == 3 || $user->id_jenis_pengguna == 4) {
                     // For lecturers and staff, only show the "Detail" button for Pelatihan
                     return '<button onclick="modalAction(\'' . url('/daftar_pelatihan/' . $pelatihan->id_pelatihan . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button>';
                 }
@@ -294,70 +294,70 @@ class DaftarPelatihanController extends Controller
         }
     }
 
-// Method to export data to PDF
-public function export_pdf()
-{
-    $pelatihan = DaftarPelatihanModel::with(['vendorPelatihan', 'mataKuliah', 'bidangMinat'])
-        ->select('id_pelatihan', 'nama_pelatihan', 'level_pelatihan', 'tanggal_mulai', 'tanggal_selesai', 'kuota', 'lokasi', 'biaya', 'jml_jam')
-        ->get();
+    // Method to export data to PDF
+    public function export_pdf()
+    {
+        $pelatihan = DaftarPelatihanModel::with(['vendorPelatihan', 'mataKuliah', 'bidangMinat'])
+            ->select('id_pelatihan', 'nama_pelatihan', 'level_pelatihan', 'tanggal_mulai', 'tanggal_selesai', 'kuota', 'lokasi', 'biaya', 'jml_jam')
+            ->get();
 
-    // Load the view with landscape orientation
-    $pdf = Pdf::loadView('daftar_pelatihan.export_pdf', compact('pelatihan'))
-        ->setPaper('a4', 'landscape'); // Set paper size and orientation
+        // Load the view with landscape orientation
+        $pdf = Pdf::loadView('daftar_pelatihan.export_pdf', compact('pelatihan'))
+            ->setPaper('a4', 'landscape'); // Set paper size and orientation
 
-    return $pdf->stream('Daftar_Pelatihan_' . date('Y-m-d_H-i-s') . '.pdf');
-}
-
-// Method to export data to Excel
-public function export_excel()
-{
-    $pelatihan = DaftarPelatihanModel::with(['vendorPelatihan', 'mataKuliah', 'bidangMinat'])
-        ->select('id_pelatihan', 'nama_pelatihan', 'level_pelatihan', 'tanggal_mulai', 'tanggal_selesai', 'kuota', 'lokasi', 'biaya', 'jml_jam')
-        ->get();
-
-    $spreadsheet = new Spreadsheet();
-    $sheet = $spreadsheet->getActiveSheet();
-
-    // Set header columns
-    $sheet->setCellValue('A1', 'ID Pelatihan');
-    $sheet->setCellValue('B1', 'Nama Pelatihan');
-    $sheet->setCellValue('C1', 'Level Pelatihan');
-    $sheet->setCellValue('D1', 'Tanggal Mulai');
-    $sheet->setCellValue('E1', 'Tanggal Selesai');
-    $sheet->setCellValue('F1', 'Kuota');
-    $sheet->setCellValue('G1', 'Lokasi');
-    $sheet->setCellValue('H1', 'Biaya');
-    $sheet->setCellValue('I1', 'Jumlah Jam');
-
-    // Fill data
-    $row = 2;
-    foreach ($pelatihan as $data) {
-        $sheet->setCellValue('A' . $row, $data->id_pelatihan);
-        $sheet->setCellValue('B' . $row, $data->nama_pelatihan);
-        $sheet->setCellValue('C' . $row, $data->level_pelatihan);
-        $sheet->setCellValue('D' . $row, $data->tanggal_mulai);
-        $sheet->setCellValue('E' . $row, $data->tanggal_selesai);
-        $sheet->setCellValue('F' . $row, $data->kuota);
-        $sheet->setCellValue('G' . $row, $data->lokasi);
-        $sheet->setCellValue('H' . $row, $data->biaya);
-        $sheet->setCellValue('I' . $row, $data->jml_jam);
-        $row++;
+        return $pdf->stream('Daftar_Pelatihan_' . date('Y-m-d_H-i-s') . '.pdf');
     }
 
-    // Auto size columns
-    foreach (range('A', 'I') as $columnID) {
-        $sheet->getColumnDimension($columnID)->setAutoSize(true);
+    // Method to export data to Excel
+    public function export_excel()
+    {
+        $pelatihan = DaftarPelatihanModel::with(['vendorPelatihan', 'mataKuliah', 'bidangMinat'])
+            ->select('id_pelatihan', 'nama_pelatihan', 'level_pelatihan', 'tanggal_mulai', 'tanggal_selesai', 'kuota', 'lokasi', 'biaya', 'jml_jam')
+            ->get();
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Set header columns
+        $sheet->setCellValue('A1', 'ID Pelatihan');
+        $sheet->setCellValue('B1', 'Nama Pelatihan');
+        $sheet->setCellValue('C1', 'Level Pelatihan');
+        $sheet->setCellValue('D1', 'Tanggal Mulai');
+        $sheet->setCellValue('E1', 'Tanggal Selesai');
+        $sheet->setCellValue('F1', 'Kuota');
+        $sheet->setCellValue('G1', 'Lokasi');
+        $sheet->setCellValue('H1', 'Biaya');
+        $sheet->setCellValue('I1', 'Jumlah Jam');
+
+        // Fill data
+        $row = 2;
+        foreach ($pelatihan as $data) {
+            $sheet->setCellValue('A' . $row, $data->id_pelatihan);
+            $sheet->setCellValue('B' . $row, $data->nama_pelatihan);
+            $sheet->setCellValue('C' . $row, $data->level_pelatihan);
+            $sheet->setCellValue('D' . $row, $data->tanggal_mulai);
+            $sheet->setCellValue('E' . $row, $data->tanggal_selesai);
+            $sheet->setCellValue('F' . $row, $data->kuota);
+            $sheet->setCellValue('G' . $row, $data->lokasi);
+            $sheet->setCellValue('H' . $row, $data->biaya);
+            $sheet->setCellValue('I' . $row, $data->jml_jam);
+            $row++;
+        }
+
+        // Auto size columns
+        foreach (range('A', 'I') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        // Save Excel file
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'Daftar_Pelatihan_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
+        exit;
     }
-
-    // Save Excel file
-    $writer = new Xlsx($spreadsheet);
-    $filename = 'Daftar_Pelatihan_' . date('Y-m-d_H-i-s') . '.xlsx';
-
-    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    header('Content-Disposition: attachment; filename="' . $filename . '"');
-    header('Cache-Control: max-age=0');
-
-    $writer->save('php://output');
-    exit;
-}
 }

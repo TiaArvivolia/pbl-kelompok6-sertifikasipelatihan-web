@@ -36,7 +36,7 @@
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th>Nama Pengguna</th>
+                        <th>Nama</th>
                         <th>Level Sertifikasi</th>
                         <th>Nama Sertifikasi</th>
                         <th>Tanggal Terbit</th>

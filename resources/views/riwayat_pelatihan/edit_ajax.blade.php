@@ -89,7 +89,7 @@
                     <input type="file" name="dokumen_pelatihan" id="dokumen_pelatihan" class="form-control">
                     <small id="error-dokumen_pelatihan" class="error-text form-text text-danger"></small>
                 </div>
-                <div class="form-group">
+                {{-- <div class="form-group">
                     <label>Pengguna</label>
                     <select name="id_pengguna" id="id_pengguna" class="form-control" required>
                         <option value="">Pilih Pengguna</option>
@@ -105,7 +105,7 @@
                         @endforeach
                     </select>                                                  
                     <small id="error-id_pengguna" class="error-text form-text text-danger"></small>
-                </div>
+                </div> --}}
                 <!-- Input untuk Mata Kuliah -->
                 <div class="form-group">
                     <label>Mata Kuliah</label>
@@ -154,6 +154,28 @@ $(document).ready(function() {
         width: '100%', // Full width
         allowClear: true
     });
+
+    // Custom file validation (not an image)
+    $('#dokumen_pelatihan').on('change', function() {
+    const file = this.files[0];
+    if (file) {
+        const validTypes = [
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'image/jpeg',
+            'image/png',
+            'image/jpg'
+        ];
+        if (!validTypes.includes(file.type) || file.size > 2048000) {
+            $('#error-dokumen_pelatihan').text('File harus berupa PDF, DOC, DOCX, JPEG, atau PNG dan maksimal 2MB');
+            $(this).val('');
+        } else {
+            $('#error-dokumen_pelatihan').text('');
+        }
+    }
+    });
+
     $("#form-edit-riwayat-pelatihan").validate({
         rules: {
             nama_pelatihan: { required: true, maxlength: 100 },
@@ -162,8 +184,7 @@ $(document).ready(function() {
             tanggal_selesai: { required: true },
             lokasi: { maxlength: 100 },
             penyelenggara: { maxlength: 100 },
-            dokumen_pelatihan: { extension: "pdf|doc|docx|jpg|jpeg|png" },
-            id_pengguna: { required: true },
+            // id_pengguna: { required: true },
             id_pelatihan: { required: true },
         },
         submitHandler: function(form) {

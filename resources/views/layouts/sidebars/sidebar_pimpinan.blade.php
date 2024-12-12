@@ -144,6 +144,11 @@
             </a>
           </li>
           <li class="nav-item">
+            <a href="{{ url('/daftar_pelatihan') }}" class="nav-link {{ $activeMenu == 'daftar_pelatihan' ? 'active' : '' }}">
+              <p>Daftar Pelatihan</p>
+            </a>
+          </li>
+          <li class="nav-item">
             <a href="{{ url('/riwayat_pelatihan') }}" class="nav-link {{ $activeMenu == 'riwayat_pelatihan' ? 'active' : '' }}">
               <p>Riwayat Pelatihan</p>
             </a>

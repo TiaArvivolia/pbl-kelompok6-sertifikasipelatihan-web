@@ -106,6 +106,7 @@ class KelolaDosenController extends Controller
             'mk_list.*' => 'exists:mata_kuliah,id_mata_kuliah', // Each mata kuliah in mk_list must exist
             'bidang_minat_list' => 'nullable|array', // Ensure bidang_minat_list is an array if provided
             'bidang_minat_list.*' => 'exists:bidang_minat,id_bidang_minat', // Each bidang minat in bidang_minat_list must exist
+            'gambar_profil' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validasi gambar
         ]);
 
         // Insert into the pengguna table and get the ID
@@ -278,9 +279,6 @@ class KelolaDosenController extends Controller
         }
     }
 
-
-
-
     public function confirm_ajax(string $id)
     {
         $dosen = KelolaDosenModel::find($id);
@@ -371,7 +369,7 @@ class KelolaDosenController extends Controller
         $writer->save('php://output');
         exit;
     }
-    
+
     public function import()
     {
         return view('dosen.import');
@@ -382,9 +380,9 @@ class KelolaDosenController extends Controller
             $rules = [
                 'file_dosen' => ['required', 'mimes:xlsx', 'max:1024'] // Ensure this matches the input name in your form
             ];
-            
+
             $validator = Validator::make($request->all(), $rules);
-            
+
             if ($validator->fails()) {
                 return response()->json([
                     'status' => false,
@@ -392,7 +390,7 @@ class KelolaDosenController extends Controller
                     'msgField' => $validator->errors()
                 ]);
             }
-    
+
             $file = $request->file('file_dosen'); // Get the uploaded file
             $reader = IOFactory::createReader('Xlsx'); // Load the Excel reader
             $reader->setReadDataOnly(true); // Only read data
@@ -400,7 +398,7 @@ class KelolaDosenController extends Controller
             $sheet = $spreadsheet->getActiveSheet(); // Get the active sheet
             $data = $sheet->toArray(null, false, true, true); // Convert the sheet to an array
             $insert = [];
-    
+
             if (count($data) > 1) { // If there is more than one row (header + data)
                 foreach ($data as $baris => $value) {
                     if ($baris > 1) { // Skip the header row

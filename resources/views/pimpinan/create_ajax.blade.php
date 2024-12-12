@@ -99,12 +99,26 @@
             passwordConfirmationField.attr('type', type);
         });
 
+        // Custom file validation
+        $('#gambar_profil').on('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+                if (!validTypes.includes(file.type) || file.size > 2048000) {
+                    $('#error-gambar_profil').text('File harus berupa JPG, JPEG, atau PNG dan maksimal 2MB');
+                    $(this).val('');
+                } else {
+                    $('#error-gambar_profil').text('');
+                }
+            }
+        });
+
         $("#form-tambah-pimpinan").validate({
             rules: {
                 id_pengguna: { required: true },
                 nama_lengkap: { required: true, minlength: 3, maxlength: 100 },
                 nip: { required: true, minlength: 5 },
-                nidn: { minlength: 5 },
+                nidn: { required: true, minlength: 5 },
                 no_telepon: { required: true, minlength: 10, maxlength: 15 },
                 email: { required: true, email: true },
                 username: { required: true, minlength: 3, maxlength: 50 },
@@ -112,7 +126,47 @@
                 password_confirmation: {
                     required: true,
                     equalTo: "#password"  // Memastikan konfirmasi password sesuai dengan password
+                }
+            },
+            messages: {
+                id_pengguna: {
+                    required: "ID Pengguna harus diisi."
                 },
+                nama_lengkap: {
+                    required: "Nama Lengkap harus diisi.",
+                    minlength: "Nama Lengkap harus minimal 3 karakter.",
+                    maxlength: "Nama Lengkap tidak boleh lebih dari 100 karakter."
+                },
+                nip: {
+                    required: "NIP harus diisi.",
+                    minlength: "NIP harus minimal 5 karakter."
+                },
+                nidn: {
+                    required: "NIDN harus diisi.",
+                    minlength: "NIDN harus minimal 5 karakter."
+                },
+                no_telepon: {
+                    required: "Nomor Telepon harus diisi.",
+                    minlength: "Nomor Telepon harus minimal 10 karakter.",
+                    maxlength: "Nomor Telepon tidak boleh lebih dari 15 karakter."
+                },
+                email: {
+                    required: "Email harus diisi.",
+                    email: "Format email tidak valid."
+                },
+                username: {
+                    required: "Username harus diisi.",
+                    minlength: "Username harus minimal 3 karakter.",
+                    maxlength: "Username tidak boleh lebih dari 50 karakter."
+                },
+                password: {
+                    required: "Password harus diisi.",
+                    minlength: "Password harus minimal 8 karakter."
+                },
+                password_confirmation: {
+                    required: "Konfirmasi Password harus diisi.",
+                    equalTo: "Konfirmasi Password tidak sesuai dengan Password."
+                }
             },
             submitHandler: function(form) {
                 $.ajax({

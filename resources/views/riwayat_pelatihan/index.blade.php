@@ -36,7 +36,7 @@
                 <thead>
                     <tr>
                         <th>No</th>
-                        <th>Nama Pengguna</th> <!-- Kolom Nama Pengguna -->
+                        <th>Nama</th> <!-- Kolom Nama Pengguna -->
                         <th>Nama Pelatihan</th>
                         {{-- <th>Penyelenggara</th> --}}
                         <th>Level Pelatihan</th>

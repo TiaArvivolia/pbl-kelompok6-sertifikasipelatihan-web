@@ -39,6 +39,12 @@
                 </div>
 
                 <div class="form-group">
+                    <label>Jumlah Jam</label>
+                    <input type="number" name="jml_jam" id="jml_jam" class="form-control">
+                    <small id="error-jml_jam" class="error-text form-text text-danger"></small>
+                </div>
+
+                <div class="form-group">
                     <label>Kuota</label>
                     <input type="number" name="kuota" id="kuota" class="form-control">
                     <small id="error-kuota" class="error-text form-text text-danger"></small>
@@ -54,12 +60,6 @@
                     <label>Biaya</label>
                     <input type="text" name="biaya" id="biaya" class="form-control">
                     <small id="error-biaya" class="error-text form-text text-danger"></small>
-                </div>
-
-                <div class="form-group">
-                    <label>Jumlah Jam</label>
-                    <input type="number" name="jml_jam" id="jml_jam" class="form-control">
-                    <small id="error-jml_jam" class="error-text form-text text-danger"></small>
                 </div>
 
                 <div class="form-group">

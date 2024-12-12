@@ -140,14 +140,10 @@
                             <img src="{{ asset('storage/' . $dosen->gambar_profil) }}" alt="Gambar Profil" width="150" height="150" class="img-thumbnail">
                         @endif
                     </div>
-                    <input type="file" name="gambar_profil" class="form-control mt-2">
-                </div>
-{{--                      
-                <div class="form-group">
-                    <label>Gambar Profil</label>
-                    <input type="file" name="gambar_profil" id="gambar_profil" class="form-control">
+                    <input type="file" id="gambar_profil" name="gambar_profil" class="form-control mt-2" accept="image/jpeg,image/jpg,image/png">
                     <small id="error-gambar_profil" class="error-text form-text text-danger"></small>
-                </div> --}}
+                </div>
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-warning" data-dismiss="modal">Batal</button>
@@ -159,6 +155,18 @@
 
 <script>
 $(document).ready(function() {
+    $('#gambar_profil').on('change', function() {
+        const file = this.files[0];
+        if (file) {
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            if (!validTypes.includes(file.type) || file.size > 2048000) {
+                $('#error-gambar_profil').text('File harus berupa JPG, JPEG, atau PNG dan maksimal 2MB');
+                $(this).val('');
+            } else {
+                $('#error-gambar_profil').text('');
+            }
+        }
+    });
     $('#mk_list').select2({
         width: '100%', // Full width
         allowClear: true
@@ -178,7 +186,6 @@ $(document).ready(function() {
             tanggal_lahir: { required: true },
             no_telepon: { required: true, maxlength: 15 },
             email: { required: true, email: true },
-            gambar_profil: { extension: "jpg|jpeg|png|gif|bmp" }
         },
         submitHandler: function(form) {
             $.ajax({

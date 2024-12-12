@@ -82,32 +82,22 @@ class RiwayatSertifikasiController extends Controller
             ->make(true);
     }
 
-    
+
     public function create_ajax()
     {
         // Mengambil data pengguna yang sedang login
         $user = auth()->user();
 
-        // Inisialisasi query untuk mengambil data 'pengguna'
-        $penggunaQuery = Pengguna::with(['dosen', 'tendik']) // Mengambil relasi dosen dan tendik
-            ->where(function ($query) use ($user) {
-                // Jika pengguna adalah admin (diasumsikan 'id_jenis_pengguna' untuk admin adalah 1)
-                if ($user->id_jenis_pengguna === 1) {
-                    // Admin hanya bisa melihat dosen dan tendik
-                    $query->whereHas('dosen') // Memastikan relasi dengan dosen ada
-                        ->orWhereHas('tendik'); // Atau relasi dengan tendik ada
-                } else {
-                    // Jika pengguna bukan admin (misalnya dosen atau tendik), hanya dapat melihat riwayat mereka sendiri
-                    $query->where('id_pengguna', $user->id_pengguna) // Filter berdasarkan id_pengguna pengguna yang sedang login
-                        ->where(function ($subQuery) {
-                            // Memastikan bahwa pengguna memiliki relasi dengan dosen atau tendik
-                            $subQuery->whereHas('dosen')->orWhereHas('tendik');
-                        });
-                }
-            });
-
-        // Mendapatkan data pengguna yang telah difilter
-        $pengguna = $penggunaQuery->get();
+        // Jika pengguna adalah dosen atau tendik
+        if (in_array($user->id_jenis_pengguna, [2, 3])) {
+            $pengguna = Pengguna::where('id_pengguna', $user->id_pengguna)->get();
+        } else {
+            // Jika admin, tampilkan semua pengguna dosen dan tendik
+            $pengguna = Pengguna::with(['dosen', 'tendik'])
+                ->whereHas('dosen')
+                ->orWhereHas('tendik')
+                ->get();
+        }
 
         $mataKuliah = MataKuliahModel::all();
         $bidangMinat = BidangMinatModel::all();
@@ -115,21 +105,20 @@ class RiwayatSertifikasiController extends Controller
         $penyelenggara = VendorSertifikasiModel::all();
         $periode = PeriodeModel::all(); // Mengambil semua periode pelatihan
 
-        return view('riwayat_sertifikasi.create_ajax', compact('pengguna', 'mataKuliah', 'bidangMinat', 'daftarPelatihan', 'penyelenggara', 'periode'));
+        return view('riwayat_sertifikasi.create_ajax', compact('pengguna', 'mataKuliah', 'bidangMinat', 'daftarPelatihan', 'penyelenggara', 'periode', 'user'));
     }
-
 
     public function store_ajax(Request $request)
     {
+        $user = auth()->user();
         $rules = [
-            'id_pengguna' => 'required|exists:pengguna,id_pengguna',
             'level_sertifikasi' => 'required|in:Nasional,Internasional',
             'jenis_sertifikasi' => 'required|in:Profesi,Keahlian',
             'nama_sertifikasi' => 'nullable|string|max:100',
             'no_sertifikat' => 'required|string|max:100',
             'tanggal_terbit' => 'required|date',
             'masa_berlaku' => 'nullable|date|after:tanggal_terbit',
-            'dokumen_sertifikat' => 'nullable|mimes:jpg,jpeg,png,gif,bmp,pdf,docx,xlsx|max:10240', // Maksimum ukuran file 10MB
+            'dokumen_pelatihan' => 'nullable|mimes:jpg,jpeg,png,gif,bmp,pdf,docx|max:2048', // Maksimum ukuran file 2MB (2048 KB)            'mk_list' => 'nullable|array', // Ensure mk_list is an array if provided
             'mk_list' => 'nullable|array', // Ensure mk_list is an array if provided
             'mk_list.*' => 'exists:mata_kuliah,id_mata_kuliah', // Each mata kuliah in mk_list must exist
             'bidang_minat_list' => 'nullable|array', // Ensure bidang_minat_list is an array if provided
@@ -146,6 +135,11 @@ class RiwayatSertifikasiController extends Controller
                 'message' => 'Validasi Gagal',
                 'msgField' => $validator->errors(),
             ]);
+        }
+
+        // Jika dosen atau tendik, override id_pengguna
+        if (in_array($user->id_jenis_pengguna, [2, 3])) {
+            $request->merge(['id_pengguna' => $user->id_pengguna]);
         }
 
         // Menangani dokumen sertifikat jika ada
@@ -285,7 +279,7 @@ class RiwayatSertifikasiController extends Controller
             'no_sertifikat' => 'required|string|max:100',
             'tanggal_terbit' => 'required|date',
             'masa_berlaku' => 'nullable|date|after:tanggal_terbit',
-            'dokumen_sertifikat' => 'nullable|mimes:jpg,jpeg,png,gif,bmp,pdf,docx,xlsx|max:10240', // Validasi untuk dokumen
+            'dokumen_pelatihan' => 'nullable|mimes:jpg,jpeg,png,gif,bmp,pdf,docx|max:2048', // Maksimum ukuran file 2MB (2048 KB)            'mk_list' => 'nullable|array', // Ensure mk_list is an array if provided
             'mk_list' => 'nullable|array',
             'mk_list.*' => 'exists:mata_kuliah,id_mata_kuliah',
             'bidang_minat_list' => 'nullable|array',
@@ -390,36 +384,36 @@ class RiwayatSertifikasiController extends Controller
     public function export_pdf()
     {
         $riwayat_sertifikasi = RiwayatSertifikasiModel::with(['pengguna', 'daftarPelatihan', 'penyelenggara', 'periode'])
-            ->select('id_riwayat', 'id_pengguna', 'level_sertifikasi', 'nama_sertifikasi', 'tanggal_terbit', 'masa_berlaku','penyelenggara', 'dokumen_sertifikat', 'id_periode')
+            ->select('id_riwayat', 'id_pengguna', 'level_sertifikasi', 'nama_sertifikasi', 'tanggal_terbit', 'masa_berlaku', 'penyelenggara', 'dokumen_sertifikat', 'id_periode')
             ->orderBy('tanggal_terbit', 'asc')
             ->get();
-    
+
         // Check if data is available
         if ($riwayat_sertifikasi->isEmpty()) {
             return response()->json(['error' => 'No data available for export'], 404);
         }
-    
+
         $pdf = Pdf::loadView('riwayat_sertifikasi.export_pdf', compact('riwayat_sertifikasi'));
-        $pdf  ->setPaper('a4', 'landscape'); // Set paper size and orientation
-    
+        $pdf->setPaper('a4', 'landscape'); // Set paper size and orientation
+
         return $pdf->stream('Data_riwayat_sertifikasi_' . date('Y-m-d_H-i-s') . '.pdf');
     }
-    
+
     public function export_excel()
     {
         $riwayat_sertifikasi = RiwayatSertifikasiModel::with(['pengguna', 'daftarPelatihan', 'penyelenggara', 'periode'])
             ->select('id_riwayat', 'id_pengguna', 'level_sertifikasi', 'nama_sertifikasi', 'tanggal_terbit', 'masa_berlaku', 'penyelenggara', 'dokumen_sertifikat', 'id_periode')
             ->orderBy('tanggal_terbit', 'asc')
             ->get();
-    
+
         // Check if data is available
         if ($riwayat_sertifikasi->isEmpty()) {
             return response()->json(['error' => 'No data available for export'], 404);
         }
-    
+
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
-    
+
         // Header columns
         $sheet->setCellValue('A1', 'No');
         $sheet->setCellValue('B1', 'Level Sertifikasi');
@@ -430,7 +424,7 @@ class RiwayatSertifikasiController extends Controller
         $sheet->setCellValue('G1', 'Dokumen');
         $sheet->setCellValue('H1', 'ID Periode');
         $sheet->getStyle('A1:H1')->getFont()->setBold(true);
-    
+
         // Fill data
         $row = 2;
         foreach ($riwayat_sertifikasi as $index => $data) {
@@ -445,20 +439,20 @@ class RiwayatSertifikasiController extends Controller
             $row++;
         }
 
-    // Auto size columns
-    foreach (range('A', 'H') as $columnID) {
-        $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        // Auto size columns
+        foreach (range('A', 'H') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        // Save Excel file
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $filename = 'Data_Riwayat_Sertifikasi_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
+        exit;
     }
-
-    // Save Excel file
-    $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-    $filename = 'Data_Riwayat_Sertifikasi_' . date('Y-m-d_H-i-s') . '.xlsx';
-
-    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    header('Content-Disposition: attachment; filename="' . $filename . '"');
-    header('Cache-Control: max-age=0');
-
-    $writer->save('php://output');
-    exit;
-}
 }

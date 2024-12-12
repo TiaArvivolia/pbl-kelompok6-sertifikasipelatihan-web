@@ -94,6 +94,7 @@ class KelolaTendikController extends Controller
             'no_telepon' => 'nullable|string|max:20',
             'email' => 'nullable|string|email|max:100',
             'tag_bidang_minat' => 'required|exists:bidang_minat,id_bidang_minat', // Validates bidang minat tag
+            'gambar_profil' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validasi gambar
         ]);
 
         // Insert into the pengguna table and get the ID

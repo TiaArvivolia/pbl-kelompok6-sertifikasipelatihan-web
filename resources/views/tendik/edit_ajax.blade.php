@@ -84,7 +84,8 @@
                             <img src="{{ asset('storage/' . $tendik->gambar_profil) }}" alt="Gambar Profil" width="150" height="150" class="img-thumbnail">
                         @endif
                     </div>
-                    <input type="file" name="gambar_profil" class="form-control mt-2">
+                    <input type="file" name="gambar_profil" id="gambar_profil" class="form-control">
+                    <small id="error-gambar_profil" class="error-text form-text text-danger"></small>
                 </div>
             </div>
             <div class="modal-footer">
@@ -97,6 +98,19 @@
 
 <script>
 $(document).ready(function() {
+    // Custom file validation
+    $('#gambar_profil').on('change', function() {
+        const file = this.files[0];
+        if (file) {
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            if (!validTypes.includes(file.type) || file.size > 2048000) {
+                $('#error-gambar_profil').text('File harus berupa JPG, JPEG, atau PNG dan maksimal 2MB');
+                $(this).val('');
+            } else {
+                $('#error-gambar_profil').text('');
+            }
+        }
+    });
     $("#form-edit-tendik").validate({
         rules: {
             nama_lengkap: { required: true, minlength: 3, maxlength: 100 },
@@ -104,7 +118,6 @@ $(document).ready(function() {
             no_telepon: { maxlength: 20 },
             email: { email: true },
             tag_bidang_minat: { required: true },
-            gambar_profil: { extension: "jpg|jpeg|png|gif|bmp" }
         },
         submitHandler: function(form) {
             $.ajax({

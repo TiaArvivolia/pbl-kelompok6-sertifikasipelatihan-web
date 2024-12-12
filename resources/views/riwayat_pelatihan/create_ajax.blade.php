@@ -11,9 +11,15 @@
             
             <div class="modal-body">
 
-                <div class="form-group">
+                <div class="form-group" id="form-group-pengguna" style="display: none;">
                     <label>Pengguna</label>
-                    <select name="id_pengguna" id="id_pengguna" class="form-control" required>
+                    <input type="hidden" name="id_pengguna" id="id_pengguna" value="{{ $user->id_pengguna }}">
+                    <input type="text" class="form-control" value="{{ $user->dosen?->nama_lengkap ?? $user->tendik?->nama_lengkap }}" readonly>
+                </div>
+                
+                <div class="form-group" id="dropdown-pengguna" style="display: {{ in_array($user->id_jenis_pengguna, [2, 3]) ? 'none' : 'block' }}">
+                    <label>Pengguna</label>
+                    <select name="id_pengguna" id="id_pengguna_dropdown" class="form-control">
                         <option value="">- Pilih Pengguna -</option>
                         @foreach($pengguna as $p)
                             <option value="{{ $p->id_pengguna }}">
@@ -21,7 +27,6 @@
                             </option>
                         @endforeach
                     </select>
-                    <small id="error-id_pengguna" class="error-text form-text text-danger"></small>
                 </div>
 
                 <div class="form-group">
@@ -130,9 +135,30 @@
         width: '100%', // Full width
         allowClear: true
     });
+
+    // Custom file validation (not an image)
+    $('#dokumen_pelatihan').on('change', function() {
+        const file = this.files[0];
+        if (file) {
+            const validTypes = [
+                'application/pdf',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'image/jpeg',
+                'image/png',
+                'image/jpg'
+            ];
+            if (!validTypes.includes(file.type) || file.size > 2048000) {
+                $('#error-dokumen_pelatihan').text('File harus berupa PDF, DOC, DOCX, JPEG, atau PNG dan maksimal 2MB');
+                $(this).val('');
+            } else {
+                $('#error-dokumen_pelatihan').text('');
+            }
+        }
+    });
+
     $("#form-tambah-riwayat-pelatihan").validate({
         rules: {
-            id_pengguna: { required: true },
             id_periode: { required: true },
             nama_pelatihan: { required: true, minlength: 3, maxlength: 100 },
             level_pelatihan: { required: true },
@@ -140,7 +166,37 @@
             tanggal_selesai: { required: true },
             lokasi: { maxlength: 100 },
             penyelenggara: { maxlength: 100 },
-            dokumen_pelatihan: { extension: "jpg|jpeg|png|gif|bmp|pdf|docx|xlsx" },
+        },
+        messages: {
+            nama_pelatihan: {
+                required: "Nama pelatihan wajib diisi.",
+                minlength: "Nama pelatihan harus memiliki setidaknya 3 karakter.",
+                maxlength: "Nama pelatihan maksimal 100 karakter."
+            },
+            level_pelatihan: {
+                required: "Level pelatihan wajib dipilih."
+            },
+            tanggal_mulai: {
+                required: "Tanggal mulai wajib diisi."
+            },
+            tanggal_selesai: {
+                required: "Tanggal selesai wajib diisi."
+            },
+            lokasi: {
+                maxlength: "Lokasi maksimal 100 karakter."
+            },
+            penyelenggara: {
+                maxlength: "Nama penyelenggara maksimal 100 karakter."
+            },
+            id_periode: {
+                required: "Periode wajib dipilih."
+            },
+            mk_list: {
+                required: "Minimal satu mata kuliah harus dipilih."
+            },
+            bidang_minat_list: {
+                required: "Minimal satu bidang minat harus dipilih."
+            }
         },
         submitHandler: function(form) {
             $.ajax({

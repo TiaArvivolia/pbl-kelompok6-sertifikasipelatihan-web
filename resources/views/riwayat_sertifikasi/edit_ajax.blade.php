@@ -163,6 +163,28 @@ $(document).ready(function() {
         width: '100%', // Full width
         allowClear: true
     });
+
+    // Custom file validation (not an image)
+    $('#dokumen_sertifikat').on('change', function() {
+        const file = this.files[0];
+        if (file) {
+            const validTypes = [
+                'application/pdf',
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'image/jpeg',
+                'image/png',
+                'image/jpg'
+            ];
+            if (!validTypes.includes(file.type) || file.size > 2048000) {
+                $('#error-dokumen_sertifikat').text('File harus berupa PDF, DOC, DOCX, JPEG, atau PNG dan maksimal 2MB');
+                $(this).val('');
+            } else {
+                $('#error-dokumen_sertifikat').text('');
+            }
+        }
+    });
+
     $("#form-edit-riwayat-sertifikasi").validate({
         rules: {
             nama_sertifikasi: { required: true, maxlength: 100 },
@@ -172,7 +194,6 @@ $(document).ready(function() {
             no_sertifikat: { required: true, maxlength: 100 },
             // diselenggarakan_oleh: { required: true },
             penyelenggara: { maxlength: 100 },
-            dokumen_sertifikat: { extension: "pdf|doc|docx|jpg|jpeg|png" },
             // id_pengguna: { required: true },
             tag_mk: { required: true },
             tag_bidang_minat: { required: true }

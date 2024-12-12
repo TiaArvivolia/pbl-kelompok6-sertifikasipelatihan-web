@@ -93,6 +93,20 @@ $(document).ready(function() {
         passwordConfirmationField.attr('type', type);
     });
 
+    // Custom file validation
+    $('#gambar_profil').on('change', function() {
+        const file = this.files[0];
+        if (file) {
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            if (!validTypes.includes(file.type) || file.size > 2048000) {
+                $('#error-gambar_profil').text('File harus berupa JPG, JPEG, atau PNG dan maksimal 2MB');
+                $(this).val('');
+            } else {
+                $('#error-gambar_profil').text('');
+            }
+        }
+    });
+
     // Validasi form
     $("#form-tambah-admin").validate({
         rules: {

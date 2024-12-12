@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
+
 class KelolaPimpinanController extends Controller
 {
     // Display the initial Kelola Pimpinan page
@@ -86,6 +87,7 @@ class KelolaPimpinanController extends Controller
             'nidn' => 'required|string|max:20',  // NIP
             'no_telepon' => 'required|string|max:15',  // Nomor telepon
             'email' => 'required|string|email|max:100',  // Email
+            'gambar_profil' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validasi gambar
         ]);
 
         // Simpan data ke tabel pengguna dan dapatkan ID
@@ -231,69 +233,67 @@ class KelolaPimpinanController extends Controller
         }
     }
     public function export_pdf()
-{
-    // Ambil data pimpinan
-    $pimpinan = KelolaPimpinanModel::select('id_pimpinan', 'id_pengguna', 'nama_lengkap', 'nip', 'no_telepon', 'email', 'gambar_profil')
-        ->with('pengguna')
-        ->get();
+    {
+        // Ambil data pimpinan
+        $pimpinan = KelolaPimpinanModel::select('id_pimpinan', 'id_pengguna', 'nama_lengkap', 'nip', 'no_telepon', 'email', 'gambar_profil')
+            ->with('pengguna')
+            ->get();
 
-    // Share data dengan view
-    $pdf = Pdf::loadView('pimpinan.export_pdf', ['pimpinan' => $pimpinan]);
-    $pdf->setPaper('a4', 'portrait'); // Ukuran kertas dan orientasi
+        // Share data dengan view
+        $pdf = Pdf::loadView('pimpinan.export_pdf', ['pimpinan' => $pimpinan]);
+        $pdf->setPaper('a4', 'portrait'); // Ukuran kertas dan orientasi
 
-    return $pdf->stream('Data_Pimpinan_' . date('Y-m-d_H-i-s') . '.pdf');
-}
-public function export_excel()
-{
-    // Ambil data pimpinan
-    $pimpinan = KelolaPimpinanModel::select('id_pimpinan', 'id_pengguna', 'nama_lengkap', 'nip', 'no_telepon', 'email', 'gambar_profil')
-        ->with('pengguna')
-        ->orderBy('nama_lengkap', 'asc')
-        ->get();
-
-    // Buat spreadsheet baru
-    $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-    $sheet = $spreadsheet->getActiveSheet();
-
-    // Header kolom
-    $sheet->setCellValue('A1', 'No');
-    $sheet->setCellValue('B1', 'ID Pimpinan');
-    $sheet->setCellValue('C1', 'ID Pengguna');
-    $sheet->setCellValue('D1', 'Nama Lengkap');
-    $sheet->setCellValue('E1', 'NIP');
-    $sheet->setCellValue('F1', 'No Telepon');
-    $sheet->setCellValue('G1', 'Email');
-    $sheet->getStyle('A1:G1')->getFont()->setBold(true);
-
-    // Isi data
-    $row = 2;
-    foreach ($pimpinan as $index => $data) {
-        $sheet->setCellValue('A' . $row, $index + 1);
-        $sheet->setCellValue('B' . $row, $data->id_pimpinan);
-        $sheet->setCellValue('C' . $row, $data->id_pengguna);
-        $sheet->setCellValue('D' . $row, $data->nama_lengkap);
-        $sheet->setCellValue('E' . $row, $data->nip);
-        $sheet->setCellValue('F' . $row, $data->no_telepon);
-        $sheet->setCellValue('G' . $row, $data->email);
-        $row++;
+        return $pdf->stream('Data_Pimpinan_' . date('Y-m-d_H-i-s') . '.pdf');
     }
+    public function export_excel()
+    {
+        // Ambil data pimpinan
+        $pimpinan = KelolaPimpinanModel::select('id_pimpinan', 'id_pengguna', 'nama_lengkap', 'nip', 'no_telepon', 'email', 'gambar_profil')
+            ->with('pengguna')
+            ->orderBy('nama_lengkap', 'asc')
+            ->get();
 
-    // Auto size kolom
-    foreach (range('A', 'G') as $columnID) {
-        $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        // Buat spreadsheet baru
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Header kolom
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'ID Pimpinan');
+        $sheet->setCellValue('C1', 'ID Pengguna');
+        $sheet->setCellValue('D1', 'Nama Lengkap');
+        $sheet->setCellValue('E1', 'NIP');
+        $sheet->setCellValue('F1', 'No Telepon');
+        $sheet->setCellValue('G1', 'Email');
+        $sheet->getStyle('A1:G1')->getFont()->setBold(true);
+
+        // Isi data
+        $row = 2;
+        foreach ($pimpinan as $index => $data) {
+            $sheet->setCellValue('A' . $row, $index + 1);
+            $sheet->setCellValue('B' . $row, $data->id_pimpinan);
+            $sheet->setCellValue('C' . $row, $data->id_pengguna);
+            $sheet->setCellValue('D' . $row, $data->nama_lengkap);
+            $sheet->setCellValue('E' . $row, $data->nip);
+            $sheet->setCellValue('F' . $row, $data->no_telepon);
+            $sheet->setCellValue('G' . $row, $data->email);
+            $row++;
+        }
+
+        // Auto size kolom
+        foreach (range('A', 'G') as $columnID) {
+            $sheet->getColumnDimension($columnID)->setAutoSize(true);
+        }
+
+        // Simpan file Excel
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $filename = 'Data_Pimpinan_' . date('Y-m-d_H-i-s') . '.xlsx';
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
+        exit;
     }
-
-    // Simpan file Excel
-    $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-    $filename = 'Data_Pimpinan_' . date('Y-m-d_H-i-s') . '.xlsx';
-
-    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    header('Content-Disposition: attachment; filename="' . $filename . '"');
-    header('Cache-Control: max-age=0');
-
-    $writer->save('php://output');
-    exit;
-}
-
-  
 }

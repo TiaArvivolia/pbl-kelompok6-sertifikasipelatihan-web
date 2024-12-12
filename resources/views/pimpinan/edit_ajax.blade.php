@@ -85,7 +85,8 @@
                                     <img src="{{ asset('storage/' . $pimpinan->gambar_profil) }}" alt="Gambar Profil" width="150" height="150" class="img-thumbnail">
                                 @endif
                             </div>
-                            <input type="file" name="gambar_profil" class="form-control mt-2">
+                            <input type="file" name="gambar_profil" id="gambar_profil" class="form-control mt-2">
+                            <small id="error-gambar_profil" class="error-text form-text text-danger"></small>
                         </div>
                     </div>
                 </div>
@@ -100,15 +101,17 @@
 
 <script>
 $(document).ready(function() {
-    // Display preview of selected profile image
-    $('#gambar_profil').change(function() {
+    // Custom file validation
+    $('#gambar_profil').on('change', function() {
         const file = this.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                $('#preview-gambar').attr('src', event.target.result);
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            if (!validTypes.includes(file.type) || file.size > 2048000) {
+                $('#error-gambar_profil').text('File harus berupa JPG, JPEG, atau PNG dan maksimal 2MB');
+                $(this).val('');
+            } else {
+                $('#error-gambar_profil').text('');
             }
-            reader.readAsDataURL(file);
         }
     });
 
@@ -121,8 +124,7 @@ $(document).ready(function() {
             no_telepon: { maxlength: 15 },
             email: { required: true, email: true },
             id_pengguna: { required: true },
-            username: { required: true },
-            gambar_profil: { extension: "jpg|jpeg|png|gif|bmp" }
+            username: { required: true }, 
         },
         submitHandler: function(form) {
             $.ajax({

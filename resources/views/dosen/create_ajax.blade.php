@@ -161,6 +161,20 @@
         passwordField.attr('type', type);
     });
 
+    // Custom file validation
+    $('#gambar_profil').on('change', function() {
+        const file = this.files[0];
+        if (file) {
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            if (!validTypes.includes(file.type) || file.size > 2048000) {
+                $('#error-gambar_profil').text('File harus berupa JPG, JPEG, atau PNG dan maksimal 2MB');
+                $(this).val('');
+            } else {
+                $('#error-gambar_profil').text('');
+            }
+        }
+    });
+
     // Toggle visibility for password confirmation field
     $('#toggle-password-confirmation').click(function() {
         var passwordConfirmationField = $('#password_confirmation');
@@ -181,9 +195,56 @@
                 required: true,
                 equalTo: "#password"  // Memastikan konfirmasi password sesuai dengan password
             },
-            tag_mk: { required: true, maxlength: 100 },
-            tag_bidang_minat: { required: true, maxlength: 100 },
-            gambar_profil: { extension: "jpg|jpeg|png|gif|bmp" }
+            mk_list: { required: true, maxlength: 100 },
+            bidang_minat_list: { required: true, maxlength: 100 },
+        },
+        messages: {
+            id_pengguna: {
+                required: "ID Pengguna wajib diisi."
+            },
+            nama_lengkap: {
+                required: "Nama Lengkap wajib diisi.",
+                minlength: "Nama Lengkap minimal terdiri dari 3 karakter.",
+                maxlength: "Nama Lengkap maksimal terdiri dari 100 karakter."
+            },
+            nip: {
+                required: "NIP wajib diisi.",
+                minlength: "NIP minimal terdiri dari 5 karakter."
+            },
+            nidn: {
+                required: "NIDN wajib diisi.",
+                minlength: "NIDN minimal terdiri dari 5 karakter."
+            },
+            no_telepon: {
+                required: "No Telepon wajib diisi.",
+                minlength: "No Telepon minimal terdiri dari 10 karakter.",
+                maxlength: "No Telepon maksimal terdiri dari 15 karakter."
+            },
+            email: {
+                required: "Email wajib diisi.",
+                email: "Masukkan format email yang benar."
+            },
+            username: {
+                required: "Username wajib diisi.",
+                minlength: "Username minimal terdiri dari 3 karakter.",
+                maxlength: "Username maksimal terdiri dari 50 karakter."
+            },
+            password: {
+                required: "Password wajib diisi.",
+                minlength: "Password minimal terdiri dari 8 karakter."
+            },
+            password_confirmation: {
+                required: "Konfirmasi Password wajib diisi.",
+                equalTo: "Konfirmasi Password harus sama dengan Password."
+            },
+            mk_list: {
+                required: "Tag Mata Kuliah wajib dipilih.",
+                maxlength: "Tag Mata Kuliah maksimal terdiri dari 100 karakter."
+            },
+            bidang_minat_list: {
+                required: "Tag Bidang Minat wajib dipilih.",
+                maxlength: "Tag Bidang Minat maksimal terdiri dari 100 karakter."
+            }
         },
         submitHandler: function(form) {
             $.ajax({

@@ -23,6 +23,23 @@
                 </div>
 
                 <div class="form-group">
+                    <label>Peserta</label>
+                    <select name="id_peserta[]" id="id_peserta" class="form-control" multiple required>
+                        <option value="">- Pilih Peserta -</option>
+                        @foreach($pengguna as $p)
+                            <option value="{{ $p->id_pengguna }}">
+                                @if($p->dosen)
+                                    {{ $p->dosen->nama_lengkap }}
+                                @elseif($p->tendik)
+                                    {{ $p->tendik->nama_lengkap }}
+                                @endif
+                            </option>
+                        @endforeach
+                    </select>
+                    <small id="error-id_peserta" class="error-text form-text text-danger"></small>
+                </div>
+
+                <div class="form-group">
                     <label>Tanggal Pengajuan</label>
                     <input type="date" name="tanggal_pengajuan" id="tanggal_pengajuan" class="form-control" required>
                     <small id="error-tanggal_pengajuan" class="error-text form-text text-danger"></small>
@@ -39,7 +56,7 @@
                     <small id="error-periode" class="error-text form-text text-danger"></small>
                 </div>
 
-                <div class="form-group">
+                {{-- <div class="form-group">
                     <label>Status Pengajuan</label>
                     <select name="status" id="status" class="form-control" required>
                         <option value="">Pilih Status</option>
@@ -48,7 +65,7 @@
                         <option value="Ditolak">Ditolak</option>
                     </select>
                     <small id="error-status" class="error-text form-text text-danger"></small>
-                </div>
+                </div> --}}
 
                 <div class="form-group">
                     <label>Catatan</label>
@@ -56,22 +73,7 @@
                     <small id="error-catatan" class="error-text form-text text-danger"></small>
                 </div>
 
-                <div class="form-group">
-                    <label>Peserta</label>
-                    <select name="id_peserta[]" id="id_peserta" class="form-control" multiple required>
-                        <option value="">- Pilih Peserta -</option>
-                        @foreach($pengguna as $p)
-                            <option value="{{ $p->id_pengguna }}">
-                                @if($p->dosen)
-                                    {{ $p->dosen->nama_lengkap }}
-                                @elseif($p->tendik)
-                                    {{ $p->tendik->nama_lengkap }}
-                                @endif
-                            </option>
-                        @endforeach
-                    </select>
-                    <small id="error-id_peserta" class="error-text form-text text-danger"></small>
-                </div>
+
                 
 
             </div>
@@ -95,7 +97,7 @@ $(document).ready(function() {
         rules: {
             id_pelatihan: { required: true },
             tanggal_pengajuan: { required: true },
-            status: { required: true },
+            // status: { required: true },
             id_peserta: { required: true }
         },
         submitHandler: function(form) {

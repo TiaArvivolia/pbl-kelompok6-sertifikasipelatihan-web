@@ -75,6 +75,7 @@ class KelolaAdminController extends Controller
             'nip' => 'required|string|max:20',
             'no_telepon' => 'required|string|max:15',
             'email' => 'required|string|email|max:100',
+            'gambar_profil' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Validasi gambar
         ]);
 
         // Simpan data ke tabel pengguna dan dapatkan ID

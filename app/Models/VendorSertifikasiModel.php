@@ -18,4 +18,8 @@ class VendorSertifikasiModel extends Authenticatable
         'website'
     ];
 
+    public function riwayatSertifikasi()
+    {
+        return $this->hasMany(RiwayatSertifikasiModel::class, 'id_vendor_sertifikasi', 'penyelenggara');
+    }
 }
