@@ -13,9 +13,9 @@
                 <a href="{{url('/pengajuan_pelatihan/export_pdf')}}" class="btn btn-sm btn-warning mt-1"><i class="fa fa-file-pdf"></i> Export (PDF)</a>
             @endif
             @if ($user->id_jenis_pengguna == 1) <!-- Check if the user is a admin -->
-                <button onclick="modalAction('{{ url('/pengajuan_pelatihan/create_ajax') }}')" class="btn btn-success btn-sm mt-1">
+                {{-- <button onclick="modalAction('{{ url('/pengajuan_pelatihan/create_ajax') }}')" class="btn btn-success btn-sm mt-1">
                     <i class="fas fa-plus"></i> Tambah Pengajuan Pelatihan
-                </button>
+                </button> --}}
             @endif
         </div>
     </div>
