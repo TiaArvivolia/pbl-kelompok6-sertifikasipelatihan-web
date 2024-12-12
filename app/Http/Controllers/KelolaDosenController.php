@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class KelolaDosenController extends Controller
 {
@@ -369,5 +370,80 @@ class KelolaDosenController extends Controller
 
         $writer->save('php://output');
         exit;
+    }
+    
+    public function import()
+    {
+        return view('dosen.import');
+    }
+    public function import_ajax(Request $request)
+    {
+        if ($request->ajax() || $request->wantsJson()) {
+            $rules = [
+                'file_dosen' => ['required', 'mimes:xlsx', 'max:1024'] // Ensure this matches the input name in your form
+            ];
+            
+            $validator = Validator::make($request->all(), $rules);
+            
+            if ($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Validasi Gagal',
+                    'msgField' => $validator->errors()
+                ]);
+            }
+    
+            $file = $request->file('file_dosen'); // Get the uploaded file
+            $reader = IOFactory::createReader('Xlsx'); // Load the Excel reader
+            $reader->setReadDataOnly(true); // Only read data
+            $spreadsheet = $reader->load($file->getRealPath()); // Load the Excel file
+            $sheet = $spreadsheet->getActiveSheet(); // Get the active sheet
+            $data = $sheet->toArray(null, false, true, true); // Convert the sheet to an array
+            $insert = [];
+    
+            if (count($data) > 1) { // If there is more than one row (header + data)
+                foreach ($data as $baris => $value) {
+                    if ($baris > 1) { // Skip the header row
+                        // Check if the expected keys exist
+                        if (isset($value['J'], $value['K'], $value['L'])) {
+                            $insert[] = [
+                                'id_dosen' => $value['A'],
+                                'id_pengguna' => $value['B'],
+                                'nama_lengkap' => $value['C'],
+                                'nip' => $value['D'],
+                                'nidn' => $value['E'],
+                                'tempat_lahir' => $value['F'],
+                                'tanggal_lahir' => $value['G'],
+                                'no_telepon' => $value['H'],
+                                'email' => $value['I'],
+                                'username' => $value['J'],
+                                'password' => $value['K'],
+                                'konfirmasi_password' => $value['L'],
+                                'mk_list' => $value['M'],
+                                'bidang_minat_list' => $value['N'],
+                                'created_at' => now(),
+                            ];
+                        } else {
+                            // Log a warning if keys are missing
+                            \Log::warning('Missing keys in row: ' . json_encode($value));
+                        }
+                    }
+                }
+                if (count($insert) > 0) {
+                    // Insert data into the database, ignoring duplicates
+                    KelolaDosenModel::insertOrIgnore($insert);
+                }
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data berhasil diimport'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Tidak ada data yang diimport'
+                ]);
+            }
+        }
+        return redirect('/');
     }
 }
