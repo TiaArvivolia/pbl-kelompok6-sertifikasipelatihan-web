@@ -26,10 +26,10 @@ Route::middleware('auth:api')->get('/pengguna', function (Request $request) {
     return $request->user();
 });
 
-
 Route::prefix('pengguna')->group(function () {
     // Menampilkan daftar pengguna
     Route::get('/', [PenggunaController::class, 'index']);
+    Route::get('/detail/{id}', [PenggunaController::class, 'getDosenByPengguna']);
 
     // Menyimpan data pengguna baru
     Route::post('/', [PenggunaController::class, 'store']);

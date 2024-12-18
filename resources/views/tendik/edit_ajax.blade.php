@@ -49,18 +49,19 @@
                     <input value="{{ $tendik->email }}" type="email" name="email" id="email" class="form-control">
                     <small id="error-email" class="error-text form-text text-danger"></small>
                 </div>
+
+                <!-- Input untuk Bidang Minat -->
                 <div class="form-group">
                     <label>Bidang Minat</label>
-                    <select name="tag_bidang_minat" id="tag_bidang_minat" class="form-control">
-                        <option value="">Pilih Bidang Minat</option>
+                    <select name="bidang_minat_list[]" id="bidang_minat_list" class="form-control" multiple required>
                         @foreach($bidangMinat as $bm)
                             <option value="{{ $bm->id_bidang_minat }}" 
-                                {{ $tendik->bidangMinat && $tendik->bidangMinat->id_bidang_minat == $bm->id_bidang_minat ? 'selected' : '' }}>
+                                {{ in_array($bm->id_bidang_minat, json_decode($tendik->bidang_minat_list ?? '[]')) ? 'selected' : '' }}>
                                 {{ $bm->nama_bidang_minat }}
                             </option>
                         @endforeach
                     </select>
-                    <small id="error-tag_bidang_minat" class="error-text form-text text-danger"></small>
+                    <small id="error-bidang_minat_list" class="error-text form-text text-danger"></small>
                 </div>
                 <div class="form-group">
                     <label>Username</label>
@@ -98,6 +99,11 @@
 
 <script>
 $(document).ready(function() {
+    // Initialize select2 for the bidang minat (bidang_minat_list) field
+    $('#bidang_minat_list').select2({
+        width: '100%', // Full width
+        allowClear: true
+    });
     // Custom file validation
     $('#gambar_profil').on('change', function() {
         const file = this.files[0];
@@ -116,8 +122,7 @@ $(document).ready(function() {
             nama_lengkap: { required: true, minlength: 3, maxlength: 100 },
             nip: { required: true, maxlength: 20 },
             no_telepon: { maxlength: 20 },
-            email: { email: true },
-            tag_bidang_minat: { required: true },
+            email: { email: true }
         },
         submitHandler: function(form) {
             $.ajax({

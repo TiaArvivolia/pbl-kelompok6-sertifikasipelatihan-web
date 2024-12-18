@@ -23,6 +23,29 @@
                 </div>
 
                 <div class="form-group">
+                    <label>Rekomendasi Peserta</label>
+                    <select name="id_peserta[]" id="id_peserta" class="form-control" multiple>
+                        <option value="">- Pilih Peserta -</option>
+                        @foreach($daftarPelatihan as $pelatihan)
+                            @if(isset($rekomendasiPeserta[$pelatihan->id_pelatihan]))
+                                <optgroup label="{{ $pelatihan->nama_pelatihan }}">
+                                    @foreach($rekomendasiPeserta[$pelatihan->id_pelatihan] as $peserta)
+                                        <option value="{{ $peserta->id_pengguna }}">
+                                            @if($peserta->dosen)
+                                                {{ $peserta->dosen->nama_lengkap }}
+                                            @elseif($peserta->tendik)
+                                                {{ $peserta->tendik->nama_lengkap }}
+                                            @endif
+                                        </option>
+                                    @endforeach
+                                </optgroup>
+                            @endif
+                        @endforeach
+                    </select>
+                </div>
+                
+
+                {{-- <div class="form-group">
                     <label>Peserta</label>
                     <select name="id_peserta[]" id="id_peserta" class="form-control" multiple required>
                         <option value="">- Pilih Peserta -</option>
@@ -37,7 +60,7 @@
                         @endforeach
                     </select>
                     <small id="error-id_peserta" class="error-text form-text text-danger"></small>
-                </div>
+                </div> --}}
 
                 <div class="form-group">
                     <label>Tanggal Pengajuan</label>
@@ -90,9 +113,22 @@
 <script>
 $(document).ready(function() {
     $('#id_peserta').select2({
-        width: '100%', // Full width
+        width: '100%',
         allowClear: true
     });
+
+    // Saat memilih dari rekomendasi, otomatis tambahkan ke id_peserta
+    // $('#rekomendasi_peserta').on('change', function() {
+    //     let selectedValues = $(this).val();
+    //     if (selectedValues) {
+    //         selectedValues.forEach(function(value) {
+    //             let pesertaOption = $('#id_peserta option[value="' + value + '"]');
+    //             if (!pesertaOption.prop('selected')) {
+    //                 pesertaOption.prop('selected', true).trigger('change');
+    //             }
+    //         });
+    //     }
+    // });
     $("#form-tambah-pengajuan-pelatihan").validate({
         rules: {
             id_pelatihan: { required: true },

@@ -31,7 +31,7 @@ class DaftarPelatihanModel extends Model
     // Relasi ke tabel 'vendor_pelatihan'
     public function vendorPelatihan()
     {
-        return $this->belongsTo(VendorPelatihanModel::class, 'id_vendor_pelatihan');
+        return $this->belongsTo(VendorPelatihanModel::class, 'id_vendor_pelatihan', 'id_vendor_pelatihan');
     }
 
     // Relasi ke tabel 'mata_kuliah'

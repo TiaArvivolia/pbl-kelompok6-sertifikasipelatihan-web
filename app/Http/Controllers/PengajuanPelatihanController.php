@@ -36,34 +36,34 @@ class PengajuanPelatihanController extends Controller
 
     public function list(Request $request)
     {
-        $query = PengajuanPelatihanModel::with(['pengguna.dosen', 'pengguna.tendik', 'daftarPelatihan'])
-            ->select('id_pengajuan', 'id_pengguna', 'id_pelatihan', 'tanggal_pengajuan', 'status', 'catatan', 'id_peserta'); // Menambahkan kolom id_peserta
+        // Query untuk mengambil data pengajuan pelatihan
+        $query = PengajuanPelatihanModel::with(['pengguna.dosen', 'pengguna.tendik', 'daftarPelatihan']);
+
+        // Tambahkan pencarian nama pelatihan
+        if ($request->has('search') && !empty($request->search['value'])) {
+            $search = $request->search['value'];
+            $query->whereHas('daftarPelatihan', function ($subQuery) use ($search) {
+                $subQuery->where('nama_pelatihan', 'like', '%' . $search . '%');
+            });
+        }
+
+        // Eksekusi query dan ambil data
+        $query = $query->select(
+            'id_pengajuan',
+            'id_pengguna',
+            'id_pelatihan',
+            'tanggal_pengajuan',
+            'status',
+            'catatan',
+            'id_peserta'
+        );
 
         // Return DataTables response
         return DataTables::of($query)
             ->addIndexColumn()
-            // ->addColumn('nama_lengkap', function ($pengajuan) {
-            //     $pesertaIds = json_decode($pengajuan->id_peserta);
-            //     $namaPeserta = [];
-            //     if ($pesertaIds) {
-            //         foreach ($pesertaIds as $index => $id) {
-            //             $peserta = Pengguna::find($id);
-            //             if ($peserta) {
-            //                 $namaPeserta[] = ($index + 1) . ') ' .
-            //                     ($peserta->dosen ? $peserta->dosen->nama_lengkap : ($peserta->tendik ? $peserta->tendik->nama_lengkap : 'Tidak Dikenal'));
-            //             } else {
-            //                 $namaPeserta[] = ($index + 1) . ') Tidak Ditemukan';
-            //             }
-            //         }
-            //     }
-            //     return implode('<br>', $namaPeserta);
-            // })
             ->addColumn('jumlah_peserta', function ($pengajuan) {
                 $pesertaIds = json_decode($pengajuan->id_peserta);
-                if ($pesertaIds) {
-                    return count($pesertaIds);
-                }
-                return 0; // If no participants, return 0
+                return $pesertaIds ? count($pesertaIds) : 0;
             })
             ->addColumn('nama_pelatihan', function ($pengajuan) {
                 return $pengajuan->daftarPelatihan ? $pengajuan->daftarPelatihan->nama_pelatihan : '-';
@@ -71,28 +71,23 @@ class PengajuanPelatihanController extends Controller
             ->addColumn('draft', function ($pengajuan) {
                 if ($pengajuan->status === 'Disetujui') {
                     $url = url('/pengajuan_pelatihan/' . $pengajuan->id_pengajuan . '/export_word');
-                    $btn = '<button onclick="window.location.href=\'' . $url . '\'" class="btn btn-primary btn-sm">
-                                <i class="fa fa-download"></i> Download
-                            </button>';
-                } else {
-                    $btn = '<button class="btn btn-secondary btn-sm" disabled>
+                    return '<button onclick="window.location.href=\'' . $url . '\'" class="btn btn-primary btn-sm">
                                 <i class="fa fa-download"></i> Download
                             </button>';
                 }
-                return $btn;
+                return '<button class="btn btn-secondary btn-sm" disabled>
+                            <i class="fa fa-download"></i> Download
+                        </button>';
             })
-
             ->addColumn('aksi', function ($pengajuan) {
                 $btn = '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/' . $pengajuan->id_pengajuan . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
-                // Admin/pimpinan  dapat melakukan operasi CRUD pada Pengajuan
                 if (auth()->user()->id_jenis_pengguna == 1 || auth()->user()->id_jenis_pengguna == 4) {
-                    // Menampilkan tombol Edit dan Hapus hanya untuk admin/pimpinan
                     $btn .= '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/' . $pengajuan->id_pengajuan . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
                     $btn .= '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/' . $pengajuan->id_pengajuan . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Hapus</button>';
                 }
                 return $btn;
             })
-            ->rawColumns(['aksi', 'nama_lengkap', 'draft']) // pastikan kolom nama_lengkap di rawColumns
+            ->rawColumns(['aksi', 'draft'])
             ->make(true);
     }
 
@@ -114,10 +109,34 @@ class PengajuanPelatihanController extends Controller
             return !in_array($pelatihan->id_pelatihan, $alreadySubmittedPelatihanIds);
         });
 
-        $periode = PeriodeModel::all(); // Mengambil semua periode pelatihan
+        // Mengambil semua periode pelatihan
+        $periode = PeriodeModel::all();
 
-        return view('pengajuan_pelatihan.create_ajax', compact('pengguna', 'daftarPelatihan', 'periode'));
+        // Rekomendasi dosen/tendik berdasarkan mk_list dan bidang_minat_list
+        $rekomendasiPeserta = [];
+
+        foreach ($daftarPelatihan as $pelatihan) {
+            $pelatihanMkList = json_decode($pelatihan->mk_list, true) ?? [];
+            $pelatihanBidangMinatList = json_decode($pelatihan->bidang_minat_list, true) ?? [];
+
+            foreach ($pengguna as $penggunaItem) {
+                $isDosen = $penggunaItem->dosen !== null;
+                $mkList = json_decode($isDosen ? $penggunaItem->dosen->mk_list : '[]', true) ?? [];
+                $bidangMinatList = json_decode($isDosen ? $penggunaItem->dosen->bidang_minat_list : $penggunaItem->tendik->bidang_minat_list, true) ?? [];
+
+                // Cocokkan mk_list dan bidang_minat_list
+                $mkMatch = array_intersect($pelatihanMkList, $mkList);
+                $bidangMinatMatch = array_intersect($pelatihanBidangMinatList, $bidangMinatList);
+
+                if (!empty($mkMatch) || !empty($bidangMinatMatch)) {
+                    $rekomendasiPeserta[$pelatihan->id_pelatihan][] = $penggunaItem;
+                }
+            }
+        }
+
+        return view('pengajuan_pelatihan.create_ajax', compact('pengguna', 'daftarPelatihan', 'periode', 'rekomendasiPeserta'));
     }
+
 
     public function store_ajax(Request $request)
     {
@@ -144,8 +163,12 @@ class PengajuanPelatihanController extends Controller
         // Ambil semua data dari request
         $data = $request->all();
 
+        // Pastikan tidak ada duplikat id_peserta
+        $data['id_peserta'] = array_unique($data['id_peserta']);
+        $data['id_peserta'] = json_encode($data['id_peserta']);
+
         // Ubah id_peserta menjadi JSON
-        $data['id_peserta'] = json_encode($request->id_peserta);
+        // $data['id_peserta'] = json_encode($request->id_peserta);
 
         // Tetapkan status default
         $data['status'] = 'Menunggu';

@@ -71,15 +71,15 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Tag Bidang Minat</label>
-                    <select name="tag_bidang_minat" id="tag_bidang_minat" class="form-control">
+                    <label>Bidang Minat</label>
+                    <select name="bidang_minat_list[]" id="bidang_minat_list" class="form-control" multiple required>
                         <option value="">- Pilih Bidang Minat -</option>
                         @foreach($bidangMinat as $bm)
                             <option value="{{ $bm->id_bidang_minat }}">{{ $bm->nama_bidang_minat }}</option>
                         @endforeach
                     </select>
-                    <small id="error-tag_bidang_minat" class="error-text form-text text-danger"></small>
-                </div>
+                    <small id="error-bidang_minat_list" class="error-text form-text text-danger"></small>
+                </div> 
             </div>
 
             <div class="modal-footer">
@@ -92,6 +92,12 @@
 
 <script>
 $(document).ready(function() {
+    // Initialize select2 for the bidang minat (bidang_minat_list) field
+    $('#bidang_minat_list').select2({
+        width: '100%', // Full width
+        allowClear: true
+    });
+
     // Toggle visibility for password field
     $('#toggle-password').click(function() {
         var passwordField = $('#password');
@@ -131,8 +137,7 @@ $(document).ready(function() {
             password_confirmation: {
                 required: true,
                 equalTo: "#password"  // Memastikan konfirmasi password sesuai dengan password
-            },
-            tag_bidang_minat: { required: true},
+            }
             
         },
         messages: {

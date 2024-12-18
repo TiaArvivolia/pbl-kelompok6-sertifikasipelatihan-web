@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Dosen;
 use App\Models\Pengguna;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -27,7 +28,7 @@ class PenggunaController extends Controller
             'peran' => 'required|in:Admin,Dosen,Pimpinan',
             // Tambahkan validasi lainnya sesuai kebutuhan
         ]);
-        
+
         // If validation fails
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
@@ -78,7 +79,7 @@ class PenggunaController extends Controller
             'peran' => 'required|in:Admin,Dosen,Pimpinan',
             // Tambahkan validasi lainnya sesuai kebutuhan
         ]);
-        
+
         // If validation fails
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
@@ -125,6 +126,35 @@ class PenggunaController extends Controller
             return response()->json(['success' => true, 'message' => 'Data pengguna berhasil dihapus']);
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json(['success' => false, 'message' => 'Data pengguna gagal dihapus karena masih terdapat tabel lain yang terkait dengan data ini'], 500);
+        }
+    }
+
+
+    public function getDosenByPengguna($id_pengguna)
+    {
+        try {
+            // Ambil data dosen berdasarkan id_pengguna
+            $dosen = Dosen::where('id_pengguna', $id_pengguna)->first();
+
+            // Jika data tidak ditemukan
+            if (!$dosen) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data dosen tidak ditemukan untuk id_pengguna: ' . $id_pengguna,
+                ], 404);
+            }
+
+            // Kembalikan data dosen
+            return response()->json([
+                'success' => true,
+                'data' => $dosen,
+            ], 200);
+        } catch (\Exception $e) {
+            // Tangani kesalahan
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mengambil data dosen: ' . $e->getMessage(),
+            ], 500);
         }
     }
 }

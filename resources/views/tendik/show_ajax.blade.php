@@ -52,9 +52,15 @@
                         <td class="col-9">{{ $tendik->email ?? '-' }}</td>
                     </tr>
                     <tr>
-                        <th class="text-right col-3">Bidang Minat :</th>
-                        <td class="col-9">{{ $tendik->bidangMinat ? $tendik->bidangMinat->nama_bidang_minat : '-' }}</td>
-                    </tr>                    
+                        <th class="text-right col-3">Bidang Minat:</th>
+                        <td class="col-9">
+                            @if($tendik->bidang_minat_list && count($bidangMinatNames) > 0)
+                                {{ implode(', ', $bidangMinatNames) }}
+                            @else
+                                <span>-</span>
+                            @endif
+                        </td>
+                    </tr>                   
                     <tr>
                         <th class="text-right col-3">Gambar Profil :</th>
                         <td class="col-9">

@@ -47,7 +47,8 @@ class DaftarPelatihanController extends Controller
             'id_vendor_pelatihan',
             'tag_mk',
             'tag_bidang_minat'
-        )->with(['pengajuan', 'vendorPelatihan', 'mataKuliah', 'bidangMinat']);
+        )->with(['pengajuan', 'vendorPelatihan', 'mataKuliah', 'bidangMinat'])->get();
+
 
         return DataTables::of($pelatihan)
             ->addIndexColumn()
