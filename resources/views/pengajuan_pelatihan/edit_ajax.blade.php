@@ -30,18 +30,49 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
+                    <input type="hidden" name="id_pelatihan" id="id_pelatihan" class="form-control" 
+                    value="{{ $selectedPelatihan ? $selectedPelatihan->id_pelatihan : '' }}" readonly>
+                    <label for="nama_pelatihan">Nama Pelatihan</label>
+                    <input type="text" name="nama_pelatihan" id="nama_pelatihan" class="form-control" 
+                           value="{{ $selectedPelatihan ? $selectedPelatihan->nama_pelatihan : '' }}" readonly>
+                </div>
+                {{-- <div class="form-group">
                     <label>Pelatihan</label>
                     <select name="id_pelatihan" id="id_pelatihan" class="form-control" required>
                         <option value="">Pilih Pelatihan</option>
-                        @foreach($daftarPelatihan as $p)
-                            <option value="{{ $p->id_pelatihan }}" 
-                                {{ $pengajuan->id_pelatihan == $p->id_pelatihan ? 'selected' : '' }}>
-                                {{ $p->nama_pelatihan }}
+                        @foreach($allPelatihan as $pelatihan)
+                            <option value="{{ $pelatihan->id_pelatihan }}" 
+                                {{ $selectedPelatihan && $selectedPelatihan->id_pelatihan == $pelatihan->id_pelatihan ? 'selected' : '' }}>
+                                {{ $pelatihan->nama_pelatihan }}
                             </option>
                         @endforeach
                     </select>
                     <small id="error-id_pelatihan" class="error-text form-text text-danger"></small>
+                </div> --}}
+                
+                <div class="form-group">
+                    <label>Peserta</label>
+                    <select name="id_peserta[]" id="id_peserta" class="form-control" multiple required>
+                        {{-- Rekomendasi Peserta Berdasarkan Pelatihan --}}
+                        @if(isset($rekomendasiPeserta))
+                            @foreach($rekomendasiPeserta as $peserta)
+                                <option value="{{ $peserta->id_pengguna }}"
+                                    {{-- Check if the peserta is already selected based on the current training submission --}}
+                                    {{ in_array($peserta->id_pengguna, json_decode($pengajuan->id_peserta ?? '[]')) ? 'selected' : '' }}>
+                                    @if($peserta->dosen)
+                                        {{ $peserta->dosen->nama_lengkap }}
+                                    @elseif($peserta->tendik)
+                                        {{ $peserta->tendik->nama_lengkap }}
+                                    @endif
+                                </option>
+                            @endforeach
+                        @else
+                            <option value="" disabled>Tidak ada peserta yang direkomendasikan</option>
+                        @endif
+                    </select>
+                    <small id="error-id_peserta" class="error-text form-text text-danger"></small>
                 </div>
+                
                 <div class="form-group">
                     <label>Tanggal Pengajuan</label>
                     <input value="{{ $pengajuan->tanggal_pengajuan }}" type="date" name="tanggal_pengajuan" id="tanggal_pengajuan" class="form-control" required>
@@ -60,22 +91,8 @@
                     </select>
                     <small id="error-penyelenggara" class="error-text form-text text-danger"></small>
                 </div>
-                <div class="form-group">
-                    <label>Peserta</label>
-                    <select name="id_peserta[]" id="id_peserta" class="form-control" multiple required>
-                        @foreach($pengguna as $p)
-                            <option value="{{ $p->id_pengguna }}" 
-                                {{ in_array($p->id_pengguna, json_decode($pengajuan->id_peserta ?? '[]')) ? 'selected' : '' }}>
-                                @if($p->dosen)
-                                    {{ $p->dosen->nama_lengkap }}
-                                @elseif($p->tendik)
-                                    {{ $p->tendik->nama_lengkap }}
-                                @endif
-                            </option>
-                        @endforeach
-                    </select>
-                    <small id="error-id_peserta" class="error-text form-text text-danger"></small>
-                </div>
+  
+                
                 <div class="form-group">
                     <label>Status</label>
                     <select name="status" id="status" class="form-control" required>

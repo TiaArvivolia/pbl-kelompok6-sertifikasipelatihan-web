@@ -276,7 +276,7 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('pengajuan_pelatihan')->group(function () {
         Route::get('/', [PengajuanPelatihanController::class, 'index']);
         Route::post('/list', [PengajuanPelatihanController::class, 'list']);
-        Route::get('/create_ajax', [PengajuanPelatihanController::class, 'create_ajax']);
+        Route::get('/create_ajax/{id}', [PengajuanPelatihanController::class, 'create_ajax']);
         Route::post('/ajax', [PengajuanPelatihanController::class, 'store_ajax']);
         Route::get('/{id}/show_ajax', [PengajuanPelatihanController::class, 'show_ajax']);
         Route::get('/{id}/edit_ajax', [PengajuanPelatihanController::class, 'edit_ajax']);

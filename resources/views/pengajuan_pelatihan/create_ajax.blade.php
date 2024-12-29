@@ -12,35 +12,32 @@
             <div class="modal-body">
 
                 <div class="form-group">
-                    <label>Nama Pelatihan</label>
-                    <select name="id_pelatihan" id="id_pelatihan" class="form-control" required>
-                        <option value="">- Pilih Pelatihan -</option>
-                        @foreach($daftarPelatihan as $p)
-                            <option value="{{ $p->id_pelatihan }}">{{ $p->nama_pelatihan }}</option>
-                        @endforeach
-                    </select>
-                    <small id="error-id_pelatihan" class="error-text form-text text-danger"></small>
+                    <input type="hidden" name="id_pelatihan" id="id_pelatihan" class="form-control" 
+                    value="{{ $selectedPelatihan ? $selectedPelatihan->id_pelatihan : '' }}" readonly>
+                    <label for="nama_pelatihan">Nama Pelatihan</label>
+                    <input type="text" name="nama_pelatihan" id="nama_pelatihan" class="form-control" 
+                           value="{{ $selectedPelatihan ? $selectedPelatihan->nama_pelatihan : '' }}" readonly>
                 </div>
 
                 <div class="form-group">
-                    <label>Rekomendasi Peserta</label>
+                    <label>Peserta</label>
                     <select name="id_peserta[]" id="id_peserta" class="form-control" multiple>
                         <option value="">- Pilih Peserta -</option>
-                        @foreach($daftarPelatihan as $pelatihan)
-                            @if(isset($rekomendasiPeserta[$pelatihan->id_pelatihan]))
-                                <optgroup label="{{ $pelatihan->nama_pelatihan }}">
-                                    @foreach($rekomendasiPeserta[$pelatihan->id_pelatihan] as $peserta)
-                                        <option value="{{ $peserta->id_pengguna }}">
-                                            @if($peserta->dosen)
-                                                {{ $peserta->dosen->nama_lengkap }}
-                                            @elseif($peserta->tendik)
-                                                {{ $peserta->tendik->nama_lengkap }}
-                                            @endif
-                                        </option>
-                                    @endforeach
-                                </optgroup>
-                            @endif
-                        @endforeach
+                        @if($rekomendasiPeserta)
+                            <optgroup label="{{ $selectedPelatihan->nama_pelatihan }}">
+                                @foreach($rekomendasiPeserta as $peserta)
+                                    <option value="{{ $peserta->id_pengguna }}">
+                                        @if($peserta->dosen)
+                                            {{ $peserta->dosen->nama_lengkap }}
+                                        @elseif($peserta->tendik)
+                                            {{ $peserta->tendik->nama_lengkap }}
+                                        @endif
+                                    </option>
+                                @endforeach
+                            </optgroup>
+                        @else
+                            <option value="" disabled>Tidak ada peserta yang direkomendasikan</option>
+                        @endif
                     </select>
                 </div>
                 
@@ -151,6 +148,7 @@ $(document).ready(function() {
                             title: 'Berhasil',
                             text: response.message
                         });
+                        
                         // Optionally reload the data table or perform additional actions
                         tablePengajuanPelatihan.ajax.reload();
                     } else {

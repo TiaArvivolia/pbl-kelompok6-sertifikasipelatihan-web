@@ -64,7 +64,7 @@ class DaftarPelatihanController extends Controller
                 // For admins, show all CRUD buttons for Pelatihan
                 $btn = '<button onclick="modalAction(\'' . url('/daftar_pelatihan/' . $pelatihan->id_pelatihan . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
                 $btn .= '<button onclick="modalAction(\'' . url('/daftar_pelatihan/' . $pelatihan->id_pelatihan . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
-                $btn .= '<button onclick="modalAction(\'' . url('/daftar_pelatihan/' . $pelatihan->id_pelatihan . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Hapus</button>';
+                // $btn .= '<button onclick="modalAction(\'' . url('/daftar_pelatihan/' . $pelatihan->id_pelatihan . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Hapus</button>';
                 return $btn;
             })
             ->addColumn('pengajuan', function ($pelatihan) {
@@ -75,7 +75,7 @@ class DaftarPelatihanController extends Controller
                     // Admins can perform CRUD operations on Pengajuan
                     if (auth()->user()->id_jenis_pengguna == 1) {
                         $btn .= '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/' . $pengajuan->id_pengajuan . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
-                        $btn .= '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/' . $pengajuan->id_pengajuan . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Hapus</button>';
+                        // $btn .= '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/' . $pengajuan->id_pengajuan . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Hapus</button>';
                     }
 
                     return $btn;
@@ -83,9 +83,16 @@ class DaftarPelatihanController extends Controller
 
                 // If there's no Pengajuan, show the button to add a new Pengajuan
                 if (auth()->user()->id_jenis_pengguna == 1) {
-                    return '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/create_ajax') . '\')" class="btn btn-success btn-sm">
+                    return '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/create_ajax/' . $pelatihan->id_pelatihan) . '\')" class="btn btn-success btn-sm">
                                 <i class="fas fa-plus"></i> Tambah Pengajuan Pelatihan
                             </button>';
+                    // return '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/create_ajax') . '\', ' . $pelatihan->id_pelatihan . ')" 
+                    //         class="btn btn-success btn-sm" 
+                    //         data-id-pelatihan="' . $pelatihan->id_pelatihan . '">
+                    //         <i class="fas fa-plus"></i> Tambah Pengajuan Pelatihan
+                    // </button>';
+
+
                 } else {
                     // Jika bukan, berikan informasi bahwa pengajuan belum ada
                     return '<div class="alert alert-success alert-sm p-1 m-1" style="font-size: 0.9rem; font-weight: 500;">
@@ -98,14 +105,25 @@ class DaftarPelatihanController extends Controller
     }
 
 
-    public function create_ajax()
+    public function create_ajax($id)
     {
+        // // Ambil data pelatihan berdasarkan ID jika ada
+        // $selectedPelatihan = null;
+        // if ($id) {
+        //     $selectedPelatihan = DaftarPelatihanModel::find($id);
+        //     if (!$selectedPelatihan) {
+        //         return response()->json(['error' => 'Pelatihan tidak ditemukan'], 404);
+        //     }
+        // }
+
+        $selectedPelatihan = DaftarPelatihanModel::find($id); // atau query lain untuk mendapatkan data pelatihan
+
         // Ambil semua data vendor pelatihan, mata kuliah, dan bidang minat untuk pilihan dropdown
         $vendorPelatihan = VendorPelatihanModel::all();
         $mataKuliah = MataKuliahModel::all();
         $bidangMinat = BidangMinatModel::all();
 
-        return view('daftar_pelatihan.create_ajax', compact('vendorPelatihan', 'mataKuliah', 'bidangMinat'));
+        return view('daftar_pelatihan.create_ajax', compact('vendorPelatihan', 'mataKuliah', 'bidangMinat', 'selectedPelatihan'));
     }
 
     public function store_ajax(Request $request)

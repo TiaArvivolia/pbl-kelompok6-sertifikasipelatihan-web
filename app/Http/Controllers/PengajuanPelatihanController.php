@@ -83,7 +83,7 @@ class PengajuanPelatihanController extends Controller
                 $btn = '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/' . $pengajuan->id_pengajuan . '/show_ajax') . '\')" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Detail</button> ';
                 if (auth()->user()->id_jenis_pengguna == 1 || auth()->user()->id_jenis_pengguna == 4) {
                     $btn .= '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/' . $pengajuan->id_pengajuan . '/edit_ajax') . '\')" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i> Edit</button> ';
-                    $btn .= '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/' . $pengajuan->id_pengajuan . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Hapus</button>';
+                    // $btn .= '<button onclick="modalAction(\'' . url('/pengajuan_pelatihan/' . $pengajuan->id_pengajuan . '/delete_ajax') . '\')" class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i> Hapus</button>';
                 }
                 return $btn;
             })
@@ -91,51 +91,48 @@ class PengajuanPelatihanController extends Controller
             ->make(true);
     }
 
-    public function create_ajax()
+    public function create_ajax($id)
     {
+        // Mengambil data pelatihan yang dipilih
+        $selectedPelatihan = DaftarPelatihanModel::find($id);
+
+        if (!$selectedPelatihan) {
+            // Jika pelatihan tidak ditemukan, kembalikan respons atau halaman error
+            return abort(404, 'Pelatihan tidak ditemukan.');
+        }
+
+        // Mengambil pengguna (dosen dan tendik)
         $pengguna = Pengguna::with(['dosen', 'tendik'])
             ->whereHas('dosen')
             ->orWhereHas('tendik')
             ->get();
 
-        // Mengambil semua pelatihan
-        $allPelatihan = DaftarPelatihanModel::all();
+        // Mengambil mk_list dan bidang_minat_list dari pelatihan yang dipilih
+        $pelatihanMkList = json_decode($selectedPelatihan->mk_list, true) ?? [];
+        $pelatihanBidangMinatList = json_decode($selectedPelatihan->bidang_minat_list, true) ?? [];
 
-        // Mengambil ID pelatihan yang sudah pernah diajukan
-        $alreadySubmittedPelatihanIds = PengajuanPelatihanModel::pluck('id_pelatihan')->toArray();
+        // Filter pengguna yang sesuai dengan pelatihan yang dipilih
+        $rekomendasiPeserta = [];
+        foreach ($pengguna as $penggunaItem) {
+            $isDosen = $penggunaItem->dosen !== null;
+            $mkList = json_decode($isDosen ? $penggunaItem->dosen->mk_list : '[]', true) ?? [];
+            $bidangMinatList = json_decode($isDosen ? $penggunaItem->dosen->bidang_minat_list : $penggunaItem->tendik->bidang_minat_list, true) ?? [];
 
-        // Filter pelatihan yang belum pernah diajukan
-        $daftarPelatihan = $allPelatihan->filter(function ($pelatihan) use ($alreadySubmittedPelatihanIds) {
-            return !in_array($pelatihan->id_pelatihan, $alreadySubmittedPelatihanIds);
-        });
+            // Cocokkan mk_list dan bidang_minat_list
+            $mkMatch = array_intersect($pelatihanMkList, $mkList);
+            $bidangMinatMatch = array_intersect($pelatihanBidangMinatList, $bidangMinatList);
+
+            if (!empty($mkMatch) || !empty($bidangMinatMatch)) {
+                $rekomendasiPeserta[] = $penggunaItem; // Hanya tambahkan pengguna yang cocok
+            }
+        }
 
         // Mengambil semua periode pelatihan
         $periode = PeriodeModel::all();
 
-        // Rekomendasi dosen/tendik berdasarkan mk_list dan bidang_minat_list
-        $rekomendasiPeserta = [];
-
-        foreach ($daftarPelatihan as $pelatihan) {
-            $pelatihanMkList = json_decode($pelatihan->mk_list, true) ?? [];
-            $pelatihanBidangMinatList = json_decode($pelatihan->bidang_minat_list, true) ?? [];
-
-            foreach ($pengguna as $penggunaItem) {
-                $isDosen = $penggunaItem->dosen !== null;
-                $mkList = json_decode($isDosen ? $penggunaItem->dosen->mk_list : '[]', true) ?? [];
-                $bidangMinatList = json_decode($isDosen ? $penggunaItem->dosen->bidang_minat_list : $penggunaItem->tendik->bidang_minat_list, true) ?? [];
-
-                // Cocokkan mk_list dan bidang_minat_list
-                $mkMatch = array_intersect($pelatihanMkList, $mkList);
-                $bidangMinatMatch = array_intersect($pelatihanBidangMinatList, $bidangMinatList);
-
-                if (!empty($mkMatch) || !empty($bidangMinatMatch)) {
-                    $rekomendasiPeserta[$pelatihan->id_pelatihan][] = $penggunaItem;
-                }
-            }
-        }
-
-        return view('pengajuan_pelatihan.create_ajax', compact('pengguna', 'daftarPelatihan', 'periode', 'rekomendasiPeserta'));
+        return view('pengajuan_pelatihan.create_ajax', compact('selectedPelatihan', 'periode', 'rekomendasiPeserta'));
     }
+
 
 
     public function store_ajax(Request $request)
@@ -217,15 +214,45 @@ class PengajuanPelatihanController extends Controller
             return response()->json(['error' => 'Data yang anda cari tidak ditemukan'], 404);
         }
 
+        // Retrieve all users (dosen and tendik)
         $pengguna = Pengguna::with(['dosen', 'tendik'])
             ->whereHas('dosen')
             ->orWhereHas('tendik')
             ->get();
-        $daftarPelatihan = DaftarPelatihanModel::all();
+
+        // Get all available training sessions
+        $allPelatihan = DaftarPelatihanModel::all();
+
+        // Get training periods
         $periode = PeriodeModel::all();
 
-        return view('pengajuan_pelatihan.edit_ajax', compact('pengajuan', 'pengguna', 'daftarPelatihan', 'periode'));
+        // Get the currently selected training from the submission
+        $selectedPelatihan = $pengajuan->daftarPelatihan;
+
+        // Get recommended participants for the selected training
+        $pelatihanMkList = json_decode($selectedPelatihan->mk_list, true) ?? [];
+        $pelatihanBidangMinatList = json_decode($selectedPelatihan->bidang_minat_list, true) ?? [];
+
+        $rekomendasiPeserta = [];
+        foreach ($pengguna as $penggunaItem) {
+            $isDosen = $penggunaItem->dosen !== null;
+            $mkList = json_decode($isDosen ? $penggunaItem->dosen->mk_list : '[]', true) ?? [];
+            $bidangMinatList = json_decode($isDosen ? $penggunaItem->dosen->bidang_minat_list : $penggunaItem->tendik->bidang_minat_list, true) ?? [];
+
+            // Check if the user matches the training's mk_list or bidang_minat_list
+            $mkMatch = array_intersect($pelatihanMkList, $mkList);
+            $bidangMinatMatch = array_intersect($pelatihanBidangMinatList, $bidangMinatList);
+
+            if (!empty($mkMatch) || !empty($bidangMinatMatch)) {
+                $rekomendasiPeserta[] = $penggunaItem;
+            }
+        }
+
+        return view('pengajuan_pelatihan.edit_ajax', compact('pengajuan', 'pengguna', 'allPelatihan', 'periode', 'rekomendasiPeserta', 'selectedPelatihan'));
     }
+
+
+
 
     public function update_ajax(Request $request, $id)
     {
